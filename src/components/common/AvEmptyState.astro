@@ -1,0 +1,24 @@
+---
+import { AvButton, AvCard } from "@ansiversa/components";
+
+interface Props {
+  title: string;
+  description?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const { title, description, ctaLabel, ctaHref } = Astro.props as Props;
+---
+
+<AvCard className="av-empty-state">
+  <div class="av-empty-state__body">
+    <h3 class="av-empty-state__title">{title}</h3>
+    {description && <p class="av-empty-state__description">{description}</p>}
+    {ctaLabel && ctaHref && (
+      <AvButton href={ctaHref} variant="primary">
+        {ctaLabel}
+      </AvButton>
+    )}
+  </div>
+</AvCard>

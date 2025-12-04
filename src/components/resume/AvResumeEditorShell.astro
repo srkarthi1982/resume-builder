@@ -1,0 +1,14 @@
+---
+import { AvContainer } from "@ansiversa/components";
+---
+
+<section class="av-resume-editor">
+  <AvContainer className="av-resume-editor__container">
+    <aside class="av-resume-editor__sidebar">
+      <slot name="sidebar" />
+    </aside>
+    <div class="av-resume-editor__preview">
+      <slot name="preview" />
+    </div>
+  </AvContainer>
+</section>

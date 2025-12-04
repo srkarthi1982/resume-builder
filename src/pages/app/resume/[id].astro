@@ -1,0 +1,140 @@
+---
+import { Fragment } from "astro/jsx-runtime";
+import AppShell from "../../../layouts/AppShell.astro";
+import AvBreadcrumb from "../../../components/common/AvBreadcrumb.astro";
+import AvPageHeader from "../../../components/common/AvPageHeader.astro";
+import AvToolbar from "../../../components/common/AvToolbar.astro";
+import AvResumeEditorShell from "../../../components/resume/AvResumeEditorShell.astro";
+import AvResumeSectionList from "../../../components/resume/AvResumeSectionList.astro";
+import AvResumeSectionFormShell from "../../../components/resume/AvResumeSectionFormShell.astro";
+import AvItemList from "../../../components/common/AvItemList.astro";
+import AvChipList from "../../../components/common/AvChipList.astro";
+import AvTextarea from "../../../components/common/AvTextarea.astro";
+import { AvButton, AvCard, AvContainer, AvInput } from "@ansiversa/components";
+
+const resume = {
+  id: "r1",
+  title: "Senior Product Manager (Fintech)",
+  targetRole: "Senior Product Manager",
+  location: "Dubai, UAE",
+};
+
+const sections = [
+  { id: "summary", type: "summary", title: "Summary", isVisible: true, isActive: false },
+  { id: "experience", type: "experience", title: "Work Experience", isVisible: true, isActive: true },
+  { id: "education", type: "education", title: "Education", isVisible: true, isActive: false },
+  { id: "skills", type: "skills", title: "Skills", isVisible: true, isActive: false },
+];
+
+const experienceItems = [
+  {
+    id: "exp1",
+    title: "Senior Product Manager",
+    subtitle: "Fintech Corp",
+    meta: "Jan 2020 – Present · Dubai, UAE",
+    isCurrent: true,
+  },
+  {
+    id: "exp2",
+    title: "Product Manager",
+    subtitle: "Payments Inc.",
+    meta: "Jun 2016 – Dec 2019 · Chennai, India",
+    isCurrent: false,
+  },
+];
+
+const skills = [
+  { id: "s1", label: "Product Strategy" },
+  { id: "s2", label: "Roadmapping" },
+  { id: "s3", label: "Stakeholder Management" },
+];
+---
+
+<AppShell>
+  <AvBreadcrumb
+    items={[
+      { label: "Home", href: "/" },
+      { label: "Resumes", href: "/app/resumes" },
+      { label: resume.title },
+    ]}
+  />
+
+  <AvPageHeader
+    title={`Edit Resume – ${resume.title}`}
+    description="Refine content, reorder sections, and keep everything ATS-friendly."
+  />
+
+  <AvToolbar
+    saveStatus="saved"
+    lastSavedAt="Just now"
+    actions={[
+      { label: "Change Template", href: "/templates" },
+      { label: "Download PDF", href: "/app/resume/r1/pdf" },
+    ]}
+  />
+
+  <AvContainer>
+    <AvResumeEditorShell>
+      <Fragment slot="sidebar">
+        <AvResumeSectionList sections={sections} />
+
+        <AvResumeSectionFormShell
+          title="Work Experience"
+          description="Add roles that show measurable impact."
+        >
+          <AvItemList items={experienceItems} />
+
+          <AvInput label="Job Title" placeholder="e.g., Senior Product Manager" />
+          <AvInput label="Company" placeholder="e.g., Fintech Corp" />
+          <AvInput label="Dates" placeholder="Jan 2020 – Present" />
+          <AvTextarea label="Highlights" placeholder="Add bullet points that show outcomes." />
+
+          <div slot="actions" class="av-form-actions">
+            <AvButton variant="ghost">Cancel</AvButton>
+            <AvButton>Add Experience</AvButton>
+          </div>
+        </AvResumeSectionFormShell>
+      </Fragment>
+
+      <Fragment slot="preview">
+        <AvCard className="av-resume-preview">
+          <div class="av-resume-preview__header">
+            <h2 class="av-resume-preview__name">Amina Rahman</h2>
+            <p class="av-resume-preview__role">Senior Product Manager</p>
+            <p class="av-resume-preview__meta">Dubai, UAE • amina@example.com • +971 555 1234</p>
+          </div>
+          <div class="av-resume-preview__section">
+            <h3 class="av-resume-preview__section-title">Summary</h3>
+            <p class="av-resume-preview__text">
+              Fintech product leader shaping secure payment experiences, aligning cross-functional teams, and shipping features
+              that balance compliance with customer delight.
+            </p>
+          </div>
+          <div class="av-resume-preview__section">
+            <h3 class="av-resume-preview__section-title">Work Experience</h3>
+            <div class="av-resume-preview__item">
+              <p class="av-resume-preview__item-title">Senior Product Manager — Fintech Corp</p>
+              <p class="av-resume-preview__item-meta">Jan 2020 – Present · Dubai, UAE</p>
+              <ul class="av-resume-preview__list">
+                <li>Scaled payments roadmap with risk controls, improving authorization success by 6%.</li>
+                <li>Built partner integrations that increased B2B revenue by $3.2M YoY.</li>
+              </ul>
+            </div>
+            <div class="av-resume-preview__item">
+              <p class="av-resume-preview__item-title">Product Manager — Payments Inc.</p>
+              <p class="av-resume-preview__item-meta">Jun 2016 – Dec 2019 · Chennai, India</p>
+              <ul class="av-resume-preview__list">
+                <li>Launched onboarding refinements reducing time-to-transaction by 18%.</li>
+                <li>Guided experimentation with engineers and design to raise activation.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="av-resume-preview__section">
+            <h3 class="av-resume-preview__section-title">Skills</h3>
+            <AvChipList chips={skills} />
+          </div>
+        </AvCard>
+      </Fragment>
+    </AvResumeEditorShell>
+  </AvContainer>
+</AppShell>

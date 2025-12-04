@@ -8,6 +8,129 @@ import {
   AvFeatureItem,
   AvFeatureList,
 } from "@ansiversa/components";
+import AvTemplateGrid from "../components/common/AvTemplateGrid.astro";
+import AvTemplateCard from "../components/common/AvTemplateCard.astro";
+
+const templates = [
+  {
+    key: "modern-blue",
+    name: "Modern Blue Template",
+    description: "Clean, ATS-friendly layout with subtle blue accents.",
+    accentClass: "av-template-accent--modern-blue",
+    href: "/app/resume/new?template=modern-blue",
+  },
+  {
+    key: "minimal-white",
+    name: "Minimal White Template",
+    description: "Simple, distraction-free layout.",
+    accentClass: "av-template-accent--minimal-white",
+    href: "/app/resume/new?template=minimal-white",
+  },
+  {
+    key: "two-column-professional",
+    name: "Two-Column Professional",
+    description: "Compact layout for experienced profiles.",
+    accentClass: "av-template-accent--two-column",
+    href: "/app/resume/new?template=two-column-professional",
+  },
+  {
+    key: "executive-serif",
+    name: "Executive Serif",
+    description: "Classic hierarchy with polished serif headings.",
+    accentClass: "av-template-accent--executive-serif",
+    href: "/app/resume/new?template=executive-serif",
+  },
+];
+
+const painPoints = [
+  {
+    title: "Builders feel overwhelming",
+    description: "Too many fields and steps slow people down. We guide one clear action at a time.",
+  },
+  {
+    title: "Generic or outdated templates",
+    description: "Stiff designs hurt your story. Our layouts stay modern, clear, and recruiter-approved.",
+  },
+  {
+    title: "Hidden paywalls and traps",
+    description: "Download, PDF export, and watermark removal stay free. Transparency is the default.",
+  },
+  {
+    title: "Fake ATS compliance",
+    description: "No tricky columns or graphics that break parsing—just machine-readable hierarchy.",
+  },
+  {
+    title: "No content coaching",
+    description: "Examples and prompts help you craft achievement-driven bullets and strong summaries.",
+  },
+  {
+    title: "Painful on mobile",
+    description: "Built to edit safely from one hand with fast preview and reliable autosave.",
+  },
+];
+
+const steps = [
+  {
+    step: "1",
+    title: "Guided, brain-friendly flow",
+    description: "One question at a time reduces cognitive load and keeps you focused on strong content.",
+  },
+  {
+    step: "2",
+    title: "Smart content helper",
+    description: "Rewrite bullets professionally and highlight skills for the role you want.",
+  },
+  {
+    step: "3",
+    title: "Templates for real employers",
+    description: "Modern, ATS-safe layouts with correct spacing, hierarchy, and recruiter expectations built in.",
+  },
+  {
+    step: "4",
+    title: "Evolve your resume",
+    description: "Reorder sections, switch templates, and return anytime for instant downloads with no watermark.",
+  },
+];
+
+const differentiators = [
+  {
+    title: "Transparent by design",
+    description: "Free creation, free editing, and free PDF downloads. No watermark surprises.",
+  },
+  {
+    title: "Speed standard",
+    description: "Every action targets fast feedback: switch templates, load resumes, and download instantly.",
+  },
+  {
+    title: "Seamless mobile experience",
+    description: "One-hand-friendly editing with safe autosave, quick preview, and confident PDF export.",
+  },
+  {
+    title: "Integrated ecosystem",
+    description: "Consistent UI, single sign-on, and access to curated career, study, and utility tools.",
+  },
+];
+
+const testimonials = [
+  "Best resume builder I've ever used—simple and clear.",
+  "ATS score improved instantly when I switched template.",
+  "Loved the real-time preview and calm editing flow.",
+];
+
+const faqs = [
+  {
+    question: "Is it free to use?",
+    answer: "Yes. Create, edit, and download PDFs without paywalls or watermarks.",
+  },
+  {
+    question: "Do I need an account to start?",
+    answer: "No login required to begin. Sign in only if you want to save progress for later.",
+  },
+  {
+    question: "Are templates ATS-friendly?",
+    answer: "Absolutely. Every layout follows ATS compliance guidelines and recruiter expectations.",
+  },
+];
 ---
 
 <AppShell
@@ -15,174 +138,100 @@ import {
   description="Guided, ATS-friendly resume creation with honest pricing, fast performance, and templates designed for real employers."
 >
   <section class="av-hero">
-    <AvContainer size="narrow" className="av-hero__content--narrow">
+    <AvContainer size="narrow" className="av-hero__container">
       <div class="av-hero__content">
-        <div class="av-kicker">
-          <span>Ansiversa Ecosystem</span>
-        </div>
-        <h1 class="av-gradient-text">A Resume Builder That Understands You</h1>
-        <p class="text-slate-300">
-          Guided, brain-friendly flow that helps you write stronger bullets and summaries—not just rearrange boxes. Clean, ATS
-          safe templates with honest pricing and smooth performance on every device.
+        <p class="av-kicker">Ansiversa Ecosystem</p>
+        <h1 class="av-hero__title">A Resume Builder That Understands You</h1>
+        <p class="av-hero__lead">
+          Guided, ATS-safe editing with honest pricing and templates designed for real employers. Build with confidence on every
+          device.
         </p>
+        <div class="av-cta-row">
+          <AvButton href="/app/resume/new">Create Your Resume</AvButton>
+          <AvButton href="#templates" variant="outline">View Templates</AvButton>
+        </div>
+        <AvFeatureList className="av-feature-list--center">
+          <AvFeatureItem variant="primary">Guided, low-stress editing</AvFeatureItem>
+          <AvFeatureItem variant="primary">Truly ATS-safe structure</AvFeatureItem>
+          <AvFeatureItem variant="primary">No surprise paywalls</AvFeatureItem>
+          <AvFeatureItem variant="primary">Mobile-first experience</AvFeatureItem>
+        </AvFeatureList>
       </div>
-      <div class="av-cta-row">
-        <AvButton href="/app/resume">Create Your Resume</AvButton>
-        <AvButton href="#templates" variant="outline">View Templates</AvButton>
-      </div>
-      <AvFeatureList className="justify-center mt-10">
-        <AvFeatureItem variant="primary">Guided, low-stress editing</AvFeatureItem>
-        <AvFeatureItem variant="primary">Truly ATS-safe structure</AvFeatureItem>
-        <AvFeatureItem variant="primary">No surprise paywalls</AvFeatureItem>
-        <AvFeatureItem variant="primary">Mobile-first experience</AvFeatureItem>
-      </AvFeatureList>
     </AvContainer>
   </section>
 
   <section class="av-section" id="why">
     <AvContainer>
-      <div class="av-section-header">
-        <h2 class="av-section-title">What Problem Are We Solving?</h2>
-        <p class="av-section-lead">Resume creation is stressful, confusing, and full of hidden traps. We remove the friction.</p>
+      <div class="av-section__header">
+        <h2 class="av-section__title">What Problem Are We Solving?</h2>
+        <p class="av-section__lead">Resume creation is stressful, confusing, and full of hidden traps. We remove the friction.</p>
       </div>
-      <div class="av-section-grid">
-        <AvCard>
-          <p class="av-card-heading">Builders feel overwhelming</p>
-          <p class="text-slate-300">Too many fields, clicks, and settings slow people down. We guide one clear step at a time.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Generic or outdated templates</p>
-          <p class="text-slate-300">Stiff designs hurt your story. Our layouts are clean, modern, and recruiter-approved.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Hidden paywalls and traps</p>
-          <p class="text-slate-300">Download, PDF export, and watermark removal stay free. Transparency is the default.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Fake ATS compliance</p>
-          <p class="text-slate-300">No tricky two-column traps, no icon-heavy layouts—just machine-readable hierarchy.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">No content coaching</p>
-          <p class="text-slate-300">Examples and prompts help you craft achievement-driven bullets and strong summaries.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Painful on mobile</p>
-          <p class="text-slate-300">Built to edit safely from one hand with fast autosave and quick preview.</p>
-        </AvCard>
-      </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="how-it-works">
-    <AvContainer>
-      <div class="av-section-header">
-        <h2 class="av-section-title">What We’re Building</h2>
-        <p class="av-section-lead">A smart, guided, story-focused system that helps you finish faster with confidence.</p>
-      </div>
-      <div class="av-steps">
-        <div class="av-step">
-          <div class="av-step-number">1</div>
-          <div class="av-step-body">
-            <p class="font-semibold text-slate-100">Guided, brain-friendly flow</p>
-            <p>One question at a time reduces cognitive load and keeps you focused on great content.</p>
-          </div>
-        </div>
-        <div class="av-step">
-          <div class="av-step-number">2</div>
-          <div class="av-step-body">
-            <p class="font-semibold text-slate-100">Smart content helper</p>
-            <p>Rewrite bullets professionally, turn tasks into achievements, and highlight skills for the role.</p>
-          </div>
-        </div>
-        <div class="av-step">
-          <div class="av-step-number">3</div>
-          <div class="av-step-body">
-            <p class="font-semibold text-slate-100">Templates for real employers</p>
-            <p>Modern, ATS-safe layouts with correct spacing, hierarchy, and recruiter expectations baked in.</p>
-          </div>
-        </div>
-        <div class="av-step">
-          <div class="av-step-number">4</div>
-          <div class="av-step-body">
-            <p class="font-semibold text-slate-100">Evolve your resume</p>
-            <p>Reorder sections, switch templates, and return anytime for instant downloads with no watermark.</p>
-          </div>
-        </div>
-      </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="templates">
-    <AvContainer>
-      <div class="av-section-header">
-        <h2 class="av-section-title">Templates Built for ATS &amp; Clarity</h2>
-        <p class="av-section-lead">Clean hierarchy, simple fonts, and no graphics that break parsing.</p>
-      </div>
-      <div class="av-section-grid">
-        {[
-          {
-            title: "Modern Blue Template",
-            accent: "from-cyan-500/20 to-blue-500/10",
-          },
-          {
-            title: "Minimal White Template",
-            accent: "from-slate-200/10 to-slate-800/20",
-          },
-          {
-            title: "Two-Column Professional",
-            accent: "from-indigo-500/20 to-purple-500/10",
-          },
-          {
-            title: "Creative Accent Template",
-            accent: "from-amber-400/25 to-pink-500/10",
-          },
-          {
-            title: "Executive Serif",
-            accent: "from-emerald-400/20 to-cyan-500/10",
-          },
-          {
-            title: "Clean Monoline",
-            accent: "from-fuchsia-500/20 to-blue-500/10",
-          },
-        ].map((template) => (
-          <AvCard className={`space-y-3 bg-gradient-to-br ${template.accent}`}>
-            <p class="av-card-heading">Template</p>
-            <h3 class="text-lg font-semibold text-slate-100">{template.title}</h3>
-            <p class="text-sm text-slate-200/80">Follows strict spacing, readable headings, and machine-friendly structure.</p>
-            <AvButton variant="ghost" href="/app/resume">Use Template</AvButton>
+      <div class="av-section__grid">
+        {painPoints.map((item) => (
+          <AvCard>
+            <p class="av-card__title">{item.title}</p>
+            <p class="av-card__body">{item.description}</p>
           </AvCard>
         ))}
       </div>
     </AvContainer>
   </section>
 
+  <section class="av-section" id="how-it-works">
+    <AvContainer>
+      <div class="av-section__header">
+        <h2 class="av-section__title">What We’re Building</h2>
+        <p class="av-section__lead">A smart, guided, story-focused system that helps you finish faster with confidence.</p>
+      </div>
+      <div class="av-steps">
+        {steps.map((step) => (
+          <div class="av-step">
+            <div class="av-step__number">{step.step}</div>
+            <div class="av-step__body">
+              <p class="av-step__title">{step.title}</p>
+              <p class="av-step__text">{step.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="templates">
+    <AvContainer>
+      <div class="av-section__header">
+        <h2 class="av-section__title">Templates Built for ATS &amp; Clarity</h2>
+        <p class="av-section__lead">Clean hierarchy, simple fonts, and no graphics that break parsing.</p>
+      </div>
+      <AvTemplateGrid>
+        {templates.map((template) => (
+          <AvTemplateCard
+            name={template.name}
+            description={template.description}
+            accentClass={template.accentClass}
+            href={template.href}
+          />
+        ))}
+      </AvTemplateGrid>
+    </AvContainer>
+  </section>
+
   <section class="av-section" id="features">
     <AvContainer>
-      <div class="av-section-header">
-        <h2 class="av-section-title">Why Ansiversa Is Different</h2>
-        <p class="av-section-lead">More than a template picker—every choice respects recruiter standards and user trust.</p>
+      <div class="av-section__header">
+        <h2 class="av-section__title">Why Ansiversa Is Different</h2>
+        <p class="av-section__lead">More than a template picker—every choice respects recruiter standards and user trust.</p>
       </div>
-      <div class="av-section-grid">
-        <AvCard>
-          <p class="av-card-heading">Transparent by design</p>
-          <p class="text-slate-300">Free creation, free editing, and free PDF downloads. No watermark surprises.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Speed standard</p>
-          <p class="text-slate-300">Every action targets a 4-second response: switch templates, load resumes, and download instantly.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Seamless mobile experience</p>
-          <p class="text-slate-300">One-hand-friendly editing with safe autosave, fast preview, and confident PDF export.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Integrated ecosystem</p>
-          <p class="text-slate-300">Consistent UI, single sign-on, and access to curated career, study, and utility tools.</p>
-        </AvCard>
+      <div class="av-section__grid">
+        {differentiators.map((item) => (
+          <AvCard>
+            <p class="av-card__title">{item.title}</p>
+            <p class="av-card__body">{item.description}</p>
+          </AvCard>
+        ))}
       </div>
-      <AvDivider className="my-10" />
-      <AvFeatureList className="grid gap-3 md:grid-cols-3">
+      <AvDivider />
+      <AvFeatureList>
         <AvFeatureItem variant="secondary">Cleaner and more modern than legacy builders</AvFeatureItem>
         <AvFeatureItem variant="secondary">Guided writing with helpful examples and prompts</AvFeatureItem>
         <AvFeatureItem variant="secondary">Part of a premium 100-app Ansiversa ecosystem</AvFeatureItem>
@@ -192,53 +241,45 @@ import {
 
   <section class="av-section" id="testimonials">
     <AvContainer>
-      <div class="av-section-header">
-        <h2 class="av-section-title">Why Early Users Love It</h2>
-        <p class="av-section-lead">Confidence from clear guidance, transparent pricing, and recruiter-ready output.</p>
+      <div class="av-section__header">
+        <h2 class="av-section__title">Why Early Users Love It</h2>
+        <p class="av-section__lead">Confidence from clear guidance, transparent pricing, and recruiter-ready output.</p>
       </div>
-      <div class="av-section-grid">
-        {["Best resume builder I've ever used—simple and clean!", "ATS score improved instantly when I switched template.", "Loved the real-time preview and easy editing."].map(
-          (quote) => (
-            <AvCard variant="soft">
-              <p class="text-slate-100">“{quote}”</p>
-            </AvCard>
-          )
-        )}
+      <div class="av-section__grid">
+        {testimonials.map((quote) => (
+          <AvCard variant="soft">
+            <p class="av-card__quote">“{quote}”</p>
+          </AvCard>
+        ))}
       </div>
     </AvContainer>
   </section>
 
   <section class="av-section" id="faq">
     <AvContainer>
-      <div class="av-section-header">
-        <h2 class="av-section-title">Frequently Asked Questions</h2>
-        <p class="av-section-lead">Quick answers about pricing, editing, and ATS compliance.</p>
+      <div class="av-section__header">
+        <h2 class="av-section__title">Frequently Asked Questions</h2>
+        <p class="av-section__lead">Quick answers about pricing, editing, and ATS compliance.</p>
       </div>
-      <div class="av-section-grid">
-        <AvCard>
-          <p class="av-card-heading">Is it free to use?</p>
-          <p class="text-slate-300">Yes. Create, edit, and download PDFs without paywalls or watermarks.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Do I need an account to start?</p>
-          <p class="text-slate-300">No login required to begin. Sign in only if you want to save progress for later.</p>
-        </AvCard>
-        <AvCard>
-          <p class="av-card-heading">Are templates ATS-friendly?</p>
-          <p class="text-slate-300">Absolutely. Every layout follows ATS compliance guidelines.</p>
-        </AvCard>
+      <div class="av-section__grid">
+        {faqs.map((item) => (
+          <AvCard>
+            <p class="av-card__title">{item.question}</p>
+            <p class="av-card__body">{item.answer}</p>
+          </AvCard>
+        ))}
       </div>
     </AvContainer>
   </section>
 
-  <section class="av-section bg-slate-950/80" id="cta">
-    <AvContainer size="narrow" className="text-center space-y-4">
-      <h2 class="text-3xl font-semibold text-slate-50">Ready to tell your story clearly?</h2>
-      <p class="text-slate-300">
+  <section class="av-section av-section--cta" id="cta">
+    <AvContainer size="narrow" className="av-section__center">
+      <h2 class="av-section__title">Ready to tell your story clearly?</h2>
+      <p class="av-section__lead">
         Ansiversa Resume Builder is your career companion—helping you craft a confident, professional, ATS-ready resume.
       </p>
-      <div class="av-cta-row justify-center">
-        <AvButton href="/app/resume">Create Your Resume</AvButton>
+      <div class="av-cta-row">
+        <AvButton href="/app/resume/new">Create Your Resume</AvButton>
         <AvButton href="#templates" variant="ghost">Explore Templates</AvButton>
       </div>
     </AvContainer>

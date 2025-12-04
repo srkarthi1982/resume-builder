@@ -1,0 +1,40 @@
+---
+import { AvButton, AvContainer, AvDivider } from "@ansiversa/components";
+
+interface ToolbarAction {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  saveStatus: "idle" | "saving" | "saved";
+  lastSavedAt?: string;
+  actions?: ToolbarAction[];
+}
+
+const { saveStatus, lastSavedAt, actions = [] } = Astro.props as Props;
+
+const statusLabel =
+  saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Changes saved" : "Not saved yet";
+---
+
+<div class="av-toolbar">
+  <AvContainer className="av-toolbar__container">
+    <div class="av-toolbar__status">
+      <span class="av-toolbar__status-dot" data-state={saveStatus}></span>
+      <span class="av-toolbar__status-text">{statusLabel}</span>
+      {lastSavedAt && <span class="av-toolbar__meta">{lastSavedAt}</span>}
+    </div>
+
+    {actions.length > 0 && (
+      <div class="av-toolbar__actions">
+        {actions.map((action) => (
+          <AvButton variant="ghost" href={action.href} size="sm">
+            {action.label}
+          </AvButton>
+        ))}
+      </div>
+    )}
+  </AvContainer>
+  <AvDivider />
+</div>

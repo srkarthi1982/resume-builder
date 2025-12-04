@@ -1,0 +1,23 @@
+---
+import { AvCard } from "@ansiversa/components";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props as Props;
+---
+
+<AvCard className="av-resume-section-form">
+  <div class="av-resume-section-form__header">
+    <h3 class="av-resume-section-form__title">{title}</h3>
+    {description && <p class="av-resume-section-form__description">{description}</p>}
+  </div>
+  <div class="av-resume-section-form__body">
+    <slot />
+  </div>
+  <div class="av-resume-section-form__actions">
+    <slot name="actions" />
+  </div>
+</AvCard>
