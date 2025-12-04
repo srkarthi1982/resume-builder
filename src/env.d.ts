@@ -29,11 +29,14 @@ interface Window {
 
 declare namespace App {
   interface Locals {
-    user?: {
+    user: {
       id: string;
       email: string;
       name?: string;
-    };
+    } | null;
+    sessionToken: string | null;
+    isAuthenticated: boolean;
+    rootAppUrl: string;
   }
 }
 
