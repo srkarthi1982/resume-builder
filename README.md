@@ -75,6 +75,12 @@ Build for production:
 npm run build
 ```
 
+Run the type and integration checks used in CI:
+
+```bash
+npm run build
+```
+
 Preview production build:
 
 ```bash
