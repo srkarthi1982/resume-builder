@@ -1,0 +1,28 @@
+---
+import { AvButton, AvCard } from "@ansiversa/components";
+
+interface Props {
+  id: string;
+  title: string;
+  targetRole: string;
+  location: string;
+  updatedAt: string;
+  isPrimary?: boolean;
+  editHref: string;
+  downloadHref: string;
+}
+
+const props = Astro.props as Props;
+---
+
+<AvCard className="av-resume-card" data-primary={props.isPrimary ? "true" : undefined}>
+  <div class="av-resume-card__body">
+    <p class="av-resume-card__title">{props.title}</p>
+    <p class="av-resume-card__meta">{props.targetRole} · {props.location}</p>
+    <p class="av-resume-card__updated">{props.updatedAt}</p>
+  </div>
+  <div class="av-resume-card__actions">
+    <AvButton href={props.editHref} variant="primary" size="sm">Edit</AvButton>
+    <AvButton href={props.downloadHref} variant="ghost" size="sm">Download PDF</AvButton>
+  </div>
+</AvCard>

@@ -1,0 +1,14 @@
+---
+interface Props {
+  label?: string;
+  placeholder?: string;
+  rows?: number;
+}
+
+const { label, placeholder, rows = 4 } = Astro.props as Props;
+---
+
+<div class="av-field">
+  {label ? <label class="av-field__label">{label}</label> : null}
+  <textarea class="av-textarea" placeholder={placeholder} rows={rows}></textarea>
+</div>

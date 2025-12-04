@@ -1,0 +1,69 @@
+---
+import AppShell from "../../../layouts/AppShell.astro";
+import AvBreadcrumb from "../../../components/common/AvBreadcrumb.astro";
+import AvPageHeader from "../../../components/common/AvPageHeader.astro";
+import AvEmptyState from "../../../components/common/AvEmptyState.astro";
+import AvResumeCard from "../../../components/resume/AvResumeCard.astro";
+import { AvContainer } from "@ansiversa/components";
+
+const resumes = [
+  {
+    id: "r1",
+    title: "Senior Product Manager (Fintech)",
+    targetRole: "Senior Product Manager",
+    location: "Dubai, UAE",
+    updatedAt: "Updated 2 days ago",
+    isPrimary: true,
+    editHref: "/app/resume/r1",
+    downloadHref: "/app/resume/r1/pdf",
+  },
+  {
+    id: "r2",
+    title: "Full-Stack Developer",
+    targetRole: "Full-Stack Developer",
+    location: "Chennai, India",
+    updatedAt: "Updated 5 days ago",
+    isPrimary: false,
+    editHref: "/app/resume/r2",
+    downloadHref: "/app/resume/r2/pdf",
+  },
+];
+---
+
+<AppShell>
+  <AvBreadcrumb
+    items={[
+      { label: "Home", href: "/" },
+      { label: "Resumes" },
+    ]}
+  />
+
+  <AvPageHeader
+    title="Your Resumes"
+    description="Create and manage tailored resumes for different roles."
+    primaryAction={{
+      label: "Create New Resume",
+      href: "/app/resume/new",
+      variant: "primary",
+    }}
+  />
+
+  <section class="av-section">
+    <AvContainer>
+      {resumes.length > 0 ? (
+        <div class="av-section__grid">
+          {resumes.map((resume) => (
+            <AvResumeCard {...resume} />
+          ))}
+        </div>
+      ) : (
+        <AvEmptyState
+          title="No resumes yet"
+          description="Start with a template and craft your story."
+          ctaLabel="Create Your First Resume"
+          ctaHref="/app/resume/new"
+        />
+      )}
+    </AvContainer>
+  </section>
+</AppShell>

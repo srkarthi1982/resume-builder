@@ -1,0 +1,35 @@
+---
+import { AvButton, AvContainer } from "@ansiversa/components";
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+}
+
+const { items } = Astro.props as Props;
+---
+
+<nav class="av-breadcrumb" aria-label="Breadcrumb">
+  <AvContainer className="av-breadcrumb__container">
+    <ol class="av-breadcrumb__list">
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        return (
+          <li class="av-breadcrumb__item" key={`${item.label}-${index}`} aria-current={isLast ? "page" : undefined}>
+            {item.href && !isLast ? (
+              <AvButton href={item.href} variant="ghost" size="sm">
+                {item.label}
+              </AvButton>
+            ) : (
+              <span class="av-breadcrumb__current">{item.label}</span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  </AvContainer>
+</nav>

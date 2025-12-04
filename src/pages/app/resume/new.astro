@@ -1,0 +1,104 @@
+---
+import { Fragment } from "astro/jsx-runtime";
+import AppShell from "../../../layouts/AppShell.astro";
+import AvBreadcrumb from "../../../components/common/AvBreadcrumb.astro";
+import AvPageHeader from "../../../components/common/AvPageHeader.astro";
+import AvToolbar from "../../../components/common/AvToolbar.astro";
+import AvResumeEditorShell from "../../../components/resume/AvResumeEditorShell.astro";
+import AvResumeSectionList from "../../../components/resume/AvResumeSectionList.astro";
+import AvResumeSectionFormShell from "../../../components/resume/AvResumeSectionFormShell.astro";
+import AvTextarea from "../../../components/common/AvTextarea.astro";
+import { AvCard, AvContainer, AvInput } from "@ansiversa/components";
+
+const sections = [
+  { id: "summary", type: "summary", title: "Summary", isVisible: true, isActive: true },
+  { id: "experience", type: "experience", title: "Work Experience", isVisible: true, isActive: false },
+  { id: "education", type: "education", title: "Education", isVisible: true, isActive: false },
+  { id: "skills", type: "skills", title: "Skills", isVisible: true, isActive: false },
+];
+---
+
+<AppShell>
+  <AvBreadcrumb
+    items={[
+      { label: "Home", href: "/" },
+      { label: "Resumes", href: "/app/resumes" },
+      { label: "New Resume" },
+    ]}
+  />
+
+  <AvPageHeader
+    title="Create a New Resume"
+    description="Start with a template and fill in your story step by step."
+  />
+
+  <AvToolbar
+    saveStatus="idle"
+    lastSavedAt="Not saved yet"
+    actions={[
+      { label: "Change Template", href: "/templates" },
+      { label: "Download PDF", href: "/app/resume/sample/pdf" },
+    ]}
+  />
+
+  <AvContainer>
+    <AvResumeEditorShell>
+      <Fragment slot="sidebar">
+        <AvResumeSectionList sections={sections} />
+
+        <AvResumeSectionFormShell
+          title="Summary"
+          description="Introduce yourself with a short, confident paragraph."
+        >
+          <AvTextarea placeholder="Write a concise summary that highlights your strengths." />
+        </AvResumeSectionFormShell>
+
+        <AvResumeSectionFormShell
+          title="Work Experience"
+          description="Share your most relevant roles with clear impact."
+        >
+          <AvInput label="Job Title" placeholder="e.g., Senior Product Manager" />
+          <AvInput label="Company" placeholder="e.g., Fintech Corp" />
+          <AvInput label="Dates" placeholder="Jan 2020 – Present" />
+          <AvTextarea label="Highlights" placeholder="Add key achievements or responsibilities." />
+        </AvResumeSectionFormShell>
+      </Fragment>
+
+      <Fragment slot="preview">
+        <AvCard className="av-resume-preview">
+          <div class="av-resume-preview__header">
+            <h2 class="av-resume-preview__name">Amina Rahman</h2>
+            <p class="av-resume-preview__role">Product Manager</p>
+            <p class="av-resume-preview__meta">Dubai, UAE • amina@example.com • +971 555 1234</p>
+          </div>
+          <div class="av-resume-preview__section">
+            <h3 class="av-resume-preview__section-title">Summary</h3>
+            <p class="av-resume-preview__text">
+              Product manager focused on building reliable fintech experiences with strong stakeholder alignment and measurable
+              impact across growth and retention.
+            </p>
+          </div>
+          <div class="av-resume-preview__section">
+            <h3 class="av-resume-preview__section-title">Work Experience</h3>
+            <div class="av-resume-preview__item">
+              <p class="av-resume-preview__item-title">Senior Product Manager — Fintech Corp</p>
+              <p class="av-resume-preview__item-meta">Jan 2020 – Present · Dubai, UAE</p>
+              <ul class="av-resume-preview__list">
+                <li>Led rollout of payment features that reduced checkout drop-off by 14%.</li>
+                <li>Partnered with compliance to streamline KYC flows for enterprise clients.</li>
+              </ul>
+            </div>
+            <div class="av-resume-preview__item">
+              <p class="av-resume-preview__item-title">Product Manager — StartUp Labs</p>
+              <p class="av-resume-preview__item-meta">Jun 2017 – Dec 2019 · Chennai, India</p>
+              <ul class="av-resume-preview__list">
+                <li>Built experimentation program improving activation by 9%.</li>
+                <li>Coordinated design system refresh for mobile app portfolio.</li>
+              </ul>
+            </div>
+          </div>
+        </AvCard>
+      </Fragment>
+    </AvResumeEditorShell>
+  </AvContainer>
+</AppShell>

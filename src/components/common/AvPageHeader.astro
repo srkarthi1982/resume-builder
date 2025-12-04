@@ -1,0 +1,41 @@
+---
+import { AvButton, AvContainer } from "@ansiversa/components";
+
+interface Action {
+  label: string;
+  href: string;
+  variant?: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  primaryAction?: Action;
+  secondaryAction?: Action;
+}
+
+const { title, description, primaryAction, secondaryAction } = Astro.props as Props;
+---
+
+<section class="av-page-header">
+  <AvContainer className="av-page-header__container">
+    <div class="av-page-header__body">
+      <h1 class="av-page-header__title">{title}</h1>
+      {description && <p class="av-page-header__description">{description}</p>}
+      {(primaryAction || secondaryAction) && (
+        <div class="av-page-header__actions">
+          {primaryAction && (
+            <AvButton href={primaryAction.href} variant={primaryAction.variant ?? "primary"}>
+              {primaryAction.label}
+            </AvButton>
+          )}
+          {secondaryAction && (
+            <AvButton href={secondaryAction.href} variant={secondaryAction.variant ?? "ghost"}>
+              {secondaryAction.label}
+            </AvButton>
+          )}
+        </div>
+      )}
+    </div>
+  </AvContainer>
+</section>

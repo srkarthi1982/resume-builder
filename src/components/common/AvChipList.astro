@@ -1,0 +1,18 @@
+---
+interface Chip {
+  id: string;
+  label: string;
+}
+
+interface Props {
+  chips: Chip[];
+}
+
+const { chips } = Astro.props as Props;
+---
+
+<div class="av-chip-list">
+  {chips.map((chip) => (
+    <span class="av-chip-list__chip">{chip.label}</span>
+  ))}
+</div>

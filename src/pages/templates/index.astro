@@ -1,0 +1,65 @@
+---
+import AppShell from "../../layouts/AppShell.astro";
+import AvBreadcrumb from "../../components/common/AvBreadcrumb.astro";
+import AvPageHeader from "../../components/common/AvPageHeader.astro";
+import AvTemplateGrid from "../../components/common/AvTemplateGrid.astro";
+import AvTemplateCard from "../../components/common/AvTemplateCard.astro";
+
+const templates = [
+  {
+    key: "modern-blue",
+    name: "Modern Blue Template",
+    description: "Clean, ATS-friendly layout with subtle blue accents.",
+    accentClass: "av-template-accent--modern-blue",
+    href: "/app/resume/new?template=modern-blue",
+  },
+  {
+    key: "minimal-white",
+    name: "Minimal White Template",
+    description: "Simple, distraction-free layout.",
+    accentClass: "av-template-accent--minimal-white",
+    href: "/app/resume/new?template=minimal-white",
+  },
+  {
+    key: "two-column-professional",
+    name: "Two-Column Professional",
+    description: "Compact layout for experienced profiles.",
+    accentClass: "av-template-accent--two-column",
+    href: "/app/resume/new?template=two-column-professional",
+  },
+  {
+    key: "executive-serif",
+    name: "Executive Serif",
+    description: "Classic hierarchy with polished serif headings.",
+    accentClass: "av-template-accent--executive-serif",
+    href: "/app/resume/new?template=executive-serif",
+  },
+];
+---
+
+<AppShell>
+  <AvBreadcrumb
+    items={[
+      { label: "Home", href: "/" },
+      { label: "Templates" },
+    ]}
+  />
+
+  <AvPageHeader
+    title="Resume Templates"
+    description="Pick a layout that fits your story, then customize every detail."
+  />
+
+  <section class="av-section">
+    <AvTemplateGrid>
+      {templates.map((template) => (
+        <AvTemplateCard
+          name={template.name}
+          description={template.description}
+          accentClass={template.accentClass}
+          href={template.href}
+        />
+      ))}
+    </AvTemplateGrid>
+  </section>
+</AppShell>
