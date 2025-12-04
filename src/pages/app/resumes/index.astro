@@ -1,33 +1,26 @@
 ---
+import { actions } from "astro:actions";
 import AppShell from "../../../layouts/AppShell.astro";
 import AvBreadcrumb from "../../../components/common/AvBreadcrumb.astro";
 import AvPageHeader from "../../../components/common/AvPageHeader.astro";
 import AvEmptyState from "../../../components/common/AvEmptyState.astro";
 import AvResumeCard from "../../../components/resume/AvResumeCard.astro";
-import { AvContainer } from "@ansiversa/components";
+import { AvButton, AvContainer } from "@ansiversa/components";
 
-const resumes = [
-  {
-    id: "r1",
-    title: "Senior Product Manager (Fintech)",
-    targetRole: "Senior Product Manager",
-    location: "Dubai, UAE",
-    updatedAt: "Updated 2 days ago",
-    isPrimary: true,
-    editHref: "/app/resume/r1",
-    downloadHref: "/app/resume/r1/pdf",
-  },
-  {
-    id: "r2",
-    title: "Full-Stack Developer",
-    targetRole: "Full-Stack Developer",
-    location: "Chennai, India",
-    updatedAt: "Updated 5 days ago",
-    isPrimary: false,
-    editHref: "/app/resume/r2",
-    downloadHref: "/app/resume/r2/pdf",
-  },
-];
+export const prerender = false;
+
+const userId = "demo-user";
+const listResult = await actions.listResumes({ userId });
+const resumes = listResult.data?.resumes ?? [];
+const loadError = listResult.error;
+const deleteResult = Astro.getActionResult(actions.deleteResume);
+
+const formatUpdatedAt = (value?: string | null) => {
+  if (!value) return "Not updated yet";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `Updated ${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+};
 ---
 
 <AppShell>
@@ -50,10 +43,39 @@ const resumes = [
 
   <section class="av-section">
     <AvContainer>
+      {loadError ? (
+        <p class="av-resume-alert" role="alert" data-variant="error">
+          Unable to load your resumes right now. Please refresh and try again.
+        </p>
+      ) : null}
+      {deleteResult?.data ? (
+        <p class="av-resume-alert" role="status">
+          Resume {deleteResult.data.deletedId} deleted.
+        </p>
+      ) : null}
+      {deleteResult?.error ? (
+        <p class="av-resume-alert" role="alert" data-variant="error">
+          Unable to delete resume. Please try again.
+        </p>
+      ) : null}
+
       {resumes.length > 0 ? (
         <div class="av-section__grid">
           {resumes.map((resume) => (
-            <AvResumeCard {...resume} />
+            <AvResumeCard
+              id={resume.id}
+              title={resume.title}
+              targetRole={resume.target_role ?? ""}
+              location={resume.location ?? ""}
+              updatedAt={formatUpdatedAt(resume.updated_at)}
+              editHref={`/app/resume/${resume.id}`}
+              downloadHref={`/app/resume/${resume.id}/pdf`}
+            >
+              <form slot="actions" method="post" action={actions.deleteResume} class="av-resume-card__form">
+                <input type="hidden" name="id" value={resume.id} />
+                <AvButton type="submit" variant="ghost" size="sm">Delete</AvButton>
+              </form>
+            </AvResumeCard>
           ))}
         </div>
       ) : (
@@ -67,3 +89,22 @@ const resumes = [
     </AvContainer>
   </section>
 </AppShell>
+
+<style>
+  .av-resume-card__form {
+    display: inline-flex;
+  }
+
+  .av-resume-alert {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: #f0f9ff;
+    color: #0f172a;
+  }
+
+  .av-resume-alert[data-variant="error"] {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+</style>

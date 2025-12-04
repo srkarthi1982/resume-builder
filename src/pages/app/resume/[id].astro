@@ -1,5 +1,6 @@
 ---
 import { Fragment } from "astro/jsx-runtime";
+import { actions } from "astro:actions";
 import AppShell from "../../../layouts/AppShell.astro";
 import AvBreadcrumb from "../../../components/common/AvBreadcrumb.astro";
 import AvPageHeader from "../../../components/common/AvPageHeader.astro";
@@ -12,12 +13,30 @@ import AvChipList from "../../../components/common/AvChipList.astro";
 import AvTextarea from "../../../components/common/AvTextarea.astro";
 import { AvButton, AvCard, AvContainer, AvInput } from "@ansiversa/components";
 
-const resume = {
-  id: "r1",
-  title: "Senior Product Manager (Fintech)",
-  targetRole: "Senior Product Manager",
-  location: "Dubai, UAE",
-};
+export const prerender = false;
+
+const resumeId = Astro.params.id;
+const userId = "demo-user";
+
+const resumeResult = await actions.getResume({ id: resumeId });
+const resume =
+  resumeResult.data?.resume ??
+  ({
+    id: resumeId,
+    title: "Untitled Resume",
+    target_role: "",
+    target_industry: "",
+    location: "",
+    summary: "",
+    template_key: "modern-blue",
+    updated_at: "",
+  } as const);
+
+const updateResult = Astro.getActionResult(actions.updateResume);
+const deleteResult = Astro.getActionResult(actions.deleteResume);
+const loadError = resumeResult.error;
+const saveStatus = updateResult?.data ? "saved" : "idle";
+const savedAt = updateResult?.data?.savedAt ?? resume.updated_at ?? "Not saved yet";
 
 const sections = [
   { id: "summary", type: "summary", title: "Summary", isVisible: true, isActive: false },
@@ -25,6 +44,13 @@ const sections = [
   { id: "education", type: "education", title: "Education", isVisible: true, isActive: false },
   { id: "skills", type: "skills", title: "Skills", isVisible: true, isActive: false },
 ];
+
+const latestResume = updateResult?.data?.resume ?? resume;
+const displayTitle = latestResume.title;
+const displayTargetRole = latestResume.target_role ?? "";
+const displayLocation = latestResume.location ?? "";
+const selectedTemplate = latestResume.template_key ?? "modern-blue";
+const summaryValue = latestResume.summary ?? "";
 
 const experienceItems = [
   {
@@ -55,28 +81,108 @@ const skills = [
     items={[
       { label: "Home", href: "/" },
       { label: "Resumes", href: "/app/resumes" },
-      { label: resume.title },
+      { label: displayTitle },
     ]}
   />
 
   <AvPageHeader
-    title={`Edit Resume – ${resume.title}`}
+    title={`Edit Resume – ${displayTitle}`}
     description="Refine content, reorder sections, and keep everything ATS-friendly."
   />
 
   <AvToolbar
-    saveStatus="saved"
-    lastSavedAt="Just now"
+    saveStatus={saveStatus}
+    lastSavedAt={savedAt}
     actions={[
       { label: "Change Template", href: "/templates" },
-      { label: "Download PDF", href: "/app/resume/r1/pdf" },
+      { label: "Download PDF", href: `/app/resume/${resume.id}/pdf` },
     ]}
   />
+
+  {loadError ? (
+    <p class="av-resume-alert" role="alert" data-variant="error">
+      Unable to load the latest resume details. Showing the most recent available data.
+    </p>
+  ) : null}
+  {deleteResult?.data ? (
+    <p class="av-resume-alert" role="status">
+      Resume deleted. Return to <a href="/app/resumes">your list</a>.
+    </p>
+  ) : null}
+  {deleteResult?.error ? (
+    <p class="av-resume-alert" role="alert" data-variant="error">
+      Unable to delete this resume right now. Please try again.
+    </p>
+  ) : null}
 
   <AvContainer>
     <AvResumeEditorShell>
       <Fragment slot="sidebar">
         <AvResumeSectionList sections={sections} />
+
+        <AvResumeSectionFormShell
+          title="Resume basics"
+          description="Update the core details and save to keep editing."
+        >
+          <form class="av-resume-form" method="post" action={actions.updateResume} id="resume-update-form">
+            <input type="hidden" name="id" value={resume.id} />
+            <input type="hidden" name="userId" value={userId} />
+
+            <AvInput
+              label="Resume title"
+              name="title"
+              placeholder="Product Manager Resume"
+              required
+              value={displayTitle}
+            />
+            <AvInput
+              label="Target role"
+              name="targetRole"
+              placeholder="e.g., Senior Product Manager"
+              value={displayTargetRole}
+            />
+            <AvInput
+              label="Target industry"
+              name="targetIndustry"
+              placeholder="e.g., Fintech"
+              value={resume.target_industry ?? ""}
+            />
+            <AvInput label="Location" name="location" placeholder="Dubai, UAE" value={displayLocation} />
+
+            <label class="av-resume-form__label" for="templateKey">Template</label>
+            <select id="templateKey" name="templateKey" class="av-resume-form__select" required>
+              <option value="modern-blue" selected={selectedTemplate === "modern-blue"}>Modern Blue</option>
+              <option value="minimal-white" selected={selectedTemplate === "minimal-white"}>Minimal White</option>
+              <option value="two-column-professional" selected={selectedTemplate === "two-column-professional"}>
+                Two Column Professional
+              </option>
+              <option value="creative-accent" selected={selectedTemplate === "creative-accent"}>Creative Accent</option>
+              <option value="executive-serif" selected={selectedTemplate === "executive-serif"}>Executive Serif</option>
+              <option value="clean-monoline" selected={selectedTemplate === "clean-monoline"}>Clean Monoline</option>
+            </select>
+
+            <AvTextarea
+              label="Summary"
+              name="summary"
+              placeholder="Write a concise summary that highlights your strengths."
+              value={summaryValue}
+            />
+          </form>
+          <div slot="actions" class="av-form-actions">
+            <AvButton variant="ghost" type="reset" form="resume-update-form">Reset</AvButton>
+            <AvButton type="submit" variant="primary" form="resume-update-form">Save changes</AvButton>
+            {updateResult?.data ? <p class="av-resume-form__status" role="status">Resume updated.</p> : null}
+            {updateResult?.error ? (
+              <p class="av-resume-form__status" data-variant="error" role="alert">
+                Unable to update the resume. Please check your entries.
+              </p>
+            ) : null}
+            <form method="post" action={actions.deleteResume} class="av-resume-form av-resume-form--inline">
+              <input type="hidden" name="id" value={resume.id} />
+              <AvButton type="submit" variant="ghost">Delete resume</AvButton>
+            </form>
+          </div>
+        </AvResumeSectionFormShell>
 
         <AvResumeSectionFormShell
           title="Work Experience"
@@ -100,14 +206,15 @@ const skills = [
         <AvCard className="av-resume-preview">
           <div class="av-resume-preview__header">
             <h2 class="av-resume-preview__name">Amina Rahman</h2>
-            <p class="av-resume-preview__role">Senior Product Manager</p>
-            <p class="av-resume-preview__meta">Dubai, UAE • amina@example.com • +971 555 1234</p>
+            <p class="av-resume-preview__role">{displayTargetRole || "Senior Product Manager"}</p>
+            <p class="av-resume-preview__meta">{displayLocation || "Dubai, UAE"} • amina@example.com • +971 555 1234</p>
           </div>
           <div class="av-resume-preview__section">
             <h3 class="av-resume-preview__section-title">Summary</h3>
             <p class="av-resume-preview__text">
-              Fintech product leader shaping secure payment experiences, aligning cross-functional teams, and shipping features
-              that balance compliance with customer delight.
+              {summaryValue.trim()
+                ? summaryValue
+                : "Fintech product leader shaping secure payment experiences, aligning cross-functional teams, and shipping features that balance compliance with customer delight."}
             </p>
           </div>
           <div class="av-resume-preview__section">
@@ -138,3 +245,68 @@ const skills = [
     </AvResumeEditorShell>
   </AvContainer>
 </AppShell>
+
+<style>
+  .av-resume-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .av-resume-form__label {
+    font-weight: 600;
+    color: rgb(30, 41, 59);
+  }
+
+  .av-resume-form__select {
+    width: 100%;
+    padding: 0.75rem 0.85rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(226, 232, 240);
+    background: #fff;
+    font-size: 1rem;
+  }
+
+  .av-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .av-resume-form__status {
+    font-size: 0.95rem;
+    color: rgb(21, 128, 61);
+    margin: 0;
+  }
+
+  .av-resume-form__status[data-variant="error"] {
+    color: rgb(220, 38, 38);
+  }
+
+  .av-resume-form--separate {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(226, 232, 240);
+  }
+
+  .av-resume-form--inline {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  .av-resume-alert {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: #f0f9ff;
+    color: #0f172a;
+  }
+
+  .av-resume-alert[data-variant="error"] {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+</style>

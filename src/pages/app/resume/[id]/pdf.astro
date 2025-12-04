@@ -1,12 +1,21 @@
 ---
+import { actions } from "astro:actions";
+
+export const prerender = false;
+
+const resumeId = Astro.params.id;
+const resumeResult = await actions.getResume({ id: resumeId });
 const resume = {
-  id: "r1",
-  title: "Senior Product Manager (Fintech)",
+  id: resumeId,
+  title: resumeResult.data?.resume?.title ?? "Senior Product Manager (Fintech)",
   name: "Amina Rahman",
-  role: "Senior Product Manager",
-  location: "Dubai, UAE",
+  role: resumeResult.data?.resume?.target_role ?? "Senior Product Manager",
+  location: resumeResult.data?.resume?.location ?? "Dubai, UAE",
   email: "amina@example.com",
   phone: "+971 555 1234",
+  summary:
+    resumeResult.data?.resume?.summary ??
+    "Product leader shaping reliable fintech experiences with measurable outcomes, strong collaboration, and recruiter-ready presentation.",
 };
 
 const experienceItems = [
@@ -80,10 +89,7 @@ const links = [
 
     <section class="av-resume-pdf__section">
       <h2 class="av-resume-pdf__section-title">Summary</h2>
-      <p class="av-resume-pdf__text">
-        Product leader shaping reliable fintech experiences with measurable outcomes, strong collaboration, and recruiter-ready
-        presentation.
-      </p>
+      <p class="av-resume-pdf__text">{resume.summary}</p>
     </section>
 
     <section class="av-resume-pdf__section">
