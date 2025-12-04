@@ -1,0 +1,150 @@
+# Resume Builder -- Landing Page Content (Ansiversa Standard)
+
+## Hero Section
+
+**Headline:** Build a Professional Resume in Minutes\
+**Subheadline:** Smart, simple, and ATSâ€‘friendly. Powered by Ansiversa's
+clean UI and realâ€‘time preview.
+
+**Primary CTA:** Create Your Resume\
+**Secondary CTA:** View Templates
+
+**Key Highlights (Bullets):** - 100% ATSâ€‘friendly resumes\
+- Live preview while you type\
+- Multiple modern templates\
+- Export as PDF\
+- Built with Ansiversa components for a premium experience
+
+------------------------------------------------------------------------
+
+## Why Choose Our Resume Builder?
+
+### 1. Modern & Professional Designs
+
+Craft resumes that stand out with templates designed using Av
+components, ensuring perfect alignment, typography, and spacing.
+
+### 2. ATSâ€‘Optimized Formatting
+
+Our templates follow strict recruiter & Applicant Tracking System
+guidelines. No hidden tables. No broken formats.
+
+### 3. Realâ€‘time Editing
+
+Update name, experience, skills, and instantly see changes in the live
+preview pane.
+
+### 4. Export in High-Quality PDF
+
+Clean PDF output using serverâ€‘side rendering for pixelâ€‘perfect results.
+
+### 5. Save & Continue Anytime
+
+Your resume autoâ€‘saves securely inside your Ansiversa account.
+
+------------------------------------------------------------------------
+
+## How It Works
+
+**Step 1 -- Choose a template**\
+Browse modern, minimal, and creative layouts built using AvCard,
+AvTextInput, and AvGrid.
+
+**Step 2 -- Fill your details**\
+Guided sections:\
+- Personal Information\
+- Summary\
+- Experience\
+- Education\
+- Skills\
+- Certifications\
+- Projects\
+- Achievements
+
+**Step 3 -- Customize**\
+Adjust layout, fonts, spacing, section order.
+
+**Step 4 -- Download / Share**\
+Export as PDF, or share a public link (optional future feature).
+
+------------------------------------------------------------------------
+
+## Templates Preview Section
+
+Showcase 3--6 sample thumbnails:
+
+-   **Modern Blue Template**\
+-   **Minimal White Template**\
+-   **Twoâ€‘Column Professional Template**\
+-   **Creative Accent Template**
+
+Each preview uses AvCard + AvButton "Use Template".
+
+------------------------------------------------------------------------
+
+## Features Section (Detailed)
+
+### ðŸ§© Built with Av Components
+
+Every field uses: - AvInput\
+- AvTextarea\
+- AvSelect\
+- AvCard\
+- AvTabs
+
+Ensures a consistent Ansiversa ecosystem experience.
+
+### ðŸ›¡ï¸ Secure & Private
+
+Your resume data is encrypted and stored safely in your personal
+Ansiversa space.
+
+### ðŸŒ Works Everywhere
+
+Fully responsive --- fast & smooth on mobile, laptop, iPad.
+
+### ðŸ§  Smart Suggestions (AI Section)
+
+"Improve My Summary", "Rewrite Professionally", "Make it Shorter".
+
+------------------------------------------------------------------------
+
+## Testimonials Section
+
+Add 3 sample cards:
+
+-   "Best resume builder I've ever used---simple and clean!"\
+-   "ATS score improved instantly when I switched template."\
+-   "Loved the realâ€‘time preview and easy editing."
+
+------------------------------------------------------------------------
+
+## FAQ Section
+
+**Is it free to use?**\
+Yes, the basic version is free. Premium templates may come later.
+
+**Can I edit after downloading?**\
+Yes, you can log in anytime and update your resume.
+
+**Are templates ATSâ€‘friendly?**\
+Yes, all templates follow ATS compliance guidelines.
+
+------------------------------------------------------------------------
+
+## Footer CTA
+
+**Final Call to Action:**\
+Ready to build your resume?\
+AvButton â†’ Create Your Resume
+
+------------------------------------------------------------------------
+
+## Developer Notes (Codex)
+
+-   Use global layout from `@ansiversa/components`
+-   Sections should follow AvGrid / AvContainer standards\
+-   Use AvHero, AvCard, AvButton, AvSection\
+-   Content must be fully static for the landing page\
+-   forms & editors will be handled inside `/app/resume`\
+-   Follow SEO guidelines: Title, meta description, OG tags
