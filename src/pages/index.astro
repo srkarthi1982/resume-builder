@@ -1,286 +1,92 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import {
-  AvButton,
-  AvCard,
-  AvContainer,
-  AvDivider,
-  AvFeatureItem,
-  AvFeatureList,
-} from "@ansiversa/components";
-import AvTemplateGrid from "../components/common/AvTemplateGrid.astro";
-import AvTemplateCard from "../components/common/AvTemplateCard.astro";
+import { AvContainer, AvButton } from "@ansiversa/components";
 
-const templates = [
-  {
-    key: "modern-blue",
-    name: "Modern Blue Template",
-    description: "Clean, ATS-friendly layout with subtle blue accents.",
-    accentClass: "av-template-accent--modern-blue",
-    href: "/app/resume/new?template=modern-blue",
-  },
-  {
-    key: "minimal-white",
-    name: "Minimal White Template",
-    description: "Simple, distraction-free layout.",
-    accentClass: "av-template-accent--minimal-white",
-    href: "/app/resume/new?template=minimal-white",
-  },
-  {
-    key: "two-column-professional",
-    name: "Two-Column Professional",
-    description: "Compact layout for experienced profiles.",
-    accentClass: "av-template-accent--two-column",
-    href: "/app/resume/new?template=two-column-professional",
-  },
-  {
-    key: "executive-serif",
-    name: "Executive Serif",
-    description: "Classic hierarchy with polished serif headings.",
-    accentClass: "av-template-accent--executive-serif",
-    href: "/app/resume/new?template=executive-serif",
-  },
-];
-
-const painPoints = [
-  {
-    title: "Builders feel overwhelming",
-    description: "Too many fields and steps slow people down. We guide one clear action at a time.",
-  },
-  {
-    title: "Generic or outdated templates",
-    description: "Stiff designs hurt your story. Our layouts stay modern, clear, and recruiter-approved.",
-  },
-  {
-    title: "Hidden paywalls and traps",
-    description: "Download, PDF export, and watermark removal stay free. Transparency is the default.",
-  },
-  {
-    title: "Fake ATS compliance",
-    description: "No tricky columns or graphics that break parsing—just machine-readable hierarchy.",
-  },
-  {
-    title: "No content coaching",
-    description: "Examples and prompts help you craft achievement-driven bullets and strong summaries.",
-  },
-  {
-    title: "Painful on mobile",
-    description: "Built to edit safely from one hand with fast preview and reliable autosave.",
-  },
-];
-
-const steps = [
-  {
-    step: "1",
-    title: "Guided, brain-friendly flow",
-    description: "One question at a time reduces cognitive load and keeps you focused on strong content.",
-  },
-  {
-    step: "2",
-    title: "Smart content helper",
-    description: "Rewrite bullets professionally and highlight skills for the role you want.",
-  },
-  {
-    step: "3",
-    title: "Templates for real employers",
-    description: "Modern, ATS-safe layouts with correct spacing, hierarchy, and recruiter expectations built in.",
-  },
-  {
-    step: "4",
-    title: "Evolve your resume",
-    description: "Reorder sections, switch templates, and return anytime for instant downloads with no watermark.",
-  },
-];
-
-const differentiators = [
-  {
-    title: "Transparent by design",
-    description: "Free creation, free editing, and free PDF downloads. No watermark surprises.",
-  },
-  {
-    title: "Speed standard",
-    description: "Every action targets fast feedback: switch templates, load resumes, and download instantly.",
-  },
-  {
-    title: "Seamless mobile experience",
-    description: "One-hand-friendly editing with safe autosave, quick preview, and confident PDF export.",
-  },
-  {
-    title: "Integrated ecosystem",
-    description: "Consistent UI, single sign-on, and access to curated career, study, and utility tools.",
-  },
-];
-
-const testimonials = [
-  "Best resume builder I've ever used—simple and clear.",
-  "ATS score improved instantly when I switched template.",
-  "Loved the real-time preview and calm editing flow.",
-];
-
-const faqs = [
-  {
-    question: "Is it free to use?",
-    answer: "Yes. Create, edit, and download PDFs without paywalls or watermarks.",
-  },
-  {
-    question: "Do I need an account to start?",
-    answer: "No login required to begin. Sign in only if you want to save progress for later.",
-  },
-  {
-    question: "Are templates ATS-friendly?",
-    answer: "Absolutely. Every layout follows ATS compliance guidelines and recruiter expectations.",
-  },
-];
+const title = "Resume Builder – Ansiversa";
+const description = "Generate clean, ATS-friendly resumes.";
 ---
 
-<AppShell
-  title="Tell Your Story Clearly | Ansiversa Resume Builder"
-  description="Guided, ATS-friendly resume creation with honest pricing, fast performance, and templates designed for real employers."
->
+<AppShell title={title} description={description}>
+  <!-- Hero -->
   <section class="av-hero">
-    <AvContainer size="narrow" className="av-hero__container">
+    <AvContainer size="narrow" className="av-hero__content--narrow">
       <div class="av-hero__content">
-        <p class="av-kicker">Ansiversa Ecosystem</p>
-        <h1 class="av-hero__title">A Resume Builder That Understands You</h1>
-        <p class="av-hero__lead">
-          Guided, ATS-safe editing with honest pricing and templates designed for real employers. Build with confidence on every
-          device.
-        </p>
-        <div class="av-cta-row">
-          <AvButton href="/app/resume/new">Create Your Resume</AvButton>
-          <AvButton href="#templates" variant="outline">View Templates</AvButton>
+        <div class="av-kicker">
+          <span>Career & Work · Ansiversa Mini App</span>
         </div>
-        <AvFeatureList className="av-feature-list--center">
-          <AvFeatureItem variant="primary">Guided, low-stress editing</AvFeatureItem>
-          <AvFeatureItem variant="primary">Truly ATS-safe structure</AvFeatureItem>
-          <AvFeatureItem variant="primary">No surprise paywalls</AvFeatureItem>
-          <AvFeatureItem variant="primary">Mobile-first experience</AvFeatureItem>
-        </AvFeatureList>
+        <h1 class="av-gradient-text">Resume Builder</h1>
+        <p>
+          Generate clean, ATS-friendly resumes.
+        </p>
       </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="why">
-    <AvContainer>
-      <div class="av-section__header">
-        <h2 class="av-section__title">What Problem Are We Solving?</h2>
-        <p class="av-section__lead">Resume creation is stressful, confusing, and full of hidden traps. We remove the friction.</p>
-      </div>
-      <div class="av-section__grid">
-        {painPoints.map((item) => (
-          <AvCard>
-            <p class="av-card__title">{item.title}</p>
-            <p class="av-card__body">{item.description}</p>
-          </AvCard>
-        ))}
-      </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="how-it-works">
-    <AvContainer>
-      <div class="av-section__header">
-        <h2 class="av-section__title">What We’re Building</h2>
-        <p class="av-section__lead">A smart, guided, story-focused system that helps you finish faster with confidence.</p>
-      </div>
-      <div class="av-steps">
-        {steps.map((step) => (
-          <div class="av-step">
-            <div class="av-step__number">{step.step}</div>
-            <div class="av-step__body">
-              <p class="av-step__title">{step.title}</p>
-              <p class="av-step__text">{step.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="templates">
-    <AvContainer>
-      <div class="av-section__header">
-        <h2 class="av-section__title">Templates Built for ATS &amp; Clarity</h2>
-        <p class="av-section__lead">Clean hierarchy, simple fonts, and no graphics that break parsing.</p>
-      </div>
-      <AvTemplateGrid>
-        {templates.map((template) => (
-          <AvTemplateCard
-            name={template.name}
-            description={template.description}
-            accentClass={template.accentClass}
-            href={template.href}
-          />
-        ))}
-      </AvTemplateGrid>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="features">
-    <AvContainer>
-      <div class="av-section__header">
-        <h2 class="av-section__title">Why Ansiversa Is Different</h2>
-        <p class="av-section__lead">More than a template picker—every choice respects recruiter standards and user trust.</p>
-      </div>
-      <div class="av-section__grid">
-        {differentiators.map((item) => (
-          <AvCard>
-            <p class="av-card__title">{item.title}</p>
-            <p class="av-card__body">{item.description}</p>
-          </AvCard>
-        ))}
-      </div>
-      <AvDivider />
-      <AvFeatureList>
-        <AvFeatureItem variant="secondary">Cleaner and more modern than legacy builders</AvFeatureItem>
-        <AvFeatureItem variant="secondary">Guided writing with helpful examples and prompts</AvFeatureItem>
-        <AvFeatureItem variant="secondary">Part of a premium 100-app Ansiversa ecosystem</AvFeatureItem>
-      </AvFeatureList>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="testimonials">
-    <AvContainer>
-      <div class="av-section__header">
-        <h2 class="av-section__title">Why Early Users Love It</h2>
-        <p class="av-section__lead">Confidence from clear guidance, transparent pricing, and recruiter-ready output.</p>
-      </div>
-      <div class="av-section__grid">
-        {testimonials.map((quote) => (
-          <AvCard variant="soft">
-            <p class="av-card__quote">“{quote}”</p>
-          </AvCard>
-        ))}
-      </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section" id="faq">
-    <AvContainer>
-      <div class="av-section__header">
-        <h2 class="av-section__title">Frequently Asked Questions</h2>
-        <p class="av-section__lead">Quick answers about pricing, editing, and ATS compliance.</p>
-      </div>
-      <div class="av-section__grid">
-        {faqs.map((item) => (
-          <AvCard>
-            <p class="av-card__title">{item.question}</p>
-            <p class="av-card__body">{item.answer}</p>
-          </AvCard>
-        ))}
-      </div>
-    </AvContainer>
-  </section>
-
-  <section class="av-section av-section--cta" id="cta">
-    <AvContainer size="narrow" className="av-section__center">
-      <h2 class="av-section__title">Ready to tell your story clearly?</h2>
-      <p class="av-section__lead">
-        Ansiversa Resume Builder is your career companion—helping you craft a confident, professional, ATS-ready resume.
-      </p>
       <div class="av-cta-row">
-        <AvButton href="/app/resume/new">Create Your Resume</AvButton>
-        <AvButton href="#templates" variant="ghost">Explore Templates</AvButton>
+        <AvButton href="https://resume-builder.ansiversa.com">Launch Resume</AvButton>
+      </div>
+    </AvContainer>
+  </section>
+
+  <!-- Problem -->
+  <section class="av-section">
+    <AvContainer size="narrow">
+      <div class="av-section-header">
+        <h2 class="av-section-title">The problem it solves</h2>
+        <p class="av-section-lead">
+          Career tasks like resumes, meetings, and communication often feel scattered.
+        </p>
+      </div>
+      <div class="av-section-body space-y-3 text-slate-300">
+        <p>Resume Builder takes one piece of your career workflow and makes it effortless.</p>
+      </div>
+    </AvContainer>
+  </section>
+
+  <!-- Why this mini app -->
+  <section class="av-section">
+    <AvContainer size="narrow">
+      <div class="av-section-header">
+        <h2 class="av-section-title">Why Resume Builder feels different</h2>
+        <p class="av-section-lead">
+          A focused mini app inside the larger Ansiversa ecosystem.
+        </p>
+      </div>
+      <div class="av-section-body">
+        <ul class="space-y-2 text-slate-300 list-disc list-inside">
+          <li>Focused on a single, real-world career task.</li>
+          <li>Gives you professional-quality output without complex tools.</li>
+          <li>Keeps everything structured, consistent, and reusable.</li>
+        </ul>
+      </div>
+    </AvContainer>
+  </section>
+
+  <!-- How it works -->
+  <section class="av-section">
+    <AvContainer size="narrow">
+      <div class="av-section-header">
+        <h2 class="av-section-title">How it works</h2>
+        <p class="av-section-lead">
+          Simple, clear steps so people can start in under a minute.
+        </p>
+      </div>
+      <ol class="av-section-body space-y-2 text-slate-300 list-decimal list-inside">
+        <li>Open Resume Builder before you start your task.</li>
+        <li>Provide a few key details about your role, client, or context.</li>
+        <li>Generate polished output you can refine and use immediately.</li>
+      </ol>
+    </AvContainer>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="av-section">
+    <AvContainer size="narrow">
+      <div class="av-section-header">
+        <h2 class="av-section-title">Ready to try Resume Builder?</h2>
+        <p class="av-section-lead">
+          Open the app, follow the simple flow, and let it handle the heavy lifting.
+        </p>
+      </div>
+      <div class="av-cta-row">
+        <AvButton href="https://resume-builder.ansiversa.com">Start with Resume</AvButton>
       </div>
     </AvContainer>
   </section>
