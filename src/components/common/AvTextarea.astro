@@ -1,14 +1,23 @@
 ---
 interface Props {
   label?: string;
+  name?: string;
   placeholder?: string;
   rows?: number;
+  value?: string;
+  required?: boolean;
 }
 
-const { label, placeholder, rows = 4 } = Astro.props as Props;
+const { label, name, placeholder, rows = 4, value, required } = Astro.props as Props;
 ---
 
 <div class="av-field">
   {label ? <label class="av-field__label">{label}</label> : null}
-  <textarea class="av-textarea" placeholder={placeholder} rows={rows}></textarea>
+  <textarea
+    class="av-textarea"
+    placeholder={placeholder}
+    rows={rows}
+    name={name}
+    required={required}
+  >{value}</textarea>
 </div>

@@ -24,5 +24,6 @@ const props = Astro.props as Props;
   <div class="av-resume-card__actions">
     <AvButton href={props.editHref} variant="primary" size="sm">Edit</AvButton>
     <AvButton href={props.downloadHref} variant="ghost" size="sm">Download PDF</AvButton>
+    <slot name="actions" />
   </div>
 </AvCard>
