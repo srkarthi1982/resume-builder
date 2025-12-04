@@ -1,23 +1,259 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { AvContainer, AvButton } from "@ansiversa/components";
+import {
+  AvButton,
+  AvCard,
+  AvContainer,
+  AvDivider,
+  AvFeatureItem,
+  AvFeatureList,
+} from "@ansiversa/components";
 ---
 
-<AppShell title="Resume Builder" description="Resume Builder – powered by Ansiversa.">
-    <!-- Hero -->
+<AppShell
+  title="Build a Professional Resume in Minutes | Ansiversa Resume Builder"
+  description="Create an ATS-friendly resume with real-time preview, modern templates, and secure saving powered by Ansiversa's component system."
+>
   <section class="av-hero">
     <AvContainer size="narrow" className="av-hero__content--narrow">
       <div class="av-hero__content">
         <div class="av-kicker">
           <span>Ansiversa Ecosystem</span>
         </div>
-        <h1 class="av-gradient-text">Resume Builder</h1>
-        <p>
-          This project uses the shared @ansiversa/components package and global design system. Use this starter as a base for your next mini-app in the Ansiversa universe.
+        <h1 class="av-gradient-text">Build a Professional Resume in Minutes</h1>
+        <p class="text-slate-300">
+          Smart, simple, and ATS-friendly. Enjoy a clean UI, real-time preview, and premium Ansiversa components for a beautiful
+          resume experience.
         </p>
       </div>
       <div class="av-cta-row">
-        <AvButton href="https://www.ansiversa.com">Visit Ansiversa</AvButton>
+        <AvButton href="/app/resume">Create Your Resume</AvButton>
+        <AvButton href="#templates" variant="outline">View Templates</AvButton>
+      </div>
+      <AvFeatureList className="justify-center mt-10">
+        <AvFeatureItem variant="primary">100% ATS-friendly resumes</AvFeatureItem>
+        <AvFeatureItem variant="primary">Live preview while you type</AvFeatureItem>
+        <AvFeatureItem variant="primary">Multiple modern templates</AvFeatureItem>
+        <AvFeatureItem variant="primary">Export as PDF</AvFeatureItem>
+      </AvFeatureList>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="why">
+    <AvContainer>
+      <div class="av-section-header">
+        <h2 class="av-section-title">Why Choose Our Resume Builder?</h2>
+        <p class="av-section-lead">
+          Crafted with Ansiversa components for perfect alignment, typography, spacing, and recruiter-ready formatting.
+        </p>
+      </div>
+      <div class="av-section-grid">
+        <AvCard>
+          <p class="av-card-heading">Modern &amp; Professional Designs</p>
+          <p class="text-slate-300">
+            Templates designed with Av components ensure consistent spacing, thoughtful hierarchy, and a polished look that stands
+            out.
+          </p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">ATS-Optimized Formatting</p>
+          <p class="text-slate-300">
+            Built to follow strict recruiter and Applicant Tracking System guidelines—no hidden tables or broken layouts.
+          </p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Real-time Editing</p>
+          <p class="text-slate-300">
+            Update details and instantly see changes in the live preview pane for faster iteration and confident publishing.
+          </p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">High-Quality PDF Export</p>
+          <p class="text-slate-300">
+            Clean server-side rendered PDFs deliver pixel-perfect output ready to share with recruiters or hiring managers.
+          </p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Save &amp; Continue Anytime</p>
+          <p class="text-slate-300">
+            Your resume auto-saves securely inside your Ansiversa account so you can return and edit whenever you want.
+          </p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Works Everywhere</p>
+          <p class="text-slate-300">
+            Fully responsive and smooth on mobile, laptop, and tablet so you can polish your resume from any device.
+          </p>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="how-it-works">
+    <AvContainer>
+      <div class="av-section-header">
+        <h2 class="av-section-title">How It Works</h2>
+        <p class="av-section-lead">Choose a template, fill your details, customize, then download or share.</p>
+      </div>
+      <div class="av-steps">
+        <div class="av-step">
+          <div class="av-step-number">1</div>
+          <div class="av-step-body">
+            <p class="font-semibold text-slate-100">Choose a template</p>
+            <p>Browse modern, minimal, and creative layouts built with AvCard, AvTextInput, and AvGrid.</p>
+          </div>
+        </div>
+        <div class="av-step">
+          <div class="av-step-number">2</div>
+          <div class="av-step-body">
+            <p class="font-semibold text-slate-100">Fill your details</p>
+            <p>
+              Guided sections for Personal Information, Summary, Experience, Education, Skills, Certifications, Projects, and
+              Achievements.
+            </p>
+          </div>
+        </div>
+        <div class="av-step">
+          <div class="av-step-number">3</div>
+          <div class="av-step-body">
+            <p class="font-semibold text-slate-100">Customize</p>
+            <p>Adjust layout, fonts, spacing, and section order to highlight what matters most.</p>
+          </div>
+        </div>
+        <div class="av-step">
+          <div class="av-step-number">4</div>
+          <div class="av-step-body">
+            <p class="font-semibold text-slate-100">Download or Share</p>
+            <p>Export as PDF or share a public link (optional future feature) with a single click.</p>
+          </div>
+        </div>
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="templates">
+    <AvContainer>
+      <div class="av-section-header">
+        <h2 class="av-section-title">Template Previews</h2>
+        <p class="av-section-lead">Pick from modern, minimal, and creative layouts designed for clarity.</p>
+      </div>
+      <div class="av-section-grid">
+        {[
+          {
+            title: "Modern Blue Template",
+            accent: "from-cyan-500/20 to-blue-500/10",
+          },
+          {
+            title: "Minimal White Template",
+            accent: "from-slate-200/10 to-slate-800/20",
+          },
+          {
+            title: "Two-Column Professional",
+            accent: "from-indigo-500/20 to-purple-500/10",
+          },
+          {
+            title: "Creative Accent Template",
+            accent: "from-amber-400/25 to-pink-500/10",
+          },
+          {
+            title: "Executive Serif",
+            accent: "from-emerald-400/20 to-cyan-500/10",
+          },
+          {
+            title: "Clean Monoline",
+            accent: "from-fuchsia-500/20 to-blue-500/10",
+          },
+        ].map((template) => (
+          <AvCard className={`space-y-3 bg-gradient-to-br ${template.accent}`}>
+            <p class="av-card-heading">Template</p>
+            <h3 class="text-lg font-semibold text-slate-100">{template.title}</h3>
+            <p class="text-sm text-slate-200/80">Preview powered by AvCard + AvButton.</p>
+            <AvButton variant="ghost" href="/app/resume">Use Template</AvButton>
+          </AvCard>
+        ))}
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="features">
+    <AvContainer>
+      <div class="av-section-header">
+        <h2 class="av-section-title">Built with Av Components</h2>
+        <p class="av-section-lead">
+          Every field uses AvInput, AvTextarea, AvSelect, AvCard, and AvTabs for a consistent Ansiversa experience.
+        </p>
+      </div>
+      <div class="av-section-grid">
+        <AvCard>
+          <p class="av-card-heading">Secure &amp; Private</p>
+          <p class="text-slate-300">Your resume data is encrypted and stored safely in your personal Ansiversa space.</p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Works Everywhere</p>
+          <p class="text-slate-300">Fully responsive and fast across mobile, laptop, and iPad for on-the-go edits.</p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Smart Suggestions (AI)</p>
+          <p class="text-slate-300">Try “Improve My Summary,” “Rewrite Professionally,” or “Make it Shorter.”</p>
+        </AvCard>
+      </div>
+      <AvDivider className="my-10" />
+      <AvFeatureList className="grid gap-3 md:grid-cols-3">
+        <AvFeatureItem variant="secondary">AvInput, AvTextarea, and AvSelect for clean forms</AvFeatureItem>
+        <AvFeatureItem variant="secondary">AvCard, AvTabs, and AvGrid for structured layouts</AvFeatureItem>
+        <AvFeatureItem variant="secondary">Global Ansiversa tokens for typography and spacing</AvFeatureItem>
+      </AvFeatureList>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="testimonials">
+    <AvContainer>
+      <div class="av-section-header">
+        <h2 class="av-section-title">Loved by Early Users</h2>
+        <p class="av-section-lead">Real feedback from people who built resumes with the live preview and ATS-friendly templates.</p>
+      </div>
+      <div class="av-section-grid">
+        {["Best resume builder I've ever used—simple and clean!", "ATS score improved instantly when I switched template.", "Loved the real-time preview and easy editing."].map(
+          (quote) => (
+            <AvCard variant="soft">
+              <p class="text-slate-100">“{quote}”</p>
+            </AvCard>
+          )
+        )}
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section" id="faq">
+    <AvContainer>
+      <div class="av-section-header">
+        <h2 class="av-section-title">Frequently Asked Questions</h2>
+        <p class="av-section-lead">Quick answers about pricing, editing, and ATS compliance.</p>
+      </div>
+      <div class="av-section-grid">
+        <AvCard>
+          <p class="av-card-heading">Is it free to use?</p>
+          <p class="text-slate-300">Yes, the basic version is free. Premium templates may come later.</p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Can I edit after downloading?</p>
+          <p class="text-slate-300">Yes, log in anytime and update your resume with live preview.</p>
+        </AvCard>
+        <AvCard>
+          <p class="av-card-heading">Are templates ATS-friendly?</p>
+          <p class="text-slate-300">Absolutely. Every layout follows ATS compliance guidelines.</p>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section bg-slate-950/80" id="cta">
+    <AvContainer size="narrow" className="text-center space-y-4">
+      <h2 class="text-3xl font-semibold text-slate-50">Ready to build your resume?</h2>
+      <p class="text-slate-300">Start with our modern templates, edit in real time, and export a polished PDF.</p>
+      <div class="av-cta-row justify-center">
+        <AvButton href="/app/resume">Create Your Resume</AvButton>
+        <AvButton href="#templates" variant="ghost">Explore Templates</AvButton>
       </div>
     </AvContainer>
   </section>
