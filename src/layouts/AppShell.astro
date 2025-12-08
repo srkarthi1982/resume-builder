@@ -1,7 +1,6 @@
 ---
 import "@ansiversa/components/styles/global.css";
 import { WebLayout } from "@ansiversa/components";
-import Alpine from "alpinejs";
 import AvActionSwitcher from "../components/common/AvActionSwitcher.astro";
 
 interface Props {
@@ -16,12 +15,4 @@ const props = Astro.props;
   <slot />
   <AvActionSwitcher />
 </WebLayout>
-
-<script is:inline>
-  window.Alpine = window.Alpine || Alpine;
-
-  if (!window.Alpine.__avInitialized) {
-    window.Alpine.__avInitialized = true;
-    window.Alpine.start();
-  }
-</script>
+<script type="module" src={Astro.resolve("../scripts/alpine.ts")}></script>
