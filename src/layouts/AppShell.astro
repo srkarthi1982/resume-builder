@@ -1,6 +1,7 @@
 ---
 import "@ansiversa/components/styles/global.css";
 import { WebLayout } from "@ansiversa/components";
+
 import AvActionSwitcher from "../components/common/AvActionSwitcher.astro";
 
 interface Props {
@@ -10,9 +11,8 @@ interface Props {
 
 const props = Astro.props;
 ---
-
 <WebLayout {...props}>
   <slot />
   <AvActionSwitcher />
 </WebLayout>
-<script type="module" src={Astro.resolve("../scripts/alpine.ts")}></script>
+
