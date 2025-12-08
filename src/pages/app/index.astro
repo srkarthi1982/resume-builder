@@ -1,0 +1,499 @@
+---
+import AppShell from "../../layouts/AppShell.astro";
+import {
+  AvContainer,
+  AvButton,
+  AvCard,
+  AvInput,
+} from "@ansiversa/components";
+import AvSelect from "../../components/common/AvSelect.astro";
+import AvTextarea from "../../components/common/AvTextarea.astro";
+import AvPageHeader from "../../components/common/AvPageHeader.astro";
+import AvToolbar from "../../components/common/AvToolbar.astro";
+import AvItemList from "../../components/common/AvItemList.astro";
+import AvEmptyState from "../../components/common/AvEmptyState.astro";
+import AvChipList from "../../components/common/AvChipList.astro";
+import AvResumeEditorShell from "../../components/resume/AvResumeEditorShell.astro";
+import AvResumeSectionList from "../../components/resume/AvResumeSectionList.astro";
+import AvResumeSectionFormShell from "../../components/resume/AvResumeSectionFormShell.astro";
+import AvDrawer from "../../components/common/AvDrawer.astro";
+
+const title = "Resume Builder – App";
+const description = "Create, edit, and preview your resumes in one focused workspace.";
+
+const sampleResumes = [
+  {
+    id: "1",
+    title: "Senior Frontend Developer",
+    targetRole: "Senior Frontend Engineer",
+    location: "Abu Dhabi, UAE",
+    updatedAt: "Today · 5:42 PM",
+    isPrimary: true,
+  },
+  {
+    id: "2",
+    title: "Full-Stack Developer",
+    targetRole: "Full-Stack Engineer",
+    location: "Remote",
+    updatedAt: "Yesterday · 9:15 PM",
+    isPrimary: false,
+  },
+];
+
+const sampleProfile = {
+  fullName: "Karthikeyan Ramalingam",
+  headline: "Senior Software Developer · Frontend & Architecture",
+  email: "karthik@example.com",
+  phone: "+971-50-000-0000",
+  location: "Abu Dhabi, UAE",
+  summary:
+    "Senior engineer with experience in scalable architectures, Astro, and building curated ecosystems of mini apps.",
+  links: {
+    LinkedIn: "https://linkedin.com/",
+    GitHub: "https://github.com/",
+  },
+};
+
+const sampleSections = [
+  {
+    id: "experience",
+    title: "Experience",
+    items: [
+      {
+        id: "exp-1",
+        title: "Senior Software Developer",
+        subtitle: "Global Aerospace Logistics · 2021 – Present",
+        meta: "Abu Dhabi, UAE",
+      },
+      {
+        id: "exp-2",
+        title: "Lead Engineer",
+        subtitle: "HCL · 2016 – 2021",
+        meta: "Chennai, India",
+      },
+    ],
+  },
+  {
+    id: "education",
+    title: "Education",
+    items: [
+      {
+        id: "edu-1",
+        title: "B.E. Computer Science",
+        subtitle: "Anna University",
+        meta: "2012 – 2016",
+      },
+    ],
+  },
+  {
+    id: "skills",
+    title: "Skills",
+    chips: [
+      { id: "s-astro", label: "Astro" },
+      { id: "s-ts", label: "TypeScript" },
+      { id: "s-arch", label: "Architecture" },
+      { id: "s-ai", label: "AI-assisted workflows" },
+    ],
+  },
+];
+---
+
+<AppShell title={title} description={description}>
+  <div
+    class="av-resume-app"
+    x-data="{ drawer: null }"
+    x-on:close-drawer.window="drawer = null"
+  >
+    <AvPageHeader
+      title="Resume workspace"
+      description="Create, edit, and preview your resumes in a calm, focused layout."
+      primaryAction={{
+        label: "New resume",
+        href: '#new',
+        variant: 'primary',
+      }}
+    />
+
+    <AvToolbar saveStatus="idle" lastSavedAt="Not saved yet" />
+
+    <AvResumeEditorShell>
+      <div slot="sidebar">
+        <section class="av-resume-app__sidebar-section">
+          <header class="av-resume-app__sidebar-header">
+            <h2 class="av-resume-app__sidebar-title">My resumes</h2>
+            <AvButton
+              type="button"
+              size="sm"
+              variant="outline"
+              x-on:click.prevent="drawer = 'new-resume'"
+            >
+              + New
+            </AvButton>
+          </header>
+
+          {sampleResumes.length > 0 ? (
+            <AvItemList
+              items={sampleResumes.map((r) => ({
+                id: r.id,
+                title: r.title,
+                subtitle: r.targetRole,
+                meta: r.updatedAt,
+                isCurrent: r.isPrimary,
+              }))}
+            />
+          ) : (
+            <AvEmptyState
+              title="No resumes yet"
+              description="Start by creating your first resume. You can always duplicate and tweak later."
+            />
+          )}
+        </section>
+
+        <section class="av-resume-app__sidebar-section">
+          <header class="av-resume-app__sidebar-header">
+            <h2 class="av-resume-app__sidebar-title">Sections</h2>
+            <AvButton
+              type="button"
+              size="sm"
+              variant="ghost"
+              x-on:click.prevent="drawer = 'add-section'"
+            >
+              + Add section
+            </AvButton>
+          </header>
+
+          <AvResumeSectionList
+            sections={sampleSections.map((section) => ({
+              id: section.id,
+              title: section.title,
+              type: section.id,
+              isVisible: true,
+              isActive: section.id === "experience",
+            }))}
+          />
+        </section>
+      </div>
+
+      <div slot="preview">
+        <AvCard className="av-resume-preview">
+          <header class="av-resume-preview__header">
+            <div>
+              <h1 class="av-resume-preview__name">{sampleProfile.fullName}</h1>
+              <p class="av-resume-preview__headline">{sampleProfile.headline}</p>
+            </div>
+            <div class="av-resume-preview__meta">
+              <p>{sampleProfile.location}</p>
+              <p>{sampleProfile.email}</p>
+              <p>{sampleProfile.phone}</p>
+              <AvButton
+                type="button"
+                size="sm"
+                variant="ghost"
+                x-on:click.prevent="drawer = 'profile'"
+              >
+                Edit profile
+              </AvButton>
+            </div>
+          </header>
+
+          <section class="av-resume-preview__section">
+            <h2 class="av-resume-preview__section-title">Summary</h2>
+            <p class="av-resume-preview__summary">{sampleProfile.summary}</p>
+          </section>
+
+          <section class="av-resume-preview__section">
+            <h2 class="av-resume-preview__section-title">Experience</h2>
+            <ul class="av-resume-preview__list">
+              {sampleSections
+                .find((s) => s.id === "experience")
+                ?.items?.map((item) => (
+                  <li class="av-resume-preview__list-item">
+                    <p class="av-resume-preview__item-title">{item.title}</p>
+                    <p class="av-resume-preview__item-subtitle">{item.subtitle}</p>
+                    <p class="av-resume-preview__item-meta">{item.meta}</p>
+                  </li>
+                ))}
+            </ul>
+          </section>
+
+          <section class="av-resume-preview__section">
+            <h2 class="av-resume-preview__section-title">Education</h2>
+            <ul class="av-resume-preview__list">
+              {sampleSections
+                .find((s) => s.id === "education")
+                ?.items?.map((item) => (
+                  <li class="av-resume-preview__list-item">
+                    <p class="av-resume-preview__item-title">{item.title}</p>
+                    <p class="av-resume-preview__item-subtitle">{item.subtitle}</p>
+                    <p class="av-resume-preview__item-meta">{item.meta}</p>
+                  </li>
+                ))}
+            </ul>
+          </section>
+
+          <section class="av-resume-preview__section">
+            <h2 class="av-resume-preview__section-title">Skills</h2>
+            <AvChipList
+              chips={sampleSections.find((s) => s.id === "skills")?.chips ?? []}
+            />
+          </section>
+        </AvCard>
+      </div>
+    </AvResumeEditorShell>
+
+    <!-- Drawers -->
+
+    <div
+      x-show="drawer === 'new-resume'"
+      x-transition
+      x-cloak
+      x-on:close-drawer.window="drawer = null"
+    >
+      <AvDrawer
+        title="Create new resume"
+        description="Give your resume a clear title and optional target role."
+      >
+        <AvResumeSectionFormShell title="Basic details">
+          <AvInput label="Title" name="title" placeholder="e.g. Senior Frontend Developer" />
+          <AvInput
+            label="Target role"
+            name="targetRole"
+            placeholder="e.g. Frontend Engineer"
+          />
+          <AvInput
+            label="Location"
+            name="location"
+            placeholder="e.g. Abu Dhabi, UAE"
+          />
+          <AvSelect label="Template" name="templateKey">
+            <option value="clean">Clean (default)</option>
+            <option value="modern">Modern</option>
+          </AvSelect>
+
+          <div slot="actions" class="av-resume-form-actions">
+            <AvButton
+              type="button"
+              variant="ghost"
+              x-on:click.prevent="drawer = null"
+            >
+              Cancel
+            </AvButton>
+            <AvButton type="button" variant="primary">
+              Create resume
+            </AvButton>
+          </div>
+        </AvResumeSectionFormShell>
+
+        <div slot="footer">
+          <!-- Footer intentionally empty for now -->
+        </div>
+      </AvDrawer>
+    </div>
+
+    <div
+      x-show="drawer === 'profile'"
+      x-transition
+      x-cloak
+      x-on:close-drawer.window="drawer = null"
+    >
+      <AvDrawer
+        title="Edit profile"
+        description="Update your contact details and summary. These appear at the top of your resume."
+      >
+        <AvResumeSectionFormShell title="Profile">
+          <AvInput label="Full name" name="fullName" value={sampleProfile.fullName} />
+          <AvInput label="Headline" name="headline" value={sampleProfile.headline} />
+          <AvInput label="Email" name="email" value={sampleProfile.email} />
+          <AvInput label="Phone" name="phone" value={sampleProfile.phone} />
+          <AvInput label="Location" name="location" value={sampleProfile.location} />
+          <AvTextarea
+            label="Summary"
+            name="summary"
+            value={sampleProfile.summary}
+            rows={4}
+          />
+
+          <div slot="actions" class="av-resume-form-actions">
+            <AvButton
+              type="button"
+              variant="ghost"
+              x-on:click.prevent="drawer = null"
+            >
+              Close
+            </AvButton>
+            <AvButton type="button" variant="primary">
+              Save changes
+            </AvButton>
+          </div>
+        </AvResumeSectionFormShell>
+
+        <div slot="footer"></div>
+      </AvDrawer>
+    </div>
+
+    <div
+      x-show="drawer === 'add-section'"
+      x-transition
+      x-cloak
+      x-on:close-drawer.window="drawer = null"
+    >
+      <AvDrawer
+        title="Add section"
+        description="Add a new section to your resume layout."
+      >
+        <AvResumeSectionFormShell title="Section details">
+          <AvInput label="Section title" name="sectionTitle" placeholder="e.g. Projects" />
+          <AvSelect label="Section type" name="sectionType">
+            <option value="projects">Projects</option>
+            <option value="certifications">Certifications</option>
+            <option value="languages">Languages</option>
+            <option value="interests">Interests</option>
+          </AvSelect>
+
+          <div slot="actions" class="av-resume-form-actions">
+            <AvButton
+              type="button"
+              variant="ghost"
+              x-on:click.prevent="drawer = null"
+            >
+              Cancel
+            </AvButton>
+            <AvButton type="button" variant="primary">
+              Add section
+            </AvButton>
+          </div>
+        </AvResumeSectionFormShell>
+
+        <div slot="footer"></div>
+      </AvDrawer>
+    </div>
+  </div>
+
+  <style>
+    .av-resume-app {
+      min-height: calc(100vh - 4rem);
+      background: radial-gradient(circle at top, rgba(94, 234, 212, 0.05), transparent 55%),
+        radial-gradient(circle at bottom, rgba(129, 140, 248, 0.06), transparent 55%);
+    }
+
+    .av-resume-app__sidebar-section {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .av-resume-app__sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .av-resume-app__sidebar-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--av-fg-muted, #9ca3af);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .av-resume-preview {
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .av-resume-preview__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      padding-bottom: 1rem;
+    }
+
+    .av-resume-preview__name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--av-fg-strong, #e5e7eb);
+    }
+
+    .av-resume-preview__headline {
+      margin-top: 0.25rem;
+      font-size: 0.95rem;
+      color: var(--av-fg-muted, #9ca3af);
+    }
+
+    .av-resume-preview__meta {
+      font-size: 0.8rem;
+      text-align: right;
+      color: var(--av-fg-muted, #9ca3af);
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .av-resume-preview__section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .av-resume-preview__section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--av-fg-muted, #9ca3af);
+    }
+
+    .av-resume-preview__summary {
+      font-size: 0.9rem;
+      color: var(--av-fg, #e5e7eb);
+    }
+
+    .av-resume-preview__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .av-resume-preview__list-item {
+      border-left: 2px solid rgba(148, 163, 184, 0.6);
+      padding-left: 0.75rem;
+    }
+
+    .av-resume-preview__item-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--av-fg-strong, #e5e7eb);
+    }
+
+    .av-resume-preview__item-subtitle {
+      font-size: 0.85rem;
+      color: var(--av-fg-muted, #9ca3af);
+    }
+
+    .av-resume-preview__item-meta {
+      font-size: 0.8rem;
+      color: var(--av-fg-soft, #94a3b8);
+    }
+
+    .av-resume-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    [x-cloak] {
+      display: none !important;
+    }
+  </style>
+</AppShell>
