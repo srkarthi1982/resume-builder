@@ -1,0 +1,154 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { AvButton, AvCard, AvContainer } from "@ansiversa/components";
+import AvPageHeader from "../components/common/AvPageHeader.astro";
+import AvEmptyState from "../components/common/AvEmptyState.astro";
+---
+
+<AppShell title="Resumes" description="Manage all of your Ansiversa resumes in one place.">
+  <section
+    class="av-page av-page--content"
+    x-data
+    x-init="$store.resumeBuilder.initResumesPage()"
+  >
+    <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
+
+    <AvPageHeader
+      title="Your resumes"
+      description="Pick up where you left off, duplicate previous versions, or start a new draft."
+      primaryAction={{
+        label: "New resume",
+        href: '/resume/new',
+        variant: 'primary',
+      }}
+    />
+
+    <AvContainer>
+      <div
+        x-show="$store.resumeBuilder.error"
+        class="av-alert av-alert--danger"
+        x-text="$store.resumeBuilder.error"
+      ></div>
+
+      <template x-if="$store.resumeBuilder.resumes.length === 0">
+        <div class="av-card-grid">
+          <AvEmptyState
+            title="No resumes yet"
+            description="Create your first resume in minutes."
+          >
+            <AvButton slot="actions" href="/resume/new">Create resume</AvButton>
+          </AvEmptyState>
+        </div>
+      </template>
+
+      <div class="av-card-grid" x-show="$store.resumeBuilder.resumes.length > 0">
+        <template x-for="resume in $store.resumeBuilder.resumes" :key="resume.id">
+          <AvCard className="av-resume-card">
+            <div class="av-resume-card__body">
+              <div class="av-resume-card__header">
+                <h3 class="av-resume-card__title" x-text="resume.title"></h3>
+                <span class="av-status-pill" x-text="resume.templateKey || 'Draft'"></span>
+              </div>
+              <p class="av-resume-card__meta">
+                <span x-text="resume.targetRole || 'No target role'"></span>
+                <template x-if="resume.targetCompany">
+                  <span>
+                    <span> · </span>
+                    <span x-text="resume.targetCompany"></span>
+                  </span>
+                </template>
+              </p>
+              <p class="av-resume-card__updated" x-text="resume.updatedLabel || resume.updatedAt"></p>
+            </div>
+            <div class="av-resume-card__actions">
+              <AvButton size="sm" href="" x-bind:href="`/resume/${resume.id}`">Edit</AvButton>
+              <AvButton size="sm" variant="ghost" x-on:click.prevent="$store.resumeBuilder.duplicateResume(resume.id)">
+                Duplicate
+              </AvButton>
+              <AvButton size="sm" variant="ghost">Download PDF</AvButton>
+              <AvButton
+                size="sm"
+                variant="ghost"
+                color="danger"
+                x-on:click.prevent="$store.resumeBuilder.deleteResume(resume.id)"
+              >
+                Delete
+              </AvButton>
+            </div>
+          </AvCard>
+        </template>
+      </div>
+    </AvContainer>
+  </section>
+
+  <style>
+    .av-loading-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, #22d3ee, #6366f1);
+      animation: shimmer 1.6s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    .av-card-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .av-resume-card__body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .av-resume-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .av-resume-card__title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .av-resume-card__meta {
+      color: var(--av-fg-muted, #94a3b8);
+      font-size: 0.9rem;
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .av-resume-card__updated {
+      font-size: 0.85rem;
+      color: var(--av-fg-soft, #cbd5e1);
+    }
+
+    .av-resume-card__actions {
+      margin-top: 0.75rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .av-status-pill {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--av-fg, #e2e8f0);
+      font-size: 0.85rem;
+    }
+  </style>
+</AppShell>
