@@ -32,7 +32,14 @@ async function callAction(actionName: string, payload: Record<string, unknown> =
     body: JSON.stringify(payload),
   });
 
-  const result = await response.json();
+  let result: any;
+
+  try {
+    result = await response.json();
+  } catch (error) {
+    const statusLabel = `${response.status} ${response.statusText}`.trim();
+    throw new Error(statusLabel || "Unexpected response from the server.");
+  }
 
   if (!response.ok || result.error) {
     const message = result?.error?.message ?? response.statusText ?? "Unknown error";
