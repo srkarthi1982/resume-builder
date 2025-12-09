@@ -4,10 +4,9 @@ import { AvButton, AvCard, AvContainer, AvInput } from "@ansiversa/components";
 import AvBreadcrumb from "../../components/common/AvBreadcrumb.astro";
 import AvTextarea from "../../components/common/AvTextarea.astro";
 import AvSelect from "../../components/common/AvSelect.astro";
----
 
 const templateId = Astro.url.searchParams.get("template") ?? "";
-
+---
 <AppShell title="New resume" description="Start a new resume draft.">
   <section
     class="av-page av-page--content av-resume-editor"
