@@ -3,14 +3,14 @@ import AppShell from "../../layouts/AppShell.astro";
 import { AvButton, AvCard, AvContainer, AvInput } from "@ansiversa/components";
 import AvBreadcrumb from "../../components/common/AvBreadcrumb.astro";
 import AvTextarea from "../../components/common/AvTextarea.astro";
-import AvSelect from "../../components/common/AvSelect.astro";
+import AvDrawer from "../../components/common/AvDrawer.astro";
 
 const templateId = Astro.url.searchParams.get("template") ?? "";
 ---
 <AppShell title="New resume" description="Start a new resume draft.">
   <section
     class="av-page av-page--content av-resume-editor"
-    x-data
+    x-data="{ drawerOpen: false }"
     x-init="
       $store.resumeBuilder.isLoading = true;
       (async () => {
@@ -28,13 +28,8 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
       <header class="av-editor-header">
         <div class="av-editor-header__title">
           <p class="av-editor-breadcrumb">Resumes / New</p>
-          <AvInput
-            name="resumeTitle"
-            label="Resume title"
-            placeholder="e.g. Senior Frontend Developer"
-            x-model="$store.resumeBuilder.editor.project.title"
-            x-on:input="$store.resumeBuilder.editor.isDirty = true"
-          />
+          <h1 class="av-page-title">Resume preview</h1>
+          <p class="av-page-subtitle">Update your details in the drawer and save to refresh this preview.</p>
         </div>
         <div class="av-editor-header__actions">
           <span class="av-status-pill" x-text="$store.resumeBuilder.editor.project.templateName"></span>
@@ -46,194 +41,114 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
           >
             Change template
           </AvButton>
-          <AvButton size="sm" variant="primary" x-on:click.prevent="$store.resumeBuilder.saveEditor()">
-            Save
+          <AvButton size="sm" variant="primary" x-on:click="drawerOpen = true">
+            Open editor
           </AvButton>
         </div>
       </header>
 
-      <div class="av-editor-grid">
-        <AvCard className="av-editor-panel">
-          <div class="av-panel-header">
-            <div>
-              <p class="av-panel-label">Sections</p>
-              <h2 class="av-panel-title">Structure</h2>
-            </div>
-            <AvButton size="sm" variant="ghost" x-on:click.prevent="$store.resumeBuilder.addSection('custom')">
-              + Add section
-            </AvButton>
+      <AvCard className="av-editor-panel av-preview-panel">
+        <div class="av-panel-header">
+          <div>
+            <p class="av-panel-label">Preview</p>
+            <h2 class="av-panel-title">Resume preview</h2>
           </div>
-
-          <ul class="av-section-list">
-            <template x-for="section in $store.resumeBuilder.editor.sections" :key="section.id">
-              <li
-                class="av-section-list__item"
-                x-bind:class="{ 'is-active': section.id === $store.resumeBuilder.activeSectionId }"
-                x-on:click="$store.resumeBuilder.selectSection(section.id)"
-              >
-                <div class="av-section-list__main">
-                  <span class="av-section-list__label" x-text="section.label"></span>
-                  <span class="av-section-list__type" x-text="section.type"></span>
-                </div>
-                <div class="av-section-list__controls">
-                  <button type="button" x-on:click.stop="$store.resumeBuilder.moveSectionUp(section.id)">↑</button>
-                  <button type="button" x-on:click.stop="$store.resumeBuilder.moveSectionDown(section.id)">↓</button>
-                  <button
-                    type="button"
-                    x-show="!section.isRequired"
-                    x-on:click.stop="$store.resumeBuilder.removeSection(section.id)"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </li>
-            </template>
-          </ul>
-        </AvCard>
-
-        <div class="av-editor-main">
-          <AvCard className="av-editor-panel">
-            <div class="av-panel-header">
-              <div>
-                <p class="av-panel-label">Details</p>
-                <h2 class="av-panel-title">Edit section</h2>
-              </div>
-            </div>
-
-            <template x-if="$store.resumeBuilder.activeSectionId === 'profile'">
-              <div class="av-form-stack">
-                <AvInput
-                  label="Full name"
-                  name="fullName"
-                  placeholder="Your name"
-                  x-model="$store.resumeBuilder.editor.project.fullName"
-                  x-on:input="$store.resumeBuilder.updateField('profile', 'fullName', $event.target.value)"
-                />
-                <AvInput
-                  label="Headline"
-                  name="headline"
-                  placeholder="Role or focus"
-                  x-model="$store.resumeBuilder.editor.project.targetRole"
-                  x-on:input="$store.resumeBuilder.updateField('profile', 'targetRole', $event.target.value)"
-                />
-                <AvTextarea
-                  label="Summary"
-                  name="summary"
-                  rows={4}
-                  placeholder="Brief overview"
-                  x-model="$store.resumeBuilder.editor.project.summary"
-                  x-on:input="$store.resumeBuilder.updateField('profile', 'summary', $event.target.value)"
-                />
-                <div class="av-form-grid">
-                  <AvInput
-                    label="Email"
-                    name="email"
-                    placeholder="you@example.com"
-                    x-model="$store.resumeBuilder.editor.project.email"
-                    x-on:input="$store.resumeBuilder.updateField('profile', 'email', $event.target.value)"
-                  />
-                  <AvInput
-                    label="Phone"
-                    name="phone"
-                    placeholder="+971-50-000-0000"
-                    x-model="$store.resumeBuilder.editor.project.phone"
-                    x-on:input="$store.resumeBuilder.updateField('profile', 'phone', $event.target.value)"
-                  />
-                </div>
-                <AvInput
-                  label="Location"
-                  name="location"
-                  placeholder="Abu Dhabi, UAE"
-                  x-model="$store.resumeBuilder.editor.project.location"
-                  x-on:input="$store.resumeBuilder.updateField('profile', 'location', $event.target.value)"
-                />
-              </div>
-            </template>
-
-            <template x-if="$store.resumeBuilder.activeSectionId === 'experience'">
-              <div class="av-form-stack">
-                <AvInput label="Latest role" name="role" placeholder="Job title" />
-                <AvInput label="Company" name="company" placeholder="Where did you work?" />
-                <div class="av-form-grid">
-                  <AvInput label="Start" name="start" placeholder="2022" />
-                  <AvInput label="End" name="end" placeholder="Present" />
-                </div>
-                <AvTextarea label="Highlights" name="bullets" rows={4} placeholder="Key achievements" />
-              </div>
-            </template>
-
-            <template x-if="$store.resumeBuilder.activeSectionId === 'education'">
-              <div class="av-form-stack">
-                <AvInput label="Degree" name="degree" placeholder="B.E. Computer Science" />
-                <AvInput label="Institution" name="institution" placeholder="University name" />
-                <AvInput label="Years" name="years" placeholder="2016 – 2020" />
-              </div>
-            </template>
-
-            <template x-if="$store.resumeBuilder.activeSectionId === 'skills'">
-              <div class="av-form-stack">
-                <AvTextarea
-                  label="Skills"
-                  name="skills"
-                  rows={3}
-                  placeholder="Comma-separated skills"
-                />
-                <AvSelect label="Proficiency" name="proficiency">
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </AvSelect>
-              </div>
-            </template>
-
-            <template x-if="!['profile','experience','education','skills'].includes($store.resumeBuilder.activeSectionId)">
-              <div class="av-form-stack">
-                <AvInput label="Custom section title" name="customTitle" placeholder="Section title" />
-                <AvTextarea label="Content" name="customContent" rows={5} placeholder="Freeform content" />
-              </div>
-            </template>
-
-            <div class="av-panel-footer">
-              <div class="av-save-status">
-                <span class="av-save-indicator" x-text="$store.resumeBuilder.editor.isSaving ? 'Saving…' : 'Idle'"></span>
-                <span x-show="$store.resumeBuilder.editor.isDirty" class="av-pill">Unsaved changes</span>
-              </div>
-              <div class="av-panel-actions">
-                <AvButton variant="ghost" x-on:click.prevent="$store.resumeBuilder.refreshPreview()">Refresh preview</AvButton>
-                <AvButton variant="primary" x-on:click.prevent="$store.resumeBuilder.saveEditor()">Save changes</AvButton>
-              </div>
-            </div>
-          </AvCard>
-        </div>
-
-        <AvCard className="av-editor-panel av-preview-panel">
-          <div class="av-panel-header">
-            <div>
-              <p class="av-panel-label">Preview</p>
-              <h2 class="av-panel-title">Resume preview</h2>
-            </div>
+          <div class="av-panel-actions">
+            <AvButton size="sm" variant="ghost" x-on:click.prevent="$store.resumeBuilder.refreshPreview()">Refresh</AvButton>
             <AvButton size="sm" variant="ghost">Export PDF</AvButton>
           </div>
+        </div>
 
-          <div class="av-preview">
-            <h3 class="av-preview__title" x-text="$store.resumeBuilder.editor.project.title"></h3>
-            <p class="av-preview__subtitle" x-text="$store.resumeBuilder.editor.project.targetRole"></p>
-            <div class="av-preview__meta">
-              <span x-text="$store.resumeBuilder.editor.project.location"></span>
-            </div>
-            <div class="av-preview__summary" x-html="$store.resumeBuilder.editor.previewHtml || 'Preview will appear after saving.'"></div>
-            <div class="av-preview__sections">
-              <template x-for="section in $store.resumeBuilder.editor.sections" :key="section.id">
-                <div class="av-preview__section">
-                  <p class="av-preview__section-title" x-text="section.label"></p>
-                  <p class="av-preview__section-type" x-text="section.type"></p>
-                </div>
-              </template>
-            </div>
+        <div class="av-preview">
+          <h3 class="av-preview__title" x-text="$store.resumeBuilder.editor.project.title"></h3>
+          <p class="av-preview__subtitle" x-text="$store.resumeBuilder.editor.project.targetRole"></p>
+          <div class="av-preview__meta">
+            <span x-text="$store.resumeBuilder.editor.project.location"></span>
           </div>
-        </AvCard>
-      </div>
+          <div class="av-preview__summary" x-html="$store.resumeBuilder.editor.previewHtml || 'Preview will appear after saving.'"></div>
+          <div class="av-preview__sections">
+            <template x-for="section in $store.resumeBuilder.editor.sections" :key="section.id">
+              <div class="av-preview__section">
+                <p class="av-preview__section-title" x-text="section.label"></p>
+                <p class="av-preview__section-type" x-text="section.type"></p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </AvCard>
     </AvContainer>
+
+    <template x-if="drawerOpen">
+      <div x-on:close-drawer="drawerOpen = false">
+        <AvDrawer
+          title="Edit resume"
+          description="Update your details and save to refresh the preview."
+        >
+          <div class="av-form-stack">
+            <AvInput
+              name="resumeTitle"
+              label="Resume title"
+              placeholder="e.g. Senior Frontend Developer"
+              x-model="$store.resumeBuilder.editor.project.title"
+              x-on:input="$store.resumeBuilder.editor.isDirty = true"
+            />
+            <AvInput
+              label="Full name"
+              name="fullName"
+              placeholder="Your name"
+              x-model="$store.resumeBuilder.editor.project.fullName"
+              x-on:input="$store.resumeBuilder.updateField('profile', 'fullName', $event.target.value)"
+            />
+            <AvInput
+              label="Headline"
+              name="headline"
+              placeholder="Role or focus"
+              x-model="$store.resumeBuilder.editor.project.targetRole"
+              x-on:input="$store.resumeBuilder.updateField('profile', 'targetRole', $event.target.value)"
+            />
+            <AvTextarea
+              label="Summary"
+              name="summary"
+              rows={4}
+              placeholder="Brief overview"
+              x-model="$store.resumeBuilder.editor.project.summary"
+              x-on:input="$store.resumeBuilder.updateField('profile', 'summary', $event.target.value)"
+            />
+            <AvInput
+              label="Email"
+              name="email"
+              placeholder="you@example.com"
+              x-model="$store.resumeBuilder.editor.project.email"
+              x-on:input="$store.resumeBuilder.updateField('profile', 'email', $event.target.value)"
+            />
+            <AvInput
+              label="Phone"
+              name="phone"
+              placeholder="+971-50-000-0000"
+              x-model="$store.resumeBuilder.editor.project.phone"
+              x-on:input="$store.resumeBuilder.updateField('profile', 'phone', $event.target.value)"
+            />
+            <AvInput
+              label="Location"
+              name="location"
+              placeholder="Abu Dhabi, UAE"
+              x-model="$store.resumeBuilder.editor.project.location"
+              x-on:input="$store.resumeBuilder.updateField('profile', 'location', $event.target.value)"
+            />
+          </div>
+
+          <div slot="footer" class="av-panel-actions">
+            <AvButton variant="ghost" x-on:click="drawerOpen = false">Cancel</AvButton>
+            <AvButton
+              variant="primary"
+              x-on:click.prevent="$store.resumeBuilder.saveEditor(); drawerOpen = false;"
+            >
+              Save changes
+            </AvButton>
+          </div>
+        </AvDrawer>
+      </div>
+    </template>
   </section>
 
   <style>
@@ -256,21 +171,35 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
 
     .av-editor-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
       flex-wrap: wrap;
     }
 
     .av-editor-header__title {
-      flex: 1 1 320px;
+      flex: 1 1 420px;
       min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
     .av-editor-breadcrumb {
       color: var(--av-fg-muted, #94a3b8);
       margin-bottom: 0.35rem;
+    }
+
+    .av-page-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .av-page-subtitle {
+      color: var(--av-fg-muted, #94a3b8);
+      max-width: 640px;
+      line-height: 1.45;
     }
 
     .av-editor-header__actions {
@@ -284,12 +213,6 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
     .av-save-indicator {
       font-size: 0.9rem;
       color: var(--av-fg-muted, #94a3b8);
-    }
-
-    .av-editor-grid {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
 
     .av-editor-panel {
@@ -307,7 +230,7 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 1rem;
     }
 
     .av-panel-label {
@@ -322,84 +245,10 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
       font-weight: 600;
     }
 
-    .av-section-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .av-section-list__item {
-      padding: 0.75rem;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      border-radius: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      cursor: pointer;
-    }
-
-    .av-section-list__item.is-active {
-      border-color: #22d3ee;
-      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
-    }
-
-    .av-section-list__main {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .av-section-list__label {
-      font-weight: 600;
-    }
-
-    .av-section-list__type {
-      font-size: 0.85rem;
-      color: var(--av-fg-muted, #94a3b8);
-    }
-
-    .av-section-list__controls {
-      display: flex;
-      gap: 0.25rem;
-    }
-
-    .av-section-list__controls button {
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(255, 255, 255, 0.02);
-      color: inherit;
-      padding: 0.3rem 0.45rem;
-      border-radius: 0.5rem;
-    }
-
-    .av-editor-main {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
     .av-form-stack {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-    }
-
-    .av-form-grid {
-      display: grid;
-      gap: 0.75rem;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    }
-
-    .av-panel-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1rem;
     }
 
     .av-panel-actions {

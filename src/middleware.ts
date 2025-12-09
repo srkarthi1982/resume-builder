@@ -31,8 +31,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       locals.user = {
         id: payload.userId,
         email: payload.email,
-        // We don't have name in the token, so leave undefined
-        name: undefined,
+        name: payload.name,
       };
 
       locals.sessionToken = token;

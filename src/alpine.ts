@@ -252,27 +252,37 @@ function createResumeBuilderStore() {
       } as any;
 
       try {
-        // Sync the profile first so the resume references the latest info
-        const profilePayload = {
-          fullName: this.editor.project.fullName || "",
-          headline: this.editor.project.targetRole || "",
-          email: this.editor.project.email || undefined,
-          phone: this.editor.project.phone || undefined,
-          location: this.editor.project.location || undefined,
-          summary: this.editor.project.summary || undefined,
-        } as any;
+        // Build profile payload only with entered fields to avoid validation errors
+        const profilePayload: Record<string, any> = {};
+        const fullName = (this.editor.project.fullName || "").trim();
+        const headline = (this.editor.project.targetRole || "").trim();
+        const email = (this.editor.project.email || "").trim();
+        const phone = (this.editor.project.phone || "").trim();
+        const location = (this.editor.project.location || "").trim();
+        const summary = (this.editor.project.summary || "").trim();
 
-        if (this.editor.profileId) {
+        if (fullName) profilePayload.fullName = fullName;
+        if (headline) profilePayload.headline = headline;
+        if (email) profilePayload.email = email;
+        if (phone) profilePayload.phone = phone;
+        if (location) profilePayload.location = location;
+        if (summary) profilePayload.summary = summary;
+
+        const hasProfileFields = Object.keys(profilePayload).length > 0;
+
+        if (this.editor.profileId && hasProfileFields) {
           const profileResult = await callAction("updateProfile", {
             id: this.editor.profileId,
             ...profilePayload,
           });
           payload.profileId = profileResult?.profile?.id;
           this.editor.profileId = profileResult?.profile?.id ?? this.editor.profileId;
-        } else {
+        } else if (!this.editor.profileId && profilePayload.fullName) {
           const profileResult = await callAction("createProfile", profilePayload);
           payload.profileId = profileResult?.profile?.id;
           this.editor.profileId = profileResult?.profile?.id ?? null;
+        } else if (this.editor.profileId) {
+          payload.profileId = this.editor.profileId;
         }
 
         if (this.editor.project.id === "new") {

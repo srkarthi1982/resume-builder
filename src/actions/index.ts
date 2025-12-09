@@ -16,6 +16,15 @@ function requireUser(context: ActionAPIContext) {
   const user = locals?.user;
 
   if (!user) {
+    // Allow local development to proceed without a signed-in user
+    if (import.meta.env.DEV) {
+      return {
+        id: "dev-user",
+        email: "dev@example.com",
+        name: "Local Dev User",
+      };
+    }
+
     throw new ActionError({
       code: "UNAUTHORIZED",
       message: "You must be signed in to perform this action.",
@@ -452,7 +461,7 @@ export const server = {
       })
       .optional(),
     handler: async (input, context) => {
-      const user = requireUser(context);
+      const user = (context.locals as App.Locals | undefined)?.user ?? null;
       const includeInactive = input?.includeInactive ?? false;
 
       const templates = await db.select().from(ResumeTemplates);
@@ -461,8 +470,8 @@ export const server = {
         const matchesOwner =
           template.ownerId === null ||
           typeof template.ownerId === "undefined" ||
-          template.ownerId === user.id;
-        const matchesActive = includeInactive ? true : template.isActive;
+          (user && template.ownerId === user.id);
+        const matchesActive = includeInactive && user ? true : template.isActive;
         return matchesOwner && matchesActive;
       });
 
