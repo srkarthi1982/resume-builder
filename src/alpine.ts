@@ -9,6 +9,20 @@ const defaultSections = [
 
 const defaultTemplates: any[] = [];
 
+const emptyProject = {
+  id: null,
+  title: "",
+  targetRole: "",
+  targetCompany: "",
+  location: "",
+  fullName: "",
+  summary: "",
+  email: "",
+  phone: "",
+  templateId: "",
+  templateName: "",
+};
+
 async function callAction(actionName: string, payload: Record<string, unknown> = {}) {
   const response = await fetch(`/actions/${actionName}`, {
     method: "POST",
@@ -47,8 +61,8 @@ function createResumeBuilderStore() {
     activeSectionId: null as string | null,
 
     editor: {
-      project: null as any,
-      sections: [] as any[],
+      project: { ...emptyProject },
+      sections: [...defaultSections],
       previewHtml: "",
       isDirty: false,
       isSaving: false,
@@ -99,6 +113,7 @@ function createResumeBuilderStore() {
 
         this.activeResumeId = `${resume.id}`;
         this.editor.project = {
+          ...emptyProject,
           id: resume.id,
           title: resume.title ?? "Untitled resume",
           targetRole: resume.targetRole ?? profile.headline ?? "",
@@ -108,7 +123,8 @@ function createResumeBuilderStore() {
           summary: profile.summary ?? "",
           email: profile.email ?? "",
           phone: profile.phone ?? "",
-          templateId: resume.templateKey ?? "",
+          templateId:
+            resume.templateKey ?? this.templates.find((t) => t.isDefault)?.templateKey ?? "",
           templateName:
             this.templates.find((t) => t.templateKey === resume.templateKey)?.name ??
             this.templates.find((t) => t.isDefault)?.name ??
@@ -144,14 +160,9 @@ function createResumeBuilderStore() {
           : this.templates.find((template) => template.isDefault) ?? this.templates[0];
 
         this.editor.project = {
+          ...emptyProject,
           id: "new",
           title: "Untitled resume",
-          targetRole: "",
-        location: "",
-          fullName: "",
-          summary: "",
-          email: "",
-          phone: "",
           templateId: selectedTemplate?.templateKey ?? "",
           templateName: selectedTemplate?.name ?? "",
         };
