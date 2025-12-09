@@ -20,10 +20,8 @@ const { id } = Astro.params;
     data-resume-id={id}
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
-
-    <AvBreadcrumb items={[{ label: "Resumes", href: "/resumes" }, { label: `Resume ${id}` }]} />
-
     <AvContainer>
+      <AvBreadcrumb items={[{ label: "Resumes", href: "/resumes" }, { label: `Resume ${id}` }]} />
       <header class="av-editor-header">
         <div class="av-editor-header__title">
           <p class="av-editor-breadcrumb">Resumes / Edit</p>
@@ -242,6 +240,10 @@ const { id } = Astro.params;
       background: linear-gradient(90deg, #22d3ee, #6366f1);
       animation: shimmer 1.6s linear infinite;
       margin-bottom: 1rem;
+    }
+
+    .av-breadcrumb__list {
+      justify-content: flex-start;
     }
 
     @keyframes shimmer {

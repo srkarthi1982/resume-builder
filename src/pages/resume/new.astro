@@ -21,13 +21,15 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
     data-template-id={templateId}
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
-
-    <AvBreadcrumb items={[{ label: "Resumes", href: "/resumes" }, { label: "New" }]} />
-
     <AvContainer>
+      <AvBreadcrumb
+          items={[
+            { label: "Resumes", href: "/resumes" },
+            { label: "New" },
+          ]}
+        />
       <header class="av-editor-header">
         <div class="av-editor-header__title">
-          <p class="av-editor-breadcrumb">Resumes / New</p>
           <h1 class="av-page-title">Resume preview</h1>
           <p class="av-page-subtitle">Update your details in the drawer and save to refresh this preview.</p>
         </div>
@@ -158,6 +160,10 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
       background: linear-gradient(90deg, #22d3ee, #6366f1);
       animation: shimmer 1.6s linear infinite;
       margin-bottom: 1rem;
+    }
+
+    .av-breadcrumb__list {
+      justify-content: flex-start;
     }
 
     @keyframes shimmer {
