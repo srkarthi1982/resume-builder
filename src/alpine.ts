@@ -23,8 +23,10 @@ const emptyProject = {
   templateName: "",
 };
 
+const ACTIONS_BASE_PATH = "/_actions";
+
 async function callAction(actionName: string, payload: Record<string, unknown> = {}) {
-  const response = await fetch(`/actions/${actionName}`, {
+  const response = await fetch(`${ACTIONS_BASE_PATH}/${actionName}`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
