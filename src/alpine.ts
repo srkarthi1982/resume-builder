@@ -1,3 +1,5 @@
+import type { Alpine } from "alpinejs";
+
 const defaultSections = [
   { id: "profile", type: "profile", label: "Profile", isRequired: true },
   { id: "experience", type: "experience", label: "Experience", isRequired: true },
@@ -430,7 +432,7 @@ function createResumeAdminStore() {
   };
 }
 
-export default function initAlpine(Alpine: any) {
+export default function initAlpine(Alpine: Alpine) {
   Alpine.store("resumeBuilder", createResumeBuilderStore());
   Alpine.store("resumeAdmin", createResumeAdminStore());
 }
