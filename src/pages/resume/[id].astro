@@ -19,7 +19,7 @@ const { id } = Astro.params;
         $store.resumeBuilder.isLoading = false;
       })();
     "
-    x-bind:data-resume-id={id}
+    data-resume-id={id}
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
 

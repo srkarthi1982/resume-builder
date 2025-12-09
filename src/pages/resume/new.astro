@@ -18,7 +18,7 @@ const templateId = Astro.url.searchParams.get("template") ?? "";
         $store.resumeBuilder.isLoading = false;
       })();
     "
-    x-bind:data-template-id={templateId}
+    data-template-id={templateId}
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
 
