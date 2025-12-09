@@ -18,6 +18,6 @@ export default defineConfig({
     // @ts-ignore
     plugins: [tailwindcss()]
   },
-integrations: [alpinejs({ entrypoint: '/src/alpine' }), db()],
+integrations: [alpinejs({ entrypoint: '/src/alpine.ts' }), db()],
   //integrations: [alpinejs(), db()]
 });
