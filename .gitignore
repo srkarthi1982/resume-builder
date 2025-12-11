@@ -24,3 +24,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vercel
+
+# Playwright artifacts
+playwright-report/
+test-results/

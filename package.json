@@ -9,6 +9,10 @@
     "preview": "astro preview",
     "astro": "astro"
   },
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "wait-on": "^7.2.0"
+  },
   "dependencies": {
     "@ansiversa/components": "^0.0.18",
     "@astrojs/alpinejs": "^0.4.9",
