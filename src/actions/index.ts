@@ -366,7 +366,6 @@ export const server = {
               )
               .limit(1)
           : [null];
-
       return { resume, profile: profile ?? null };
     },
   }),
@@ -396,7 +395,6 @@ export const server = {
         .from(Resumes)
         .where(whereClause)
         .orderBy(desc(Resumes.updatedAt));
-
       return { resumes };
     },
   }),
