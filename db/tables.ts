@@ -130,7 +130,7 @@ export const ResumeJobs = defineTable({
 
     status: column.text({
       enum: ["pending", "completed", "failed"],
-      default: "completed",
+      default: "pending",
     }),
 
     createdAt: column.date({ default: NOW }),

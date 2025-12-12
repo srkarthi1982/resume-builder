@@ -5,6 +5,10 @@ import {
   db,
   eq,
   and,
+  or,
+  isNull,
+  asc,
+  desc,
   ResumeProfiles,
   Resumes,
   ResumeTemplates,
@@ -128,9 +132,44 @@ export const server = {
       const profiles = await db
         .select()
         .from(ResumeProfiles)
-        .where(eq(ResumeProfiles.ownerId, user.id));
+        .where(eq(ResumeProfiles.ownerId, user.id))
+        .orderBy(desc(ResumeProfiles.updatedAt));
 
       return { profiles };
+    },
+  }),
+
+  deleteProfile: defineAction({
+    input: z.object({
+      id: z.number().int(),
+    }),
+    handler: async (input, context) => {
+      const user = requireUser(context);
+
+      const [existing] = await db
+        .select()
+        .from(ResumeProfiles)
+        .where(and(eq(ResumeProfiles.id, input.id), eq(ResumeProfiles.ownerId, user.id)))
+        .limit(1);
+
+      if (!existing) {
+        throw new ActionError({
+          code: "NOT_FOUND",
+          message: "Profile not found.",
+        });
+      }
+
+      await db
+        .update(Resumes)
+        .set({ profileId: null, updatedAt: new Date() })
+        .where(and(eq(Resumes.profileId, input.id), eq(Resumes.ownerId, user.id)));
+
+      const [profile] = await db
+        .delete(ResumeProfiles)
+        .where(and(eq(ResumeProfiles.id, input.id), eq(ResumeProfiles.ownerId, user.id)))
+        .returning();
+
+      return { profile };
     },
   }),
 
@@ -352,9 +391,90 @@ export const server = {
 
       const whereClause = filters.length === 1 ? filters[0] : and(...filters);
 
-      const resumes = await db.select().from(Resumes).where(whereClause);
+      const resumes = await db
+        .select()
+        .from(Resumes)
+        .where(whereClause)
+        .orderBy(desc(Resumes.updatedAt));
 
       return { resumes };
+    },
+  }),
+
+  duplicateResume: defineAction({
+    input: z.object({
+      id: z.number().int(),
+    }),
+    handler: async (input, context) => {
+      const user = requireUser(context);
+
+      const [existing] = await db
+        .select()
+        .from(Resumes)
+        .where(and(eq(Resumes.id, input.id), eq(Resumes.ownerId, user.id)))
+        .limit(1);
+
+      if (!existing) {
+        throw new ActionError({
+          code: "NOT_FOUND",
+          message: "Resume not found.",
+        });
+      }
+
+      const timestamp = new Date();
+      const [resume] = await db
+        .insert(Resumes)
+        .values({
+          ownerId: user.id,
+          profileId: existing.profileId,
+          title: `${existing.title} (Copy)`,
+          targetRole: existing.targetRole,
+          targetCompany: existing.targetCompany,
+          templateKey: existing.templateKey,
+          content: existing.content,
+          isPrimary: false,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        })
+        .returning();
+
+      return { resume };
+    },
+  }),
+
+  setPrimaryResume: defineAction({
+    input: z.object({
+      id: z.number().int(),
+    }),
+    handler: async (input, context) => {
+      const user = requireUser(context);
+
+      const [existing] = await db
+        .select()
+        .from(Resumes)
+        .where(and(eq(Resumes.id, input.id), eq(Resumes.ownerId, user.id)))
+        .limit(1);
+
+      if (!existing) {
+        throw new ActionError({
+          code: "NOT_FOUND",
+          message: "Resume not found.",
+        });
+      }
+
+      const timestamp = new Date();
+      await db
+        .update(Resumes)
+        .set({ isPrimary: false, updatedAt: timestamp })
+        .where(eq(Resumes.ownerId, user.id));
+
+      const [resume] = await db
+        .update(Resumes)
+        .set({ isPrimary: true, updatedAt: timestamp })
+        .where(and(eq(Resumes.id, input.id), eq(Resumes.ownerId, user.id)))
+        .returning();
+
+      return { resume };
     },
   }),
 
@@ -464,18 +584,57 @@ export const server = {
       const user = (context.locals as App.Locals | undefined)?.user ?? null;
       const includeInactive = input?.includeInactive ?? false;
 
-      const templates = await db.select().from(ResumeTemplates);
+      let whereClause;
+      if (!user) {
+        whereClause = and(isNull(ResumeTemplates.ownerId), eq(ResumeTemplates.isActive, true));
+      } else {
+        const activeFilter = includeInactive ? undefined : eq(ResumeTemplates.isActive, true);
+        whereClause = activeFilter
+          ? and(or(isNull(ResumeTemplates.ownerId), eq(ResumeTemplates.ownerId, user.id)), activeFilter)
+          : or(isNull(ResumeTemplates.ownerId), eq(ResumeTemplates.ownerId, user.id));
+      }
 
-      const filtered = templates.filter((template) => {
-        const matchesOwner =
-          template.ownerId === null ||
-          typeof template.ownerId === "undefined" ||
-          (user && template.ownerId === user.id);
-        const matchesActive = includeInactive && user ? true : template.isActive;
-        return matchesOwner && matchesActive;
-      });
+      const templates = await db
+        .select()
+        .from(ResumeTemplates)
+        .where(whereClause)
+        .orderBy(desc(ResumeTemplates.isDefault), asc(ResumeTemplates.ownerId), asc(ResumeTemplates.name));
 
-      return { templates: filtered };
+      return { templates };
+    },
+  }),
+
+  deleteTemplate: defineAction({
+    input: z.object({
+      id: z.number().int(),
+    }),
+    handler: async (input, context) => {
+      const user = requireUser(context);
+
+      const [existing] = await db
+        .select()
+        .from(ResumeTemplates)
+        .where(and(eq(ResumeTemplates.id, input.id), eq(ResumeTemplates.ownerId, user.id)))
+        .limit(1);
+
+      if (!existing) {
+        throw new ActionError({
+          code: "NOT_FOUND",
+          message: "Template not found or you do not have access.",
+        });
+      }
+
+      const [template] = await db
+        .update(ResumeTemplates)
+        .set({
+          isActive: false,
+          isDefault: false,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(ResumeTemplates.id, input.id), eq(ResumeTemplates.ownerId, user.id)))
+        .returning();
+
+      return { template };
     },
   }),
 
@@ -491,7 +650,6 @@ export const server = {
         "other",
       ]),
       input: z.any().optional(),
-      status: z.enum(["pending", "completed", "failed"]).optional(),
     }),
     handler: async (input, context) => {
       const user = requireUser(context);
@@ -518,7 +676,7 @@ export const server = {
           userId: user.id,
           jobType: input.jobType,
           input: input.input,
-          status: input.status ?? "pending",
+          status: "pending",
           createdAt: new Date(),
         })
         .returning();
