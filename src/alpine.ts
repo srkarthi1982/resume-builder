@@ -74,7 +74,6 @@ class ResumeBuilderStore extends AvBaseStore {
     try {
       const { data, error } = await actions.listMyResumes({});
       if (error) throw new Error(error.message);
-      console.log('data', data)
       this.resumes = (data?.resumes ?? []).map((resume: any) => ({
         ...resume,
         updatedLabel: formatDate(resume.updatedAt),

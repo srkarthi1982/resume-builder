@@ -12,17 +12,18 @@ import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansi
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
 
-    <AvPageHeader
-      title="Your resumes"
-      description="Pick up where you left off, duplicate previous versions, or start a new draft."
-      primaryAction={{
-        label: "New resume",
-        href: "/resume/new",
-        variant: "primary",
-      }}
-    />
-
+    
+    
     <AvContainer>
+      <AvPageHeader
+          title="Your resumes"
+          description="Pick up where you left off, duplicate previous versions, or start a new draft."
+          primaryAction={{
+            label: "New resume",
+            href: "/resume/new",
+            variant: "primary",
+          }}
+        />
       <div
         x-show="!$store.resumeBuilder.isLoading && $store.resumeBuilder.error"
         class="av-alert av-alert--danger"
@@ -33,7 +34,7 @@ import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansi
       <template
         x-if="!$store.resumeBuilder.isLoading && !$store.resumeBuilder.error && $store.resumeBuilder.resumes.length === 0"
       >
-        <div class="av-card-grid">
+        <div class="av-stack">
           <AvEmptyState title="No resumes yet" description="Create your first resume in minutes.">
             <AvButton slot="actions" href="/resume/new">Create resume</AvButton>
           </AvEmptyState>
@@ -41,8 +42,7 @@ import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansi
       </template>
 
       <!-- Cards -->
-      <div
-        class="av-card-grid"
+      <div class="av-stack"
         x-show="!$store.resumeBuilder.isLoading && $store.resumeBuilder.resumes.length > 0"
       >
         <template x-for="resume in $store.resumeBuilder.resumes" :key="resume.id">
@@ -79,7 +79,7 @@ import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansi
             </div>
 
             <div class="av-resume-card__actions">
-              <AvButton size="sm" x-bind:href="`/resume/${resume.id}`">Edit</AvButton>
+              <a class="av-btn-primary av-btn-sm" x-bind:href="`/resume/${resume.id}`">Edit</a>
 
               <AvButton size="sm" variant="ghost" x-on:click.prevent="$store.resumeBuilder.duplicateResume(resume.id)">
                 Duplicate
@@ -95,7 +95,9 @@ import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansi
                 </AvButton>
               </template>
 
-              <AvButton size="sm" variant="ghost" disabled title="Coming soon">Download PDF</AvButton>
+              <AvButton size="sm" variant="ghost" disabled title="Coming soon">
+                Download PDF
+              </AvButton>
 
               <AvButton
                 size="sm"

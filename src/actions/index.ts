@@ -317,22 +317,36 @@ export const server = {
     handler: async (input, context) => {
       const user = requireUser(context);
 
-      const [deleted] = await db
-        .delete(Resumes)
+      // 1) Ensure the resume exists and belongs to the user (also gives us the row to return)
+      const [resume] = await db
+        .select()
+        .from(Resumes)
         .where(and(eq(Resumes.id, input.id), eq(Resumes.ownerId, user.id)))
-        .returning();
+        .limit(1);
 
-      if (!deleted) {
+      if (!resume) {
         throw new ActionError({
           code: "NOT_FOUND",
           message: "Resume not found.",
         });
       }
 
-      return { resume: deleted };
+      // 2) Delete dependent rows first (prevents FOREIGN KEY constraint failure)
+      await db.delete(ResumeJobs).where(eq(ResumeJobs.resumeId, input.id));
+
+      // If you have more child tables later, delete them here too, e.g.:
+      // await db.delete(ResumeSections).where(eq(ResumeSections.resumeId, input.id));
+      // await db.delete(ResumeItems).where(eq(ResumeItems.resumeId, input.id));
+
+      // 3) Delete the resume itself
+      const [deleted] = await db
+        .delete(Resumes)
+        .where(and(eq(Resumes.id, input.id), eq(Resumes.ownerId, user.id)))
+        .returning();
+
+      return { resume: deleted ?? resume };
     },
   }),
-
   getResume: defineAction({
     input: z.object({
       id: z.number().int(),
