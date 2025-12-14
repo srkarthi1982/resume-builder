@@ -1,6 +1,6 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansiversa/components";
+import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState, AvBreadcrumb } from "@ansiversa/components";
 ---
 
 <AppShell title="Resumes" description="Manage all of your Ansiversa resumes in one place.">
@@ -11,10 +11,11 @@ import { AvButton, AvCard, AvContainer, AvPageHeader, AvEmptyState } from "@ansi
     x-cloak
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
-
-    
-    
     <AvContainer>
+      <AvBreadcrumb items={[
+        { label: "Apps", href: "https://ansiversa.com/apps" }, 
+        { label: "Resumes", href: "/resumes" }
+      ]} />
       <AvPageHeader
           title="Your resumes"
           description="Pick up where you left off, duplicate previous versions, or start a new draft."

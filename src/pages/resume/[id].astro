@@ -26,7 +26,11 @@ const { id } = Astro.params;
   >
     <div x-show="$store.resumeBuilder.isLoading" class="av-loading-bar"></div>
     <AvContainer>
-      <AvBreadcrumb items={[{ label: "Resumes", href: "/resumes" }, { label: `Resume ${id}` }]} />
+      <AvBreadcrumb items={[
+        { label: "Apps", href: "https://ansiversa.com/apps" }, 
+        { label: "Resumes", href: "/resumes" }, 
+        { label: `Resume ${id}` }
+      ]} />
       <header class="av-editor-header">
         <div class="av-editor-header__title">
           <p class="av-editor-breadcrumb">Resumes / Edit</p>
