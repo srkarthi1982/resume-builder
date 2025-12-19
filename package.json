@@ -14,7 +14,7 @@
     "wait-on": "^7.2.0"
   },
   "dependencies": {
-    "@ansiversa/components": "^0.0.26",
+    "@ansiversa/components": "^0.0.37",
     "@astrojs/alpinejs": "^0.4.9",
     "@astrojs/db": "^0.18.3",
     "@astrojs/vercel": "^9.0.2",
