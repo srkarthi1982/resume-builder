@@ -44,6 +44,8 @@ Defined in `db/tables.ts`:
 
 - Templates are provided by `@ansiversa/components` via `ResumeBuilderShell`.
 - Preview route: `/dev/resume-preview` (`src/pages/dev/resume-preview.astro`).
+- Auth guard redirect lives in `src/middleware.ts` (login redirect when unauthenticated).
+- `/dev/*` routes are intended for development/QA only and are not meant for production access.
 
 To add a 5th template later:
 
@@ -55,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-20 Clarified dev auth bypass and dev-only routes in AGENTS.
 - 2026-01-20 Restored resume templates preview page and upgraded @ansiversa/components to 0.0.106.
 - 2026-01-20 Updated identifiers from app-starter to resume-builder.
 - 2026-01-20 Reset resume-builder to a fresh copy of app-starter after backup.
