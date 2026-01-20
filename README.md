@@ -1,127 +1,121 @@
-# Ansiversa Mini-App Starter
+# Ansiversa Resume Builder
 
-This repository is the official starter template for all **Ansiversa Mini-Apps**.  
-Every app in the Ansiversa ecosystem begins with this structure—clean, fast, and consistent.
+This repo is the Resume Builder mini-app, currently aligned to the Ansiversa app-starter baseline.
+It contains the standard middleware auth guard, shared AppShell/AppAdminShell layouts, unread
+notifications badge wiring, and a small Example Items module that demonstrates end-to-end CRUD.
 
-If you are a developer or contributor, you can use this template to build any app in the ecosystem.
+## Freeze status
 
----
+Baseline Freeze Jan-17-2026 (locked baseline).
 
-## 🚀 Features
+## Quick start
 
-- **Astro 5** — blazing-fast frontend framework  
-- **Tailwind CSS** — utility-first styling  
-- **@ansiversa/components** — shared UI library for unified design  
-- **Global Styles** — imported automatically from the components package  
-- **Clean File Structure** — easy to extend for any type of app  
-- **Ready for Deployment** — optimized for Vercel out of the box  
-
----
-
-## 📁 Project Structure
+1) Install dependencies
 
 ```
-app/
- ├── public/
- ├── src/
- │   ├── layouts/
- │   │   └── AppShell.astro
- │   └── pages/
- │       ├── index.astro
- │       └── login.astro
- ├── astro.config.mjs
- ├── package.json
- ├── tsconfig.json
- ├── postcss.config.cjs
- └── tailwind.config.cjs
+npm ci
 ```
 
----
+2) Configure env vars (see `src/env.d.ts` for the full list)
 
-## 🧩 Using Ansiversa Components
+- `ANSIVERSA_AUTH_SECRET`
+- `ANSIVERSA_SESSION_SECRET`
+- `ANSIVERSA_COOKIE_DOMAIN`
+- `PUBLIC_ROOT_APP_URL` (optional)
+- `PARENT_APP_URL` (optional)
 
-All apps share the same UI look and feel using:
+Note: `ANSIVERSA_AUTH_SECRET` is reserved for future auth workflows (not used in this app yet).
 
-```ts
-import "@ansiversa/components/styles/global.css";
-import { WebLayout, AuthLayout } from "@ansiversa/components";
+3) Run the app
+
 ```
-
-This ensures:
-
-- Perfect consistency across **100+ apps**
-- Unified branding  
-- Fully reusable layouts and UI blocks  
-
----
-
-## ▶️ Running Locally
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-Build for production:
+## How this app works (mental model)
 
-```bash
-npm run build
+Ansiversa apps run in two layers:
+
+- **Parent app** (ansiversa.com)
+  - Owns authentication, users, billing, notifications
+  - Issues a shared session cookie
+- **Mini-apps** (quiz.ansiversa.com, etc.)
+  - Trust the shared session cookie
+  - Never implement their own auth
+  - Use shared layouts and middleware
+
+This app follows that environment so you can build Resume Builder without needing
+the parent app locally.
+
+## Local dev without parent app
+
+If you do not have the parent app session cookie, you can enable a DEV-only auth bypass
+to inject a dummy session during local development:
+
+```
+DEV_BYPASS_AUTH=true npm run dev
 ```
 
-Run the type and integration checks used in CI:
+Optional overrides (defaults shown):
 
-```bash
-npm run build
+```
+DEV_BYPASS_USER_ID=dev-user
+DEV_BYPASS_EMAIL=dev@local
+DEV_BYPASS_ROLE_ID=1
 ```
 
-Preview production build:
+⚠️ This bypass only works in local development (import.meta.env.DEV) and is ignored in
+production builds.
 
-```bash
-npm run preview
-```
+After starting the dev server, open a protected route like `/items` or `/admin/items`
+to confirm the dummy session is active.
+
+## First run checklist
+
+You should be able to:
+
+- Start the app with `npm run dev`
+- Open `/items` and see the Example Items list
+- Open `/admin/items` and access admin CRUD (roleId = 1)
+- See no redirects to the parent login when DEV_BYPASS_AUTH is enabled
+
+If this works, your setup is correct.
+
+## Commands
+
+- `npm run dev`
+- `npm run dev:remote`
+- `npm run typecheck` (Astro check)
+- `npm run build`
+- `npm run build:remote`
+- `npm run db:push:local`
+
+## Example module (baseline)
+
+Example Items live under `src/modules/example-items/` with routes at:
+
+- `/items`
+- `/items/[id]`
+- `/admin/items`
+
+Delete `src/modules/example-items/` and these routes when starting real app work.
+
+## Evolving this mini-app
+
+1) Remove the Example Items module and routes.
+2) Add your domain tables/actions/pages.
+3) Keep shared shells + middleware patterns unchanged.
+
+### Non-negotiable standards
+
+These files define the Ansiversa contract. Do not modify or replace them.
+
+- `src/layouts/AppShell.astro` and `src/layouts/AppAdminShell.astro`
+- `src/middleware.ts` auth guard + admin role gate
+- AppShell unread notifications fetch (`/api/notifications/unread-count`)
+- One global Alpine store pattern (`src/alpine.ts`)
+- Always update `AGENTS.md` when completing a task
 
 ---
 
-## 🌐 Deployment
-
-Ansiversa apps are optimized for **Vercel**:
-
-- No configuration required
-- Astro server output ready
-- CI/CD supported automatically
-
-Just link your repo to Vercel → deploy.
-
----
-
-## 🔗 About Ansiversa
-
-Ansiversa is a curated ecosystem of 100+ premium mini-apps designed for learning, productivity, writing, creativity, utilities, wellness, and more.
-
-Each app shares:
-
-- One global design language  
-- One component system  
-- One identity  
-- Premium UX  
-
-You are currently viewing the official **starter template** that powers all apps.
-
----
-
-## 🤝 Contributing
-
-If you wish to contribute to this template or suggest improvements, please open an issue or submit a pull request.
-
----
-
-## 📄 License
-
-MIT License — free to use and modify.
+Ansiversa motto: Make it simple — but not simpler.

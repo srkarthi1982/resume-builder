@@ -1,11 +1,11 @@
-# Contributing to Ansiversa Mini-App Starter
+# Contributing to Ansiversa Resume Builder
 
-Thank you for your interest in improving the Ansiversa Mini-App Starter!
+Thank you for your interest in improving the Ansiversa Resume Builder!
 
-## 🧩 How this starter is used
+## 🧩 How this app is used
 
-This repository is used as the **golden template** for all mini-apps in the Ansiversa ecosystem.
-Changes here will eventually flow into many apps, so edits should be:
+This repository powers the Resume Builder mini-app in the Ansiversa ecosystem.
+Changes here should be:
 
 - Small
 - Clear
@@ -24,7 +24,7 @@ Changes here will eventually flow into many apps, so edits should be:
    npm install
    npm run dev
    ```
-5. Ensure the starter builds:
+5. Ensure the app builds:
    ```bash
    npm run build
    ```
@@ -40,8 +40,8 @@ Changes here will eventually flow into many apps, so edits should be:
 
 ## 🧪 Guidelines
 
-- Keep the starter **generic** – avoid app-specific logic.
-- Do not hard-code mini-app names.
-- Prefer changes that improve **all apps** (UX, DX, structure, performance).
+- Keep changes aligned to the mini-app standards.
+- Do not hard-code unrelated app names.
+- Prefer changes that improve the Resume Builder UX, DX, structure, or performance.
 
 Thank you for helping keep the Ansiversa ecosystem clean and consistent 💚

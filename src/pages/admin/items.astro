@@ -1,0 +1,308 @@
+---
+import {
+  AvButton,
+  AvCard,
+  AvConfirmDialog,
+  AvDrawer,
+  AvEmptyState,
+  AvIcon,
+  AvInput,
+  AvLoading,
+  AvTable,
+  AvTableToolbar,
+  AvTextarea,
+} from "@ansiversa/components";
+import { actions } from "astro:actions";
+import AppAdminShell from "../../layouts/AppAdminShell.astro";
+
+const listResult = await Astro.callAction(actions.exampleItems.adminListItems, {
+  page: 1,
+  pageSize: 10,
+  sort: "newest",
+  dir: "desc",
+});
+
+const data = (listResult as any)?.data ?? (listResult as any) ?? {};
+const items = data?.items ?? [];
+const total = data?.total ?? 0;
+const page = data?.page ?? 1;
+const pageSize = data?.pageSize ?? 10;
+const sort = data?.sort ?? "newest";
+const dir = data?.dir ?? "desc";
+
+const sortKeyMap = [
+  { prefix: "title", key: "title" },
+  { prefix: "status", key: "status" },
+];
+const sortKey = sortKeyMap.find((entry) => sort.startsWith(entry.prefix))?.key ?? "updatedAt";
+const ascSorts = new Set(["title-asc", "status-asc", "oldest"]);
+const sortDir = ascSorts.has(sort) ? "asc" : "desc";
+
+const initialState = {
+  items,
+  total,
+  page,
+  pageSize,
+  query: "",
+  sort,
+  dir,
+  drawerOpen: false,
+  editingId: null,
+  form: { title: "", content: "", isArchived: false },
+  pendingDeleteId: null,
+  loading: false,
+  error: null,
+  success: null,
+};
+---
+
+<AppAdminShell
+  title="Example Items – Admin"
+  description="Manage items you created."
+  crumbItems={[
+    { label: "Home", href: "/" },
+    { label: "Administration", href: "/admin" },
+    { label: "Example Items" },
+  ]}
+>
+  <div
+    class="av-auth-stack-lg"
+    x-data="$store.adminExampleItems"
+    x-init="init && init(JSON.parse($el.dataset.initial))"
+    data-initial={JSON.stringify(initialState)}
+  >
+    <AvCard variant="soft" className="av-auth-stack-sm">
+      <AvTableToolbar title="Example Items">
+        <div slot="title" class="av-admin-titlewrap">
+          <h1 class="av-table-toolbar__title">
+            Example Items <span class="av-admin-count-inline" x-text="`(${total})`"></span>
+          </h1>
+        </div>
+
+        <div slot="search">
+          <div class="av-admin-toolbar-left">
+            <div class="av-admin-toolbar-top">
+              <p class="av-table-toolbar__subtitle av-m-0">Items you created.</p>
+              <div class="av-admin-toolbar-actions">
+                <AvButton
+                  size="md"
+                  variant="ghost"
+                  type="button"
+                  title="Reset filters"
+                  aria-label="Reset filters"
+                  @click.prevent="resetFilters()"
+                  :disabled="loading"
+                >
+                  <AvIcon name="refresh" size="md" />
+                </AvButton>
+                <AvButton
+                  size="md"
+                  variant="primary"
+                  type="button"
+                  title="Add item"
+                  aria-label="Add item"
+                  @click.prevent="openCreate()"
+                  :disabled="loading"
+                >
+                  <AvIcon name="plus" size="md" />
+                </AvButton>
+              </div>
+            </div>
+            <div class="av-admin-filters">
+              <div class="av-admin-filter av-admin-filter--search">
+                <AvInput
+                  name="item-search"
+                  type="search"
+                  placeholder="Search by title…"
+                  x-model="query"
+                  @input="setQuery($event.target.value)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </AvTableToolbar>
+
+      <template x-if="error">
+        <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
+      </template>
+      <template x-if="success">
+        <div class="av-alert av-alert-success" role="status" x-text="success"></div>
+      </template>
+    </AvCard>
+
+    <div x-bind:aria-busy="loading">
+      <template x-if="!loading && total === 0">
+        <AvEmptyState
+          headline="No items yet"
+          description="Create the first item to see it here."
+          ctaLabel="Add item"
+          x-bind:ctaDisabled="loading"
+          @cta="openCreate()"
+        />
+      </template>
+
+      <template x-if="total > 0">
+        <AvCard variant="soft" className="av-auth-stack-sm">
+          <div x-on:av-sort="setSort($event.detail.key, $event.detail.dir)">
+            <AvTable
+              stickyHeader
+              sortKey={sortKey}
+              sortDir={sortDir}
+              x-bind:data-sort-key="sort.startsWith('title') ? 'title' : sort.startsWith('status') ? 'status' : 'updatedAt'"
+              x-bind:data-sort-dir="dir"
+            >
+            <thead>
+              <tr>
+                <th>
+                  <button class="av-table__sort" data-av-sort="title">Title</button>
+                </th>
+                <th>User</th>
+                <th>
+                  <button class="av-table__sort" data-av-sort="updatedAt" data-av-sort-default="desc">
+                    Updated
+                  </button>
+                </th>
+                <th>
+                  <button class="av-table__sort" data-av-sort="status">Status</button>
+                </th>
+                <th class="av-table__th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="row in items" :key="row.id">
+                <tr>
+                  <td>
+                    <div class="av-auth-stack-xxs">
+                      <p class="av-table__cell-strong" x-text="row.title"></p>
+                      <p class="av-table__cell-muted" x-text="row.content || 'No notes'"></p>
+                    </div>
+                  </td>
+                  <td class="av-table__cell-muted" x-text="row.userName || row.userId"></td>
+                  <td
+                    class="av-table__cell-muted"
+                    x-text="new Date(row.updatedAt || row.createdAt).toLocaleString()"
+                  ></td>
+                  <td>
+                    <span class="av-badge av-badge-soft" x-text="row.isArchived ? 'Archived' : 'Active'"></span>
+                  </td>
+                  <td class="av-table__td-actions">
+                    <div class="av-table__cell-actions">
+                      <AvButton
+                        size="sm"
+                        variant="ghost"
+                        type="button"
+                        title="Edit"
+                        aria-label="Edit item"
+                        @click.prevent="openEdit(row)"
+                        :disabled="loading"
+                      >
+                        <AvIcon name="edit" size="sm" />
+                      </AvButton>
+                      <AvButton
+                        size="sm"
+                        variant="ghost"
+                        type="button"
+                        title="Delete"
+                        aria-label="Delete item"
+                        @click.prevent="pendingDeleteId = row.id; window.AvDialog?.open('items-delete-dialog')"
+                        :disabled="loading"
+                      >
+                        <AvIcon name="trash" size="sm" />
+                      </AvButton>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+            </AvTable>
+          </div>
+        </AvCard>
+      </template>
+    </div>
+
+    <template x-if="!loading && totalPages > 1">
+      <div class="av-table-pager" role="navigation" aria-label="Pagination">
+        <div
+          class="av-table-pager__meta"
+          x-text="`Page ${total === 0 ? 0 : (page - 1) * pageSize + 1} - ${Math.min(page * pageSize, total)} of ${total} entries`"
+        ></div>
+        <div class="av-table-pager__buttons">
+          <AvButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            @click.prevent="setPage(page - 1)"
+            :disabled="page <= 1 || loading"
+            :aria-disabled="page <= 1 || loading"
+          >
+            <AvIcon name="chevron-left" size="md" />
+          </AvButton>
+          <AvButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            @click.prevent="setPage(page + 1)"
+            :disabled="page >= totalPages || loading"
+            :aria-disabled="page >= totalPages || loading"
+          >
+            <AvIcon name="chevron-right" size="md" />
+          </AvButton>
+        </div>
+      </div>
+    </template>
+
+    <AvLoading x-show="loading" x-cloak label="Loading…" />
+
+    <template x-if="drawerOpen">
+      <div
+        class="av-drawer-overlay"
+        @click.self="closeDrawer()"
+        @keydown.escape.window="closeDrawer()"
+        @close-drawer="closeDrawer()"
+        x-cloak
+      >
+        <AvDrawer title="Manage item" description="Create or edit an item.">
+          <form class="av-auth-stack-md" @submit.prevent="submit()">
+            <AvInput label="Title" name="title" placeholder="Item title" required x-model="form.title" />
+            <AvTextarea
+              label="Notes"
+              name="content"
+              placeholder="Optional notes"
+              x-model="form.content"
+              rows={3}
+            />
+
+            <label class="av-row-wrap av-text-soft">
+              <input type="checkbox" x-model="form.isArchived" />
+              <span>Archive this item</span>
+            </label>
+
+            <template x-if="error">
+              <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
+            </template>
+          </form>
+
+          <div slot="footer">
+            <AvButton variant="ghost" type="button" @click="closeDrawer()">Cancel</AvButton>
+            <AvButton type="button" @click="submit" :disabled="loading">
+              <span x-show="!loading" x-text="editingId ? 'Save' : 'Create'"></span>
+              <span x-show="loading">Saving…</span>
+            </AvButton>
+          </div>
+        </AvDrawer>
+      </div>
+    </template>
+
+    <AvConfirmDialog
+      id="items-delete-dialog"
+      headline="Delete item?"
+      description="This action cannot be undone."
+      confirmLabel="Delete"
+      cancelLabel="Cancel"
+      variant="danger"
+      @av-confirm="pendingDeleteId && deleteItem(pendingDeleteId)"
+      @av-cancel="pendingDeleteId = null"
+    />
+  </div>
+</AppAdminShell>

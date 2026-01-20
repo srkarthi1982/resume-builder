@@ -1,16 +1,8 @@
 import { defineDb } from "astro:db";
-import {
-  ResumeProfiles,
-  Resumes,
-  ResumeTemplates,
-  ResumeJobs,
-} from "./tables";
+import { ExampleItem } from "./tables";
 
 export default defineDb({
   tables: {
-    ResumeProfiles,
-    Resumes,
-    ResumeTemplates,
-    ResumeJobs,
+    ExampleItem,
   },
 });

@@ -1,92 +1,34 @@
 ---
+import { AvButton, AvCard, AvContainer } from "@ansiversa/components";
 import AppShell from "../layouts/AppShell.astro";
-import { AvContainer, AvButton } from "@ansiversa/components";
 
-const title = "Resume Builder – Ansiversa";
-const description = "Generate clean, ATS-friendly resumes.";
+const title = "Ansiversa Resume Builder";
+const description =
+  "Resume builder mini-app baseline with shared shells, auth guard, and example CRUD.";
 ---
 
 <AppShell title={title} description={description}>
-  <!-- Hero -->
-  <section class="av-hero">
-    <AvContainer size="narrow" className="av-hero__content--narrow">
-      <div class="av-hero__content">
-        <div class="av-kicker">
-          <span>Career & Work · Ansiversa Mini App</span>
-        </div>
-        <h1 class="av-gradient-text">Resume Builder</h1>
-        <p>
-          Generate clean, ATS-friendly resumes.
-        </p>
-      </div>
-      <div class="av-cta-row">
-        <AvButton href="/resumes">Launch Resume</AvButton>
-      </div>
-    </AvContainer>
-  </section>
-
-  <!-- Problem -->
   <section class="av-section">
-    <AvContainer size="narrow">
-      <div class="av-section-header">
-        <h2 class="av-section-title">The problem it solves</h2>
-        <p class="av-section-lead">
-          Career tasks like resumes, meetings, and communication often feel scattered.
-        </p>
-      </div>
-      <div class="av-section-body space-y-3 text-slate-300">
-        <p>Resume Builder takes one piece of your career workflow and makes it effortless.</p>
-      </div>
-    </AvContainer>
-  </section>
+    <AvContainer>
+      <div class="av-auth-stack-lg">
+        <AvCard className="av-auth-card">
+          <div class="av-auth-stack-md">
+            <div class="av-auth-stack-xs">
+              <p class="av-kicker">Resume Builder</p>
+              <h1 class="av-section-title">Resume Builder baseline</h1>
+              <p class="av-text-soft">
+                This app is currently reset to the Ansiversa starter baseline. It includes shared
+                layout shells, auth guard, notifications badge wiring, and a deletable Example
+                Items module.
+              </p>
+            </div>
 
-  <!-- Why this mini app -->
-  <section class="av-section">
-    <AvContainer size="narrow">
-      <div class="av-section-header">
-        <h2 class="av-section-title">Why Resume Builder feels different</h2>
-        <p class="av-section-lead">
-          A focused mini app inside the larger Ansiversa ecosystem.
-        </p>
-      </div>
-      <div class="av-section-body">
-        <ul class="space-y-2 text-slate-300 list-disc list-inside">
-          <li>Focused on a single, real-world career task.</li>
-          <li>Gives you professional-quality output without complex tools.</li>
-          <li>Keeps everything structured, consistent, and reusable.</li>
-        </ul>
-      </div>
-    </AvContainer>
-  </section>
-
-  <!-- How it works -->
-  <section class="av-section">
-    <AvContainer size="narrow">
-      <div class="av-section-header">
-        <h2 class="av-section-title">How it works</h2>
-        <p class="av-section-lead">
-          Simple, clear steps so people can start in under a minute.
-        </p>
-      </div>
-      <ol class="av-section-body space-y-2 text-slate-300 list-decimal list-inside">
-        <li>Open Resume Builder before you start your task.</li>
-        <li>Provide a few key details about your role, client, or context.</li>
-        <li>Generate polished output you can refine and use immediately.</li>
-      </ol>
-    </AvContainer>
-  </section>
-
-  <!-- Final CTA -->
-  <section class="av-section">
-    <AvContainer size="narrow">
-      <div class="av-section-header">
-        <h2 class="av-section-title">Ready to try Resume Builder?</h2>
-        <p class="av-section-lead">
-          Open the app, follow the simple flow, and let it handle the heavy lifting.
-        </p>
-      </div>
-      <div class="av-cta-row">
-        <AvButton href="/resume/new">Start with Resume</AvButton>
+            <div class="av-row-wrap">
+              <AvButton href="/items">Open Example Items</AvButton>
+              <AvButton href="/admin/items" variant="ghost">Admin Items</AvButton>
+            </div>
+          </div>
+        </AvCard>
       </div>
     </AvContainer>
   </section>

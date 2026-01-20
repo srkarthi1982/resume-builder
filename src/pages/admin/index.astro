@@ -1,222 +1,82 @@
 ---
-import AppShell from "../../layouts/AppShell.astro";
-import { AvButton, AvCard, AvContainer, AvPageHeader } from "@ansiversa/components";
+import { AvButton, AvCard, AvIcon, AvInput, AvTableToolbar } from "@ansiversa/components";
+import AppAdminShell from "../../layouts/AppAdminShell.astro";
+
+const adminItems = [
+  { label: "Items", href: "/admin/items", description: "Review and manage items" },
+];
+
+const query = Astro.url.searchParams.get("q")?.trim() ?? "";
+const normalizedQuery = query.toLowerCase();
+const filteredItems = normalizedQuery
+  ? adminItems.filter((item) => item.label.toLowerCase().includes(normalizedQuery))
+  : adminItems;
 ---
 
-<AppShell title="Resume admin" description="Manage templates and sections.">
-  <section
-    class="av-page av-page--content"
-    x-data="{ tab: 'templates' }"
-    x-init="$store.resumeAdmin.initAdmin()"
-  >
-    <div x-show="$store.resumeAdmin.isLoading" class="av-loading-bar"></div>
-
-    <AvPageHeader
-      title="Admin"
-      description="Control templates, section presets, and availability."
-      primaryAction={{ label: "New template", href: '#new-template', variant: 'primary' }}
-    />
-
-    <AvContainer>
-      <div class="av-tabs">
-        <button
-          type="button"
-          class="av-tab"
-          x-bind:class="{ 'is-active': tab === 'templates' }"
-          x-on:click="tab = 'templates'"
-        >
-          Templates
-        </button>
-        <button
-          type="button"
-          class="av-tab"
-          x-bind:class="{ 'is-active': tab === 'sections' }"
-          x-on:click="tab = 'sections'"
-        >
-          Sections
-        </button>
-      </div>
-
-      <div x-show="tab === 'templates'" class="av-admin-panel">
-        <AvCard className="av-table-card">
-          <div class="av-table-header">
-            <div>
-              <p class="av-panel-label">Templates</p>
-              <h2 class="av-panel-title">Available layouts</h2>
+<AppAdminShell
+  title="Admin Dashboard – Resume Builder"
+  description="Manage administration."
+  crumbItems={[{ label: "Home", href: "/" }, { label: "Administration" }]}
+>
+  <Fragment slot="toolbar">
+    <AvCard variant="soft" className="av-auth-stack-sm">
+      <AvTableToolbar title="Administration">
+        <div slot="title" class="av-admin-titlewrap">
+          <h1 class="av-table-toolbar__title">
+            Administration <span class="av-admin-count-inline">({filteredItems.length})</span>
+          </h1>
+        </div>
+        <div slot="search">
+          <div class="av-admin-toolbar-left">
+            <div class="av-admin-toolbar-top">
+              <p class="av-table-toolbar__subtitle av-m-0">Manage administration.</p>
+              <div class="av-admin-toolbar-actions">
+                <AvButton
+                  href="/admin"
+                  size="md"
+                  variant="ghost"
+                  title="Reset search"
+                  aria-label="Reset search"
+                >
+                  <AvIcon name="refresh" size="md" />
+                </AvButton>
+                <AvButton href="/" variant="primary" size="md" title="Home" aria-label="Home">
+                  <AvIcon name="home" size="md" />
+                </AvButton>
+              </div>
             </div>
-            <AvButton size="sm" variant="ghost">Create template</AvButton>
-          </div>
-          <div class="av-table-wrapper">
-            <table class="av-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Slug</th>
-                  <th>Style</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <template x-for="template in $store.resumeAdmin.templates" :key="template.id">
-                  <tr>
-                    <td x-text="template.name"></td>
-                    <td x-text="template.slug"></td>
-                    <td x-text="template.style"></td>
-                    <td>
-                      <span class="av-status-pill" x-text="template.enabled ? 'Enabled' : 'Disabled'"></span>
-                    </td>
-                    <td class="av-table-actions">
-                      <AvButton size="xs" variant="ghost" x-on:click.prevent="$store.resumeAdmin.toggleTemplateEnabled(template.id)">
-                        Toggle
-                      </AvButton>
-                      <AvButton size="xs" variant="ghost">Edit</AvButton>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </div>
-        </AvCard>
-      </div>
-
-      <div x-show="tab === 'sections'" class="av-admin-panel">
-        <AvCard className="av-table-card">
-          <div class="av-table-header">
-            <div>
-              <p class="av-panel-label">Sections</p>
-              <h2 class="av-panel-title">Building blocks</h2>
+            <div class="av-admin-filters">
+              <form class="av-admin-filter av-admin-filter--search" method="get" action="/admin">
+                <AvInput
+                  name="q"
+                  type="search"
+                  placeholder="Search admin links…"
+                  value={query}
+                />
+              </form>
             </div>
-            <AvButton size="sm" variant="ghost">Add section</AvButton>
           </div>
-          <div class="av-table-wrapper">
-            <table class="av-table">
-              <thead>
-                <tr>
-                  <th>Label</th>
-                  <th>Type key</th>
-                  <th>Required</th>
-                  <th>Enabled</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <template x-for="section in $store.resumeAdmin.sections" :key="section.id">
-                  <tr>
-                    <td x-text="section.label"></td>
-                    <td x-text="section.type"></td>
-                    <td x-text="section.isRequired ? 'Yes' : 'No'"></td>
-                    <td x-text="section.enabled ? 'Yes' : 'No'"></td>
-                    <td class="av-table-actions">
-                      <AvButton size="xs" variant="ghost">Edit</AvButton>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </div>
-        </AvCard>
+        </div>
+      </AvTableToolbar>
+    </AvCard>
+  </Fragment>
+
+  <AvCard variant="soft" className="av-auth-stack-sm">
+    {filteredItems.length ? (
+      <div class="av-grid-auto av-grid-auto--260">
+        {filteredItems.map((item) => (
+          <AvCard variant="soft" className="av-card--fullheight">
+            <div class="av-auth-stack-xxs">
+              <h3 class="av-card-heading av-m-0">
+                <a href={item.href} class="av-text-strong">{item.label}</a>
+              </h3>
+              <p class="av-text-soft av-m-0">{item.description}</p>
+            </div>
+          </AvCard>
+        ))}
       </div>
-    </AvContainer>
-  </section>
-
-  <style>
-    .av-loading-bar {
-      height: 4px;
-      width: 100%;
-      background: linear-gradient(90deg, #22d3ee, #6366f1);
-      animation: shimmer 1.6s linear infinite;
-      margin-bottom: 1rem;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: 0 0;
-      }
-      100% {
-        background-position: 200% 0;
-      }
-    }
-
-    .av-tabs {
-      display: inline-flex;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-
-    .av-tab {
-      padding: 0.5rem 1rem;
-      border: none;
-      background: transparent;
-      color: inherit;
-      cursor: pointer;
-    }
-
-    .av-tab.is-active {
-      background: rgba(34, 211, 238, 0.15);
-      color: #67e8f9;
-    }
-
-    .av-admin-panel {
-      margin-top: 1rem;
-    }
-
-    .av-table-card {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .av-table-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .av-table-wrapper {
-      overflow: auto;
-    }
-
-    .av-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .av-table th,
-    .av-table td {
-      text-align: left;
-      padding: 0.65rem;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-    }
-
-    .av-table-actions {
-      display: flex;
-      gap: 0.35rem;
-      justify-content: flex-end;
-    }
-
-    .av-status-pill {
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.15);
-      color: var(--av-fg, #e2e8f0);
-      font-size: 0.85rem;
-    }
-
-    .av-panel-label {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--av-fg-muted, #94a3b8);
-      margin-bottom: 0.25rem;
-    }
-
-    .av-panel-title {
-      font-weight: 600;
-    }
-  </style>
-</AppShell>
+    ) : (
+      <p class="av-text-soft av-m-0">No admin links match “{query}”.</p>
+    )}
+  </AvCard>
+</AppAdminShell>

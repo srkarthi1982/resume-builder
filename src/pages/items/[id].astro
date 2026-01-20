@@ -1,0 +1,99 @@
+---
+import { AvButton, AvCard, AvContainer, AvInput, AvTextarea } from "@ansiversa/components";
+import { ExampleItem, and, db, eq } from "astro:db";
+import AppShell from "../../layouts/AppShell.astro";
+import { normalizeExampleItem } from "../../modules/example-items/helpers";
+
+const { id } = Astro.params;
+const user = Astro.locals.user;
+
+let row: typeof ExampleItem.$inferSelect | null = null;
+if (id && user) {
+  const fetched = await db
+    .select()
+    .from(ExampleItem)
+    .where(and(eq(ExampleItem.id, id), eq(ExampleItem.userId, user.id)))
+    .get();
+  row = fetched ?? null;
+}
+
+if (!row) {
+  return Astro.redirect("/items");
+}
+
+const item = normalizeExampleItem(row);
+
+const initialState = {
+  items: [],
+  currentItem: item,
+  form: {
+    title: item.title,
+    content: item.content ?? "",
+    isArchived: item.isArchived,
+  },
+  loading: false,
+  error: null,
+  success: null,
+};
+---
+
+<AppShell title="Edit Item – Resume Builder" description="Update your example item.">
+  <section class="av-section">
+    <AvContainer>
+      <div
+        class="av-auth-stack-lg"
+        x-data="$store.exampleItems"
+        x-init="init && init(JSON.parse($el.dataset.initial)); setCurrent(currentItem)"
+        data-initial={JSON.stringify(initialState)}
+      >
+        <AvCard className="av-auth-stack-md">
+          <div>
+            <p class="av-kicker">Example Module</p>
+            <h1 class="av-section-title">Edit item</h1>
+          </div>
+
+          <form class="av-auth-stack-sm" @submit.prevent="updateCurrent()">
+            <div class="av-auth-stack-xs">
+              <AvInput
+                name="item-title"
+                placeholder="Title"
+                x-model="form.title"
+                required
+              />
+              <AvTextarea
+                name="item-content"
+                rows={5}
+                placeholder="Optional notes"
+                x-model="form.content"
+              />
+              <label class="av-checkbox">
+                <input type="checkbox" x-model="form.isArchived" />
+                <span>Archive this item</span>
+              </label>
+            </div>
+
+            <div class="av-row-wrap">
+              <AvButton type="submit" :disabled="loading">Save changes</AvButton>
+              <AvButton href="/items" variant="ghost">Back to list</AvButton>
+              <AvButton
+                type="button"
+                variant="outline"
+                @click.prevent="deleteCurrent()"
+                :disabled="loading"
+              >
+                Delete
+              </AvButton>
+            </div>
+          </form>
+
+          <template x-if="error">
+            <p class="av-error" role="alert" x-text="error"></p>
+          </template>
+          <template x-if="success">
+            <p class="av-success" role="status" x-text="success"></p>
+          </template>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+</AppShell>
