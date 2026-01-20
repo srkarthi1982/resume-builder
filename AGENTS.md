@@ -40,8 +40,22 @@ Defined in `db/tables.ts`:
 
 ---
 
-## 4. Task Log (Newest first)
+## 4. Resume Templates
 
+- Templates are provided by `@ansiversa/components` via `ResumeBuilderShell`.
+- Preview route: `/dev/resume-preview` (`src/pages/dev/resume-preview.astro`).
+
+To add a 5th template later:
+
+1) Add the new template type + renderer in `@ansiversa/components`.
+2) Extend the `types` array in `src/pages/dev/resume-preview.astro`.
+3) Ensure any new data requirements are covered by `resumeData`.
+
+---
+
+## 5. Task Log (Newest first)
+
+- 2026-01-20 Restored resume templates preview page and upgraded @ansiversa/components to 0.0.106.
 - 2026-01-20 Updated identifiers from app-starter to resume-builder.
 - 2026-01-20 Reset resume-builder to a fresh copy of app-starter after backup.
 - 2026-01-17 Expanded README with mental model, first-run checklist, and standards framing.

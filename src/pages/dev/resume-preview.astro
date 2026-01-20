@@ -1,0 +1,47 @@
+---
+import AppShell from "../../layouts/AppShell.astro";
+import { AvContainer } from "@ansiversa/components";
+import { ResumeBuilderShell, resumeData } from "@ansiversa/components";
+import type { ResumeTemplateType } from "@ansiversa/components";
+
+const types = ["classic", "modern", "minimal", "timeline"] as const satisfies ResumeTemplateType[];
+---
+
+<AppShell title="Resume Preview" description="QA preview of all resume templates.">
+  <AvContainer>
+    <div class="dev-preview">
+      {types.map((type) => (
+        <section class="dev-preview__section">
+          <h2 class="dev-preview__heading">{type}</h2>
+          <ResumeBuilderShell type={type} data={resumeData} />
+        </section>
+      ))}
+    </div>
+  </AvContainer>
+
+  <style>
+    .dev-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .dev-preview__heading {
+      font-size: 1.15rem;
+      font-weight: 600;
+      text-transform: capitalize;
+      margin-bottom: 1rem;
+    }
+
+    @media print {
+      .dev-preview__heading {
+        display: none;
+      }
+
+      .dev-preview__section {
+        page-break-after: always;
+        break-after: page;
+      }
+    }
+  </style>
+</AppShell>
