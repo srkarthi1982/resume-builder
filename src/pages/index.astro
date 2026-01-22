@@ -4,7 +4,7 @@ import AppShell from "../layouts/AppShell.astro";
 
 const title = "Ansiversa Resume Builder";
 const description =
-  "Resume builder mini-app baseline with shared shells, auth guard, and example CRUD.";
+  "Build, edit, and print your resumes with Ansiversa templates.";
 ---
 
 <AppShell title={title} description={description}>
@@ -15,17 +15,14 @@ const description =
           <div class="av-auth-stack-md">
             <div class="av-auth-stack-xs">
               <p class="av-kicker">Resume Builder</p>
-              <h1 class="av-section-title">Resume Builder baseline</h1>
+              <h1 class="av-section-title">Create your next resume</h1>
               <p class="av-text-soft">
-                This app is currently reset to the Ansiversa starter baseline. It includes shared
-                layout shells, auth guard, notifications badge wiring, and a deletable Example
-                Items module.
+                Create multiple resumes, set a default version, and preview or print in one click.
               </p>
             </div>
 
             <div class="av-row-wrap">
-              <AvButton href="/items">Open Example Items</AvButton>
-              <AvButton href="/admin/items" variant="ghost">Admin Items</AvButton>
+              <AvButton href="/app/resumes">Open resume builder</AvButton>
             </div>
           </div>
         </AvCard>

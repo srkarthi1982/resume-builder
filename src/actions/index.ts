@@ -1,31 +1,27 @@
 import {
-  adminCreateItem,
-  adminDeleteItem,
-  adminListItems,
-  adminUpdateItem,
-  createItem,
-  deleteMyItem,
-  fetchMyItems,
-  updateMyItem,
-} from "./exampleItems";
+  addOrUpdateItem,
+  createResumeProject,
+  deleteItem,
+  deleteResumeProject,
+  getResumeProject,
+  listResumeProjects,
+  setDefaultResumeProject,
+  updateResumeProject,
+  upsertSection,
+} from "./resumeBuilder";
 
-export const exampleItems = {
-  fetchMyItems,
-  createItem,
-  updateMyItem,
-  deleteMyItem,
-  adminListItems,
-  adminCreateItem,
-  adminUpdateItem,
-  adminDeleteItem,
+export const resumeBuilder = {
+  listResumeProjects,
+  createResumeProject,
+  getResumeProject,
+  updateResumeProject,
+  deleteResumeProject,
+  setDefaultResumeProject,
+  upsertSection,
+  addOrUpdateItem,
+  deleteItem,
 };
 
 export const server = {
-  exampleItems,
-  admin: {
-    listExampleItems: exampleItems.adminListItems,
-    createExampleItem: exampleItems.adminCreateItem,
-    updateExampleItem: exampleItems.adminUpdateItem,
-    deleteExampleItem: exampleItems.adminDeleteItem,
-  },
+  resumeBuilder,
 };

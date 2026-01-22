@@ -1,0 +1,175 @@
+---
+import {
+  AvButton,
+  AvCard,
+  AvConfirmDialog,
+  AvContainer,
+  AvEmptyState,
+  AvInput,
+  AvSelect,
+} from "@ansiversa/components";
+import { actions } from "astro:actions";
+import AppShell from "../../../layouts/AppShell.astro";
+import type { ResumeProjectDTO } from "../../../modules/resume-builder/types";
+
+const title = "Your Resumes – Resume Builder";
+const description = "Create and manage your resumes.";
+
+const listResult = await Astro.callAction(actions.resumeBuilder.listResumeProjects, {});
+const data = (listResult as any)?.data ?? (listResult as any) ?? {};
+const projects = (data?.items ?? []) as ResumeProjectDTO[];
+
+const initialState = {
+  projects,
+  newProject: {
+    title: "",
+    templateKey: "classic",
+  },
+  pendingDeleteId: null,
+};
+---
+
+<AppShell title={title} description={description}>
+  <section class="av-section">
+    <AvContainer>
+      <div
+        class="av-auth-stack-lg"
+        x-data="$store.resumeBuilder"
+        x-init="init && init(JSON.parse($el.dataset.initial))"
+        data-initial={JSON.stringify(initialState)}
+      >
+        <AvCard className="av-auth-card">
+          <div class="av-auth-stack-md">
+            <div class="av-auth-stack-xs">
+              <p class="av-kicker">Resume Builder</p>
+              <h1 class="av-section-title">Your resumes</h1>
+              <p class="av-text-soft">Create a new resume or continue editing an existing one.</p>
+            </div>
+
+            <form class="av-auth-stack-sm" @submit.prevent="createProject()">
+              <AvInput
+                label="Resume title"
+                name="resume-title"
+                placeholder="e.g. Product Designer Resume"
+                x-model="newProject.title"
+                required
+              />
+              <AvSelect label="Template" name="template" x-model="newProject.templateKey">
+                <option value="classic">Classic</option>
+                <option value="modern">Modern</option>
+                <option value="minimal">Minimal</option>
+                <option value="timeline">Timeline</option>
+              </AvSelect>
+              <div class="av-row-wrap">
+                <AvButton type="submit" :disabled="loading">Create resume</AvButton>
+              </div>
+            </form>
+
+            <template x-if="error">
+              <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
+            </template>
+            <template x-if="success">
+              <div class="av-alert av-alert-success" role="status" x-text="success"></div>
+            </template>
+          </div>
+        </AvCard>
+
+        <AvCard variant="soft" className="av-auth-stack-md">
+          <div class="av-row-between">
+            <h2 class="av-card-heading">Resume list</h2>
+            <p class="av-text-soft" x-text="projects.length + ' total'"></p>
+          </div>
+
+          <template x-if="projects.length === 0">
+            <AvEmptyState
+              headline="No resumes yet"
+              description="Create your first resume to start editing."
+            />
+          </template>
+
+          <template x-if="projects.length > 0">
+            <div class="rb-resume-grid">
+              <template x-for="project in projects" :key="project.id">
+                <AvCard variant="soft" className="av-card--fullheight">
+                  <div class="av-auth-stack-sm">
+                    <div class="av-auth-stack-xxs">
+                      <div class="rb-resume-card__head">
+                        <h3 class="av-card-heading" x-text="project.title"></h3>
+                        <template x-if="project.isDefault">
+                          <span class="av-badge av-badge-soft">Default</span>
+                        </template>
+                      </div>
+                      <p class="av-text-soft" x-text="`Template: ${project.templateKey}`"></p>
+                    </div>
+
+                    <div class="av-row-wrap">
+                      <AvButton
+                        variant="ghost"
+                        size="sm"
+                        x-bind:href="`/app/resumes/${project.id}`"
+                      >
+                        Edit
+                      </AvButton>
+                      <AvButton
+                        variant="ghost"
+                        size="sm"
+                        x-bind:href="`/app/resumes/${project.id}/print`"
+                        target="_blank"
+                      >
+                        Preview / Print
+                      </AvButton>
+                      <AvButton
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        @click.prevent="setDefault(project.id)"
+                        :disabled="project.isDefault || loading"
+                      >
+                        Set default
+                      </AvButton>
+                      <AvButton
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        @click.prevent="pendingDeleteId = project.id; window.AvDialog?.open('resume-delete-dialog')"
+                        :disabled="loading"
+                      >
+                        Delete
+                      </AvButton>
+                    </div>
+                  </div>
+                </AvCard>
+              </template>
+            </div>
+          </template>
+        </AvCard>
+
+        <AvConfirmDialog
+          id="resume-delete-dialog"
+          headline="Delete resume?"
+          description="This action cannot be undone."
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          variant="danger"
+          @av-confirm="pendingDeleteId && deleteProject(pendingDeleteId)"
+          @av-cancel="pendingDeleteId = null"
+        />
+      </div>
+    </AvContainer>
+  </section>
+
+  <style>
+    .rb-resume-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .rb-resume-card__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+  </style>
+</AppShell>

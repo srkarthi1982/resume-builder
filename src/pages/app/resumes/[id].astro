@@ -1,0 +1,657 @@
+---
+import {
+  AvButton,
+  AvCard,
+  AvContainer,
+  AvDrawer,
+  AvEmptyState,
+  AvIcon,
+  AvInput,
+  AvLoading,
+  AvSelect,
+  AvTextarea,
+} from "@ansiversa/components";
+import { actions } from "astro:actions";
+import AppShell from "../../../layouts/AppShell.astro";
+import type { ResumeProjectDetail } from "../../../modules/resume-builder/types";
+import { sectionLabels } from "../../../modules/resume-builder/helpers";
+
+const projectId = Astro.params.id ?? "";
+
+let projectData: ResumeProjectDetail | null = null;
+let loadError: string | null = null;
+
+try {
+  const result = await Astro.callAction(actions.resumeBuilder.getResumeProject, {
+    projectId,
+  });
+  const data = (result as any)?.data ?? (result as any) ?? null;
+  projectData = data as ResumeProjectDetail;
+} catch (err) {
+  loadError = (err as Error)?.message ?? "Unable to load resume.";
+}
+
+const title = projectData?.project?.title
+  ? `Edit ${projectData.project.title} – Resume Builder`
+  : "Edit Resume – Resume Builder";
+const description = "Edit your resume and preview the chosen template.";
+
+const initialState = {
+  activeProject: projectData,
+  activeProjectId: projectData?.project?.id ?? projectId,
+  projects: [],
+};
+
+const sectionOrder = [
+  "basics",
+  "summary",
+  "experience",
+  "education",
+  "skills",
+  "projects",
+  "certifications",
+  "awards",
+  "languages",
+  "highlights",
+] as const;
+---
+
+<AppShell title={title} description={description}>
+  <section class="av-section">
+    <AvContainer>
+      <div
+        class="rb-editor"
+        x-data="$store.resumeBuilder"
+        x-init="init && init(JSON.parse($el.dataset.initial))"
+        data-initial={JSON.stringify(initialState)}
+      >
+        {loadError ? (
+          <AvCard variant="soft" className="av-auth-stack-sm">
+            <AvEmptyState headline="Unable to load resume" description={loadError} />
+            <AvButton href="/app/resumes" variant="ghost">Back to resumes</AvButton>
+          </AvCard>
+        ) : (
+          <>
+            <div class="rb-editor__left">
+              <AvCard variant="soft" className="av-auth-stack-md">
+                <div class="av-auth-stack-xs">
+                  <p class="av-kicker">Resume Builder</p>
+                  <h1 class="av-section-title">Edit resume</h1>
+                  <p class="av-text-soft">
+                    Update your resume content and refresh the preview whenever you save changes.
+                  </p>
+                </div>
+
+                <form class="av-auth-stack-sm" @submit.prevent="saveProjectMeta()">
+                  <AvInput
+                    label="Resume title"
+                    name="resume-title"
+                    placeholder="Resume name"
+                    x-model="projectMeta.title"
+                    required
+                  />
+                  <AvSelect
+                    label="Template"
+                    name="template"
+                    x-model="projectMeta.templateKey"
+                  >
+                    <option value="classic">Classic</option>
+                    <option value="modern">Modern</option>
+                    <option value="minimal">Minimal</option>
+                    <option value="timeline">Timeline</option>
+                  </AvSelect>
+
+                  <div class="av-row-wrap">
+                    <AvButton type="submit" :disabled="loading">Save details</AvButton>
+                    <AvButton href={`/app/resumes/${projectId}/print`} variant="ghost" target="_blank">
+                      Preview / Print
+                    </AvButton>
+                  </div>
+                </form>
+
+                <template x-if="error">
+                  <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
+                </template>
+                <template x-if="success">
+                  <div class="av-alert av-alert-success" role="status" x-text="success"></div>
+                </template>
+              </AvCard>
+
+              <AvCard variant="soft" className="av-auth-stack-sm">
+                <div class="av-row-between">
+                  <h2 class="av-card-heading">Sections</h2>
+                  <p class="av-text-soft">Edit each section</p>
+                </div>
+
+                <div class="rb-section-list">
+                  {sectionOrder.map((key) => (
+                    <button
+                      class="rb-section-button"
+                      type="button"
+                      @click.prevent={`openSection('${key}')`}
+                    >
+                      <span>{sectionLabels[key]}</span>
+                      <span class="rb-section-button__meta">
+                        <AvIcon name="chevron-right" size="sm" />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </AvCard>
+            </div>
+
+            <div class="rb-editor__right">
+              <AvCard variant="soft" className="av-auth-stack-sm">
+                <div class="av-row-between">
+                  <h2 class="av-card-heading">Live preview</h2>
+                  <p class="av-text-soft">Saved changes appear here</p>
+                </div>
+                <div class="rb-preview-frame">
+                  <iframe
+                    title="Resume preview"
+                    :src="'/app/resumes/${projectId}/print?preview=1&t=' + previewBuster"
+                  ></iframe>
+                </div>
+              </AvCard>
+            </div>
+          </>
+        )}
+
+        <AvLoading x-show="loading" x-cloak label="Saving…" />
+
+        <template x-if="drawerOpen">
+          <div
+            class="av-drawer-overlay"
+            @click.self="closeDrawer()"
+            @keydown.escape.window="closeDrawer()"
+            @close-drawer="closeDrawer()"
+            x-cloak
+          >
+            <AvDrawer title="Edit section" description="Update section content and save.">
+              <div class="av-auth-stack-md">
+                <div class="av-auth-stack-xs">
+                  <p class="av-kicker" x-text="getSectionLabel(activeSectionKey)"></p>
+                  <p class="av-text-soft">Save to refresh the preview.</p>
+                </div>
+
+                <template x-if="activeSectionKey === 'basics'">
+                  <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                    <AvInput label="Full name" name="full-name" x-model="formData.fullName" required />
+                    <AvInput label="Headline" name="headline" x-model="formData.headline" />
+
+                    <div class="rb-form-grid">
+                      <AvInput label="Email" name="email" x-model="formData.contact.email" />
+                      <AvInput label="Phone" name="phone" x-model="formData.contact.phone" />
+                    </div>
+                    <AvInput label="Website" name="website" x-model="formData.contact.website" />
+
+                    <div class="rb-form-grid">
+                      <AvInput label="Location label" name="location-label" x-model="formData.location.label" />
+                      <AvInput label="City" name="city" x-model="formData.location.city" />
+                      <AvInput label="Country" name="country" x-model="formData.location.country" />
+                    </div>
+
+                    <div class="av-auth-stack-xs">
+                      <div class="av-row-between">
+                        <h3 class="av-card-heading">Links</h3>
+                        <AvButton variant="ghost" type="button" @click.prevent="addLink()">
+                          Add link
+                        </AvButton>
+                      </div>
+                      <template x-for="(link, index) in formData.links" :key="index">
+                        <div class="rb-link-row">
+                          <AvInput
+                            label="Label"
+                            name="link-label"
+                            x-model="link.label"
+                          />
+                          <AvInput
+                            label="URL"
+                            name="link-url"
+                            x-model="link.url"
+                          />
+                          <AvButton
+                            variant="ghost"
+                            type="button"
+                            title="Remove link"
+                            @click.prevent="removeLink(index)"
+                          >
+                            <AvIcon name="trash" size="sm" />
+                          </AvButton>
+                        </div>
+                      </template>
+                    </div>
+                  </form>
+                </template>
+
+                <template x-if="activeSectionKey === 'summary'">
+                  <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                    <AvTextarea
+                      label="Summary"
+                      name="summary"
+                      rows={5}
+                      x-model="formData.text"
+                      placeholder="Write a short professional summary."
+                    />
+                  </form>
+                </template>
+
+                <template x-if="activeSectionKey === 'experience'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add experience
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Role" name="role" x-model="formData.role" required />
+                      <AvInput label="Company" name="company" x-model="formData.company" required />
+                      <AvInput label="Location" name="location" x-model="formData.location" />
+                      <div class="rb-form-grid">
+                        <AvInput label="Start year" name="start-year" x-model="formData.startYear" />
+                        <AvInput label="Start month" name="start-month" x-model="formData.startMonth" />
+                        <AvInput label="End year" name="end-year" x-model="formData.endYear" />
+                        <AvInput label="End month" name="end-month" x-model="formData.endMonth" />
+                      </div>
+                      <label class="av-row-wrap av-text-soft">
+                        <input type="checkbox" x-model="formData.present" />
+                        <span>Currently here</span>
+                      </label>
+                      <AvTextarea label="Summary" name="summary" rows={3} x-model="formData.summary" />
+                      <AvTextarea label="Highlights (one per line)" name="bullets" rows={4} x-model="formData.bullets" />
+                      <AvInput label="Tags (comma separated)" name="tags" x-model="formData.tags" />
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'education'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add education
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Degree" name="degree" x-model="formData.degree" required />
+                      <AvInput label="School" name="school" x-model="formData.school" required />
+                      <AvInput label="Location" name="location" x-model="formData.location" />
+                      <div class="rb-form-grid">
+                        <AvInput label="Start year" name="start-year" x-model="formData.startYear" />
+                        <AvInput label="Start month" name="start-month" x-model="formData.startMonth" />
+                        <AvInput label="End year" name="end-year" x-model="formData.endYear" />
+                        <AvInput label="End month" name="end-month" x-model="formData.endMonth" />
+                      </div>
+                      <AvInput label="Grade" name="grade" x-model="formData.grade" />
+                      <AvTextarea label="Notes (one per line)" name="bullets" rows={4} x-model="formData.bullets" />
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'skills'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add skill
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Skill" name="skill-name" x-model="formData.name" required />
+                      <AvSelect label="Level" name="skill-level" x-model="formData.level">
+                        <option value="">Select level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Expert">Expert</option>
+                      </AvSelect>
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'projects'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add project
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Project name" name="project-name" x-model="formData.name" required />
+                      <AvInput label="Project link" name="project-link" x-model="formData.link" />
+                      <div class="rb-form-grid">
+                        <AvInput label="Start year" name="start-year" x-model="formData.startYear" />
+                        <AvInput label="Start month" name="start-month" x-model="formData.startMonth" />
+                        <AvInput label="End year" name="end-year" x-model="formData.endYear" />
+                        <AvInput label="End month" name="end-month" x-model="formData.endMonth" />
+                      </div>
+                      <label class="av-row-wrap av-text-soft">
+                        <input type="checkbox" x-model="formData.present" />
+                        <span>Ongoing</span>
+                      </label>
+                      <AvTextarea label="Summary" name="summary" rows={3} x-model="formData.summary" />
+                      <AvTextarea label="Highlights (one per line)" name="bullets" rows={4} x-model="formData.bullets" />
+                      <AvInput label="Tags (comma separated)" name="tags" x-model="formData.tags" />
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'certifications'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add certification
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Certification" name="cert-name" x-model="formData.name" required />
+                      <AvInput label="Issuer" name="cert-issuer" x-model="formData.issuer" />
+                      <AvInput label="Year" name="cert-year" x-model="formData.year" />
+                      <AvInput label="Link" name="cert-link" x-model="formData.link" />
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'awards'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add achievement
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Title" name="award-title" x-model="formData.title" required />
+                      <AvInput label="Year" name="award-year" x-model="formData.year" />
+                      <AvInput label="By" name="award-by" x-model="formData.by" />
+                      <AvTextarea label="Summary" name="award-summary" rows={3} x-model="formData.summary" />
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'languages'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add language
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Language" name="language-name" x-model="formData.name" required />
+                      <AvSelect label="Proficiency" name="language-level" x-model="formData.proficiency">
+                        <option value="">Select proficiency</option>
+                        <option value="Native">Native</option>
+                        <option value="Fluent">Fluent</option>
+                        <option value="Professional">Professional</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Basic">Basic</option>
+                      </AvSelect>
+                    </form>
+                  </div>
+                </template>
+
+                <template x-if="activeSectionKey === 'highlights'">
+                  <div class="av-auth-stack-md">
+                    <template x-if="activeSectionItems.length">
+                      <div class="rb-item-list">
+                        <template x-for="item in activeSectionItems" :key="item.id">
+                          <div class="rb-item-row">
+                            <div>
+                              <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            </div>
+                            <div class="rb-item-actions">
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">
+                                Edit
+                              </AvButton>
+                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">
+                                Delete
+                              </AvButton>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">
+                      Add highlight
+                    </AvButton>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvTextarea label="Highlight" name="highlight" rows={3} x-model="formData.text" />
+                    </form>
+                  </div>
+                </template>
+              </div>
+
+              <div slot="footer">
+                <AvButton variant="ghost" type="button" @click="closeDrawer()">Close</AvButton>
+                <AvButton type="button" @click="saveActiveItem()" :disabled="loading">
+                  <span x-show="!loading">Save</span>
+                  <span x-show="loading">Saving…</span>
+                </AvButton>
+              </div>
+            </AvDrawer>
+          </div>
+        </template>
+      </div>
+    </AvContainer>
+  </section>
+
+  <style>
+    .rb-editor {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+
+    .rb-editor__left,
+    .rb-editor__right {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .rb-section-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .rb-section-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      background: var(--av-surface);
+      border: 1px solid var(--av-border);
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .rb-section-button:hover {
+      border-color: var(--av-border-strong);
+    }
+
+    .rb-section-button__meta {
+      color: var(--av-text-muted);
+    }
+
+    .rb-preview-frame iframe {
+      width: 100%;
+      min-height: 720px;
+      border: none;
+      background: #fff;
+      border-radius: 16px;
+    }
+
+    .rb-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .rb-link-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .rb-item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .rb-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--av-border);
+      background: var(--av-surface);
+      gap: 1rem;
+    }
+
+    .rb-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 960px) {
+      .rb-editor {
+        grid-template-columns: 1fr;
+      }
+
+      .rb-preview-frame iframe {
+        min-height: 560px;
+      }
+    }
+  </style>
+</AppShell>

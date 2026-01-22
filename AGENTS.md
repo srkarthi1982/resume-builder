@@ -57,6 +57,9 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-22 Ran `npm run db:push:remote` after backing up `.astro/content.db` to `.astro/content.db.bak-2026-01-22-2139` to initialize Resume tables.
+- 2026-01-22 Updated `db:push:local` to use local mode and added `db:push:remote` script.
+- 2026-01-22 Built resume-builder user flow: Resume tables/actions/store, /app/resumes list/editor/print pages, removed example module/admin pages, updated home copy. Ran `npm run typecheck`.
 - 2026-01-20 Clarified dev auth bypass and dev-only routes in AGENTS.
 - 2026-01-20 Restored resume templates preview page and upgraded @ansiversa/components to 0.0.106.
 - 2026-01-20 Updated identifiers from app-starter to resume-builder.
