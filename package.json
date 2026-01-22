@@ -13,8 +13,7 @@
     "astro": "astro",
     "build:remote": "astro build --remote",
     "dev:remote": "astro dev --remote",
-    "db:push:local": "ASTRO_DB_LOCAL_URL=file:$PWD/.astro/content.db astro db push",
-    "db:push:remote": "ASTRO_DB_REMOTE_URL=file:$PWD/.astro/content.db astro db push --remote"
+    "db:push": "ASTRO_DB_REMOTE_URL=file:$PWD/.astro/content.db astro db push --remote"
   },
   "dependencies": {
     "@ansiversa/components": "^0.0.106",

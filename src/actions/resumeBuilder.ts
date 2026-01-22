@@ -226,7 +226,7 @@ export const deleteResumeProject = defineAction({
   input: projectIdSchema,
   async handler({ projectId }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProject(projectId, user.id);
+    const project = await getOwnedProject(projectId, user.id);
 
     const sections = await getProjectSections(projectId);
     const sectionIds = sections.map((section) => section.id);
@@ -237,6 +237,22 @@ export const deleteResumeProject = defineAction({
     }
 
     await db.delete(ResumeProject).where(eq(ResumeProject.id, projectId));
+
+    if (project.isDefault) {
+      const [nextDefault] = await db
+        .select()
+        .from(ResumeProject)
+        .where(eq(ResumeProject.userId, user.id))
+        .orderBy(desc(ResumeProject.updatedAt), desc(ResumeProject.createdAt))
+        .limit(1);
+
+      if (nextDefault) {
+        await db
+          .update(ResumeProject)
+          .set({ isDefault: true, updatedAt: new Date() })
+          .where(eq(ResumeProject.id, nextDefault.id));
+      }
+    }
 
     return { success: true };
   },
