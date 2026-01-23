@@ -57,6 +57,29 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-23 Seeded four realistic demo resumes (classic/modern/minimal/timeline) directly into local DB for dev-user.
+- 2026-01-23 Classic template divider changed to border for print visibility; installed @ansiversa/components 0.0.116 (local pack).
+- 2026-01-23 Classic template print divider line forced visible; installed @ansiversa/components 0.0.115 (local pack).
+- 2026-01-23 Classic template PDF: forced sidebar column layout in print; installed @ansiversa/components 0.0.114 (local pack).
+- 2026-01-23 Classic template contact list: removed separator dots; installed @ansiversa/components 0.0.113 (local pack).
+- 2026-01-23 Classic template summary now spans full width; installed @ansiversa/components 0.0.112 (local pack).
+- 2026-01-23 Seeded classic template data for dev-user in local Astro DB.
+- 2026-01-23 Classic template polish: inline contact row with separators + friendly URL labels; ran `npm run typecheck` and `npm run build --remote`.
+- 2026-01-23 Added editable declaration section and installed @ansiversa/components 0.0.110 (local pack).
+- 2026-01-23 Increased live preview iframe height.
+- 2026-01-23 Installed @ansiversa/components 0.0.109 (local pack) for Classic achievements section.
+- 2026-01-23 Installed @ansiversa/components 0.0.108 (local pack) to pick up Classic certifications section.
+- 2026-01-23 Reduced print page side padding to 8px.
+- 2026-01-23 Tightened print page side gutters to bring the resume card closer to the edges.
+- 2026-01-23 Made print toolbar banner full-bleed by removing side padding and radius.
+- 2026-01-23 Reduced print page side gutters by widening resume content wrapper.
+- 2026-01-23 Bumped @ansiversa/components dependency to 0.0.107 for resume template Tailwind source fix.
+- 2026-01-23 Wrapped print resume content in AvContainer to keep it centered.
+- 2026-01-23 Added top margin to the print/preview toolbar surface for spacing.
+- 2026-01-23 Added a dark toolbar surface on resume print/preview for button contrast.
+- 2026-01-23 Made preview iframe use store-derived previewSrc and ensured preview buster always changes.
+- 2026-01-23 Set light-theme CSS variables on resume print preview page to fix low-contrast text on white background.
+- 2026-01-23 Fixed resume list Edit/Preview buttons to render as anchors so Alpine can bind hrefs.
 - 2026-01-22 Standardized db push to single `db:push` script using file-based remote mode; removed local/remote split scripts.
 - 2026-01-22 Removed admin leftovers (AppAdminShell, middleware guard, requireAdmin), added default reassignment on delete, standardized db push script. Ran `npm run typecheck` and `npm run build --remote`.
 - 2026-01-22 Ran `npm run db:push:remote` after backing up `.astro/content.db` to `.astro/content.db.bak-2026-01-22-2139` to initialize Resume tables.

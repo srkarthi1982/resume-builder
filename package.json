@@ -16,7 +16,7 @@
     "db:push": "ASTRO_DB_REMOTE_URL=file:$PWD/.astro/content.db astro db push --remote"
   },
   "dependencies": {
-    "@ansiversa/components": "^0.0.106",
+    "@ansiversa/components": "file:../components/ansiversa-components-0.0.116.tgz",
     "@astrojs/alpinejs": "^0.4.9",
     "@astrojs/db": "^0.18.3",
     "@astrojs/vercel": "^9.0.2",

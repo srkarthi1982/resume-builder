@@ -156,6 +156,12 @@ const emptyHighlight = () => ({
   text: "",
 });
 
+const emptyDeclaration = () => ({
+  text: "",
+  place: "",
+  name: "",
+});
+
 const defaultFormForSection = (key: ResumeSectionKey) => {
   if (key === "basics") return emptyBasics();
   if (key === "summary") return emptySummary();
@@ -166,6 +172,7 @@ const defaultFormForSection = (key: ResumeSectionKey) => {
   if (key === "certifications") return emptyCertification();
   if (key === "awards") return emptyAward();
   if (key === "languages") return emptyLanguage();
+  if (key === "declaration") return emptyDeclaration();
   return emptyHighlight();
 };
 
@@ -228,6 +235,7 @@ const toFormData = (key: ResumeSectionKey, data: any) => {
   if (key === "certifications") return { ...emptyCertification(), ...data };
   if (key === "awards") return { ...emptyAward(), ...data };
   if (key === "languages") return { ...emptyLanguage(), ...data };
+  if (key === "declaration") return { ...emptyDeclaration(), ...data };
 
   return { ...emptyHighlight(), ...data };
 };
@@ -339,6 +347,14 @@ const toPayload = (key: ResumeSectionKey, data: Record<string, any>) => {
     };
   }
 
+  if (key === "declaration") {
+    return {
+      text: normalizeText(data.text),
+      place: normalizeText(data.place),
+      name: normalizeText(data.name),
+    };
+  }
+
   return {
     text: normalizeText(data.text),
   };
@@ -438,6 +454,10 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       return normalizeText(data.text ?? "") || "Highlight";
     }
 
+    if (this.activeSectionKey === "declaration") {
+      return "Declaration";
+    }
+
     return "Item";
   }
 
@@ -457,7 +477,48 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   }
 
   private refreshPreview() {
-    this.previewBuster = Date.now();
+    const now = Date.now();
+    this.previewBuster = now === this.previewBuster ? now + 1 : now;
+  }
+
+  private async ensureSectionExists(key: ResumeSectionKey) {
+    if (!this.activeProject?.project?.id) return;
+    const existing = this.activeProject.sections.find((section) => section.key === key);
+    if (existing) return;
+
+    const orderMap: Record<ResumeSectionKey, number> = {
+      basics: 1,
+      summary: 2,
+      experience: 3,
+      education: 4,
+      skills: 5,
+      projects: 6,
+      certifications: 7,
+      awards: 8,
+      languages: 9,
+      highlights: 10,
+      declaration: 11,
+    };
+
+    try {
+      const res = await actions.resumeBuilder.upsertSection({
+        projectId: this.activeProject.project.id,
+        key,
+        order: orderMap[key],
+        isEnabled: true,
+      });
+      const data = this.unwrapResult(res) as { section: any };
+      if (data?.section) {
+        this.activeProject.sections = [...this.activeProject.sections, data.section];
+      }
+    } catch {
+      // ignore; handled when saving
+    }
+  }
+
+  get previewSrc() {
+    if (!this.activeProjectId) return "";
+    return `/app/resumes/${this.activeProjectId}/print?preview=1&t=${this.previewBuster}`;
   }
 
   private updateProjectInList(project: ResumeProjectDTO) {
@@ -616,7 +677,8 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.drawerOpen = true;
     this.editingItemId = null;
 
-    if (key === "basics" || key === "summary") {
+    if (key === "basics" || key === "summary" || key === "declaration") {
+      this.ensureSectionExists(key);
       const item = this.activeSectionItems[0];
       this.formData = toFormData(key, item?.data ?? {});
     } else {
@@ -733,7 +795,8 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   async saveActiveItem() {
     if (!this.activeSectionKey) return;
 
-    if (this.activeSectionKey === "basics" || this.activeSectionKey === "summary") {
+    if (this.activeSectionKey === "basics" || this.activeSectionKey === "summary" || this.activeSectionKey === "declaration") {
+      await this.ensureSectionExists(this.activeSectionKey);
       await this.saveSingleSection(this.activeSectionKey);
       return;
     }

@@ -99,6 +99,11 @@ export const createEmptyResumeData = (): ResumeData => ({
   certifications: [],
   languages: [],
   awards: [],
+  declaration: {
+    text: "",
+    place: "",
+    name: "",
+  },
   settings: {
     showSkillsAs: "chips",
     paper: "A4",
@@ -291,6 +296,14 @@ export const buildResumeDataFromSections = (
     summary: normalizeText(item.data?.summary ?? "") || undefined,
   })).filter((entry) => entry.title);
 
+  const declarationItems = getSectionItems(enabledSections, "declaration");
+  const declaration = declarationItems[0]?.data ?? {};
+  base.declaration = {
+    text: normalizeText(declaration.text ?? "") || undefined,
+    place: normalizeText(declaration.place ?? "") || undefined,
+    name: normalizeText(declaration.name ?? "") || undefined,
+  };
+
   return base;
 };
 
@@ -305,4 +318,5 @@ export const sectionLabels: Record<string, string> = {
   certifications: "Certifications",
   awards: "Achievements",
   languages: "Languages",
+  declaration: "Declaration",
 };

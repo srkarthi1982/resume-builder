@@ -53,6 +53,7 @@ const sectionOrder = [
   "awards",
   "languages",
   "highlights",
+  "declaration",
 ] as const;
 ---
 
@@ -149,7 +150,7 @@ const sectionOrder = [
                 <div class="rb-preview-frame">
                   <iframe
                     title="Resume preview"
-                    :src="'/app/resumes/${projectId}/print?preview=1&t=' + previewBuster"
+                    x-bind:src="previewSrc"
                   ></iframe>
                 </div>
               </AvCard>
@@ -233,6 +234,22 @@ const sectionOrder = [
                       x-model="formData.text"
                       placeholder="Write a short professional summary."
                     />
+                  </form>
+                </template>
+
+                <template x-if="activeSectionKey === 'declaration'">
+                  <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                    <AvTextarea
+                      label="Declaration"
+                      name="declaration"
+                      rows={4}
+                      x-model="formData.text"
+                      placeholder="I hereby declare that the information furnished above is true to the best of my knowledge."
+                    />
+                    <div class="rb-form-grid">
+                      <AvInput label="Place" name="declaration-place" x-model="formData.place" />
+                      <AvInput label="Name" name="declaration-name" x-model="formData.name" />
+                    </div>
                   </form>
                 </template>
 
@@ -602,7 +619,7 @@ const sectionOrder = [
 
     .rb-preview-frame iframe {
       width: 100%;
-      min-height: 720px;
+      min-height: 880px;
       border: none;
       background: #fff;
       border-radius: 16px;

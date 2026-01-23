@@ -62,6 +62,7 @@ const DEFAULT_SECTIONS = [
   { key: "awards", order: 8 },
   { key: "languages", order: 9 },
   { key: "highlights", order: 10 },
+  { key: "declaration", order: 11 },
 ];
 
 const getOwnedProject = async (projectId: string, userId: string) => {

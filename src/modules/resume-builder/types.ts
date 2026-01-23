@@ -10,7 +10,8 @@ export type ResumeSectionKey =
   | "education"
   | "certifications"
   | "languages"
-  | "awards";
+  | "awards"
+  | "declaration";
 
 export type ResumeProjectDTO = {
   id: string;

@@ -34,8 +34,8 @@ const pageTitle = projectData?.project?.title
     <title>{pageTitle}</title>
   </head>
   <body class="rb-print">
-    <AvContainer>
-      <div class="rb-print__toolbar">
+    <AvContainer size="full" className="rb-print__toolbar-container">
+      <div class="rb-print__toolbar rb-print__toolbar-surface">
         <div>
           <p class="av-kicker">Resume Builder</p>
           <h1 class="av-section-title">Print / Preview</h1>
@@ -54,7 +54,9 @@ const pageTitle = projectData?.project?.title
           <div class="av-alert av-alert-danger" role="status">{loadError}</div>
         </AvContainer>
       ) : resumeData ? (
-        <ResumeBuilderShell type={templateKey} data={resumeData} />
+        <AvContainer size="full" className="rb-print__content">
+          <ResumeBuilderShell type={templateKey} data={resumeData} />
+        </AvContainer>
       ) : null}
     </main>
 
@@ -63,6 +65,16 @@ const pageTitle = projectData?.project?.title
         background: #fff;
         color: #0f172a;
         min-height: 100vh;
+        color-scheme: light;
+        --av-bg: #ffffff;
+        --av-surface: #ffffff;
+        --av-surface-soft: #f8fafc;
+        --av-border-subtle: rgba(15, 23, 42, 0.12);
+        --av-border-strong: rgba(15, 23, 42, 0.25);
+        --av-text: #0f172a;
+        --av-text-muted: #475569;
+        --av-text-soft: #64748b;
+        --av-text-strong: #0b1220;
       }
 
       .rb-print__toolbar {
@@ -71,6 +83,20 @@ const pageTitle = projectData?.project?.title
         justify-content: space-between;
         gap: 1.5rem;
         padding: 2rem 0 1rem;
+      }
+
+      .rb-print__toolbar-container {
+        padding: 0;
+      }
+
+      .rb-print__toolbar-surface {
+        background: radial-gradient(circle at top left, rgba(0, 234, 255, 0.18), transparent 55%),
+          radial-gradient(circle at bottom right, rgba(122, 0, 255, 0.2), transparent 60%),
+          #0b1120;
+        border-radius: 0;
+        margin-top: 0;
+        padding: 2rem;
+        box-shadow: 0 14px 32px rgba(2, 6, 23, 0.35);
       }
 
       .rb-print__actions {
@@ -85,12 +111,26 @@ const pageTitle = projectData?.project?.title
         padding: 1rem 0 3rem;
       }
 
+      .rb-print__content {
+        padding: 0 0.5rem;
+      }
+
+      .rb-print__page .resume-template > main {
+        max-width: 80rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+
       @media print {
         .rb-print__toolbar {
           display: none;
         }
 
         .rb-print__page {
+          padding: 0;
+        }
+
+        .rb-print__content {
           padding: 0;
         }
       }
