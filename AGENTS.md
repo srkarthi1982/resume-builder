@@ -57,6 +57,10 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-25 End-to-end verification (local): web webhook returned 204 and Dashboard row inserted for appId resume-builder using file-based remote DB.
+- 2026-01-25 Parent web webhook endpoint added for resume-builder activity; end-to-end verification still pending (needs live webhook response + dashboard row check).
+- 2026-01-25 Added dashboard push + summary v1 for resume-builder (events: resume create/update/delete/default set, section upsert/toggle, item create/update/delete). Summary fields: version, totalResumes, defaultResumeTitle, lastUpdatedAt, templatesUsed, sectionsEnabledCount, completionHint. Test: create/update/delete resume, toggle a section, add/update/delete an item; confirm parent webhook `/api/webhooks/resume-builder-activity.json` returns 204/200 and dashboard row updates; run `npm run typecheck` + `npm run build --remote`.
+- 2026-01-25 Updated db seed to use Astro DB table imports and Date timestamps for typecheck compatibility.
 - 2026-01-23 Seeded four realistic demo resumes (classic/modern/minimal/timeline) directly into local DB for dev-user.
 - 2026-01-23 Classic template divider changed to border for print visibility; installed @ansiversa/components 0.0.116 (local pack).
 - 2026-01-23 Classic template print divider line forced visible; installed @ansiversa/components 0.0.115 (local pack).

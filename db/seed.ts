@@ -1,13 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { db } from "astro:db";
-import { ResumeItem, ResumeProject, ResumeSection } from "./tables";
+import { db, ResumeItem, ResumeProject, ResumeSection } from "astro:db";
 
 const SEED_USER_ID =
   process.env.SEED_USER_ID ||
   process.env.DEV_BYPASS_USER_ID ||
   "dev-user";
 
-const nowIso = () => new Date().toISOString();
+const nowDate = () => new Date();
 
 const SECTIONS = [
   { key: "basics", order: 1 },
@@ -498,7 +497,7 @@ const resumes: ResumeSeed[] = [
 ];
 
 const insertResume = async (resume: ResumeSeed) => {
-  const now = nowIso();
+  const now = nowDate();
   const projectId = randomUUID();
 
   await db.insert(ResumeProject).values({

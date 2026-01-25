@@ -3,6 +3,8 @@ import { ActionError, defineAction, type ActionAPIContext } from "astro:actions"
 import { z } from "astro:schema";
 import { ResumeItem, ResumeProject, ResumeSection, and, asc, db, desc, eq, inArray } from "astro:db";
 import { requireUser } from "./_guards";
+import { buildResumeDashboardSummary } from "../dashboard/summary.schema";
+import { pushResumeBuilderActivity } from "../lib/pushActivity";
 import {
   normalizeResumeItem,
   normalizeResumeProject,
@@ -93,6 +95,25 @@ const touchProject = async (projectId: string) => {
     .where(eq(ResumeProject.id, projectId));
 };
 
+const pushDashboardActivity = async (userId: string, activity: { event: string; entityId?: string }) => {
+  try {
+    const summary = await buildResumeDashboardSummary(userId);
+    pushResumeBuilderActivity({
+      userId,
+      activity: {
+        event: activity.event,
+        entityId: activity.entityId,
+        occurredAt: new Date().toISOString(),
+      },
+      summary,
+    });
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn("pushResumeBuilderActivity failed", error);
+    }
+  }
+};
+
 export const listResumeProjects = defineAction({
   input: z.object({}).optional(),
   async handler(_input, context: ActionAPIContext) {
@@ -149,6 +170,11 @@ export const createResumeProject = defineAction({
     }));
 
     await db.insert(ResumeSection).values(sections);
+
+    await pushDashboardActivity(user.id, {
+      event: "resume.created",
+      entityId: project.id,
+    });
 
     return {
       project: normalizeResumeProject(project),
@@ -219,6 +245,11 @@ export const updateResumeProject = defineAction({
       .where(eq(ResumeProject.id, projectId))
       .returning();
 
+    await pushDashboardActivity(user.id, {
+      event: "resume.updated",
+      entityId: projectId,
+    });
+
     return { project: normalizeResumeProject(project) };
   },
 });
@@ -255,6 +286,11 @@ export const deleteResumeProject = defineAction({
       }
     }
 
+    await pushDashboardActivity(user.id, {
+      event: "resume.deleted",
+      entityId: projectId,
+    });
+
     return { success: true };
   },
 });
@@ -275,6 +311,11 @@ export const setDefaultResumeProject = defineAction({
       .set({ isDefault: true, updatedAt: new Date() })
       .where(eq(ResumeProject.id, projectId))
       .returning();
+
+    await pushDashboardActivity(user.id, {
+      event: "resume.default_set",
+      entityId: projectId,
+    });
 
     return { project: normalizeResumeProject(project) };
   },
@@ -304,6 +345,11 @@ export const upsertSection = defineAction({
         .where(eq(ResumeSection.id, existing.id))
         .returning();
 
+      await pushDashboardActivity(user.id, {
+        event: "section.toggled",
+        entityId: existing.id,
+      });
+
       return {
         section: { ...normalizeResumeSection(updated), items: [] },
       };
@@ -321,6 +367,11 @@ export const upsertSection = defineAction({
         updatedAt: now,
       })
       .returning();
+
+    await pushDashboardActivity(user.id, {
+      event: "section.toggled",
+      entityId: created.id,
+    });
 
     return {
       section: { ...normalizeResumeSection(created), items: [] },
@@ -363,6 +414,10 @@ export const addOrUpdateItem = defineAction({
         .returning();
 
       await touchProject(projectId);
+      await pushDashboardActivity(user.id, {
+        event: "item.updated",
+        entityId: itemId,
+      });
 
       return { item: normalizeResumeItem(updated) };
     }
@@ -380,6 +435,10 @@ export const addOrUpdateItem = defineAction({
       .returning();
 
     await touchProject(projectId);
+    await pushDashboardActivity(user.id, {
+      event: "item.created",
+      entityId: created.id,
+    });
 
     return { item: normalizeResumeItem(created) };
   },
@@ -414,6 +473,10 @@ export const deleteItem = defineAction({
 
     await db.delete(ResumeItem).where(eq(ResumeItem.id, itemId));
     await touchProject(projectId);
+    await pushDashboardActivity(user.id, {
+      event: "item.deleted",
+      entityId: itemId,
+    });
 
     return { success: true };
   },
