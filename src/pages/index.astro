@@ -1,5 +1,5 @@
 ---
-import { AvButton, AvCard, AvContainer } from "@ansiversa/components";
+import { AvButton, AvCard, AvContainer, AvTimeline } from "@ansiversa/components";
 import AppShell from "../layouts/AppShell.astro";
 
 const title = "Resume Builder – Ansiversa";
@@ -24,28 +24,34 @@ const templates = [
   },
 ];
 
-const features = [
+const resumeTimelineItems = [
   {
+    date: "Pillar 01",
     title: "Live preview + print to PDF",
     body: "Instant preview updates and a one-click print flow for final export.",
   },
   {
+    date: "Pillar 02",
     title: "Multiple resumes per user",
     body: "Create role-specific versions without duplicating work.",
   },
   {
+    date: "Pillar 03",
     title: "Section-based editor",
     body: "Left navigation + focused drawer editing keeps updates fast.",
   },
   {
+    date: "Pillar 04",
     title: "ATS-friendly output",
     body: "Clean structure that reads well across screening systems.",
   },
   {
+    date: "Pillar 05",
     title: "Clean templates",
     body: "Four polished layouts tuned for clarity and print quality.",
   },
   {
+    date: "Pillar 06",
     title: "Fast editing workflow",
     body: "Save, preview, and adjust without leaving the editor.",
   },
@@ -133,16 +139,7 @@ const features = [
           Everything you need to ship a polished resume without busywork.
         </p>
       </div>
-      <div class="rb-feature-grid">
-        {features.map((feature) => (
-          <AvCard className="rb-feature-card">
-            <div class="av-auth-stack-xs">
-              <h3 class="av-card-heading">{feature.title}</h3>
-              <p class="av-text-soft">{feature.body}</p>
-            </div>
-          </AvCard>
-        ))}
-      </div>
+      <AvTimeline items={resumeTimelineItems} />
     </AvContainer>
   </section>
 
@@ -236,6 +233,8 @@ const features = [
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
   }
 
   .rb-hero__note {
@@ -311,15 +310,13 @@ const features = [
     margin-bottom: 24px;
   }
 
-  .rb-template-grid,
-  .rb-feature-grid {
+  .rb-template-grid {
     display: grid;
     gap: 16px;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 
-  .rb-template-card,
-  .rb-feature-card {
+  .rb-template-card {
     padding: 20px;
   }
 
