@@ -2,31 +2,340 @@
 import { AvButton, AvCard, AvContainer } from "@ansiversa/components";
 import AppShell from "../layouts/AppShell.astro";
 
-const title = "Ansiversa Resume Builder";
-const description =
-  "Build, edit, and print your resumes with Ansiversa templates.";
+const title = "Resume Builder – Ansiversa";
+const description = "Build ATS-safe resumes with beautiful templates in minutes.";
+
+const templates = [
+  {
+    name: "Classic",
+    description: "Traditional layout with strong hierarchy for timeless roles.",
+  },
+  {
+    name: "Modern",
+    description: "Clean blocks and bold headings for contemporary positions.",
+  },
+  {
+    name: "Minimal",
+    description: "Crisp, compact design that keeps focus on essentials.",
+  },
+  {
+    name: "Timeline",
+    description: "Chronological layout that highlights career progression.",
+  },
+];
+
+const features = [
+  {
+    title: "Live preview + print to PDF",
+    body: "Instant preview updates and a one-click print flow for final export.",
+  },
+  {
+    title: "Multiple resumes per user",
+    body: "Create role-specific versions without duplicating work.",
+  },
+  {
+    title: "Section-based editor",
+    body: "Left navigation + focused drawer editing keeps updates fast.",
+  },
+  {
+    title: "ATS-friendly output",
+    body: "Clean structure that reads well across screening systems.",
+  },
+  {
+    title: "Clean templates",
+    body: "Four polished layouts tuned for clarity and print quality.",
+  },
+  {
+    title: "Fast editing workflow",
+    body: "Save, preview, and adjust without leaving the editor.",
+  },
+];
 ---
 
 <AppShell title={title} description={description}>
-  <section class="av-section">
-    <AvContainer>
-      <div class="av-auth-stack-lg">
-        <AvCard className="av-auth-card">
-          <div class="av-auth-stack-md">
-            <div class="av-auth-stack-xs">
-              <p class="av-kicker">Resume Builder</p>
-              <h1 class="av-section-title">Create your next resume</h1>
-              <p class="av-text-soft">
-                Create multiple resumes, set a default version, and preview or print in one click.
-              </p>
-            </div>
-
-            <div class="av-row-wrap">
-              <AvButton href="/app/resumes">Open resume builder</AvButton>
-            </div>
+  <section class="rb-hero">
+    <AvContainer size="default">
+      <div class="rb-hero__grid">
+        <div class="rb-hero__text">
+          <div class="av-kicker">
+            <span>Career · Ansiversa Mini App</span>
           </div>
-        </AvCard>
+          <h1 class="rb-hero__title">Resume Builder</h1>
+          <p class="rb-hero__lead">
+            Build ATS-safe resumes with beautiful templates in minutes.
+          </p>
+          <div class="rb-hero__bullets">
+            <span>Focused editor with section-based workflow</span>
+            <span>Multiple resumes per user, one click to set default</span>
+            <span>Print-ready output with clean templates</span>
+          </div>
+          <div class="rb-hero__cta">
+            <AvButton href="/app/resumes">Create Resume</AvButton>
+            <AvButton href="#templates" variant="ghost">View Templates</AvButton>
+          </div>
+          <p class="rb-hero__note">Fast edits. Clean exports. No clutter.</p>
+        </div>
+
+        <div class="rb-hero__panel">
+          <AvCard className="rb-hero__panel-card">
+            <p class="rb-hero__panel-kicker">Resume flow</p>
+            <h3 class="rb-hero__panel-title">Create → Fill → Download</h3>
+            <ol class="rb-hero__panel-steps">
+              <li><span>1</span>Choose a template</li>
+              <li><span>2</span>Add sections and details</li>
+              <li><span>3</span>Preview + print to PDF</li>
+            </ol>
+            <div class="rb-hero__panel-footer">
+              <div>
+                <p class="rb-hero__panel-label">Templates</p>
+                <p class="rb-hero__panel-value">4 clean styles</p>
+              </div>
+              <div>
+                <p class="rb-hero__panel-label">Output</p>
+                <p class="rb-hero__panel-value">ATS-ready</p>
+              </div>
+            </div>
+          </AvCard>
+        </div>
       </div>
     </AvContainer>
   </section>
+
+  <section class="av-section" id="templates">
+    <AvContainer size="default">
+      <div class="rb-section__header">
+        <h2 class="av-section-title">Templates</h2>
+        <p class="av-section-lead">
+          Four clean layouts that balance structure, whitespace, and clarity.
+        </p>
+      </div>
+      <div class="rb-template-grid">
+        {templates.map((template) => (
+          <AvCard className="rb-template-card">
+            <div class="av-auth-stack-sm">
+              <h3 class="av-card-heading">{template.name}</h3>
+              <p class="av-text-soft">{template.description}</p>
+              <AvButton href="/app/resumes" size="sm" variant="ghost">
+                Use this template
+              </AvButton>
+            </div>
+          </AvCard>
+        ))}
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section">
+    <AvContainer size="default">
+      <div class="rb-section__header">
+        <h2 class="av-section-title">Why Resume Builder</h2>
+        <p class="av-section-lead">
+          Everything you need to ship a polished resume without busywork.
+        </p>
+      </div>
+      <div class="rb-feature-grid">
+        {features.map((feature) => (
+          <AvCard className="rb-feature-card">
+            <div class="av-auth-stack-xs">
+              <h3 class="av-card-heading">{feature.title}</h3>
+              <p class="av-text-soft">{feature.body}</p>
+            </div>
+          </AvCard>
+        ))}
+      </div>
+    </AvContainer>
+  </section>
+
+  <section class="av-section rb-process">
+    <AvContainer size="default">
+      <div class="av-section-header">
+        <div class="av-kicker">
+          <span>How it works</span>
+        </div>
+        <h2 class="av-section-title">Create → Fill → Download</h2>
+        <p class="av-section-lead">
+          Three steps from empty canvas to final PDF.
+        </p>
+      </div>
+
+      <ol class="av-steps">
+        <li class="av-step">
+          <span class="av-step-number">1</span>
+          <div class="av-step-body">
+            <h3 class="av-card-heading">Create a resume</h3>
+            <p>Pick a template and name your resume in seconds.</p>
+          </div>
+        </li>
+
+        <li class="av-step">
+          <span class="av-step-number">2</span>
+          <div class="av-step-body">
+            <h3 class="av-card-heading">Fill each section</h3>
+            <p>Use the left navigation to focus on one section at a time.</p>
+          </div>
+        </li>
+
+        <li class="av-step">
+          <span class="av-step-number">3</span>
+          <div class="av-step-body">
+            <h3 class="av-card-heading">Download</h3>
+            <p>Preview, print, and share the final ATS-ready PDF.</p>
+          </div>
+        </li>
+      </ol>
+    </AvContainer>
+  </section>
+
+  <section class="av-section">
+    <AvContainer size="default">
+      <AvCard className="rb-cta">
+        <div class="rb-cta__content">
+          <div class="av-auth-stack-xxs">
+            <h2 class="av-section-title">Ready to build your resume?</h2>
+            <p class="av-text-soft">
+              Start a new resume and get to a printable draft in minutes.
+            </p>
+          </div>
+          <AvButton href="/app/resumes">Create Resume</AvButton>
+        </div>
+      </AvCard>
+    </AvContainer>
+  </section>
 </AppShell>
+
+<style>
+  .rb-hero {
+    padding: 72px 0 48px;
+  }
+
+  .rb-hero__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    align-items: center;
+  }
+
+  .rb-hero__title {
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    line-height: 1.05;
+    margin: 0;
+  }
+
+  .rb-hero__lead {
+    font-size: 1.1rem;
+    color: var(--av-text-soft);
+  }
+
+  .rb-hero__bullets {
+    display: grid;
+    gap: 8px;
+    color: var(--av-text-soft);
+  }
+
+  .rb-hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .rb-hero__note {
+    margin: 0;
+    color: var(--av-text-soft);
+  }
+
+  .rb-hero__panel-card {
+    padding: 24px;
+  }
+
+  .rb-hero__panel-kicker {
+    margin: 0 0 4px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--av-text-soft);
+  }
+
+  .rb-hero__panel-title {
+    margin: 0 0 16px;
+  }
+
+  .rb-hero__panel-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .rb-hero__panel-steps li {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: var(--av-text-soft);
+  }
+
+  .rb-hero__panel-steps span {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--av-surface-subtle, rgba(255, 255, 255, 0.08));
+    color: var(--av-text-strong, #fff);
+    font-size: 0.85rem;
+  }
+
+  .rb-hero__panel-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+    color: var(--av-text-soft);
+  }
+
+  .rb-hero__panel-label {
+    margin: 0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .rb-hero__panel-value {
+    margin: 4px 0 0;
+    font-weight: 600;
+    color: var(--av-text-strong, #fff);
+  }
+
+  .rb-section__header {
+    margin-bottom: 24px;
+  }
+
+  .rb-template-grid,
+  .rb-feature-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .rb-template-card,
+  .rb-feature-card {
+    padding: 20px;
+  }
+
+  .rb-process {
+    padding-top: 32px;
+  }
+
+  .rb-cta {
+    padding: 24px;
+  }
+
+  .rb-cta__content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+</style>
