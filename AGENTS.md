@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-27 Bumped @ansiversa/components to ^0.0.118 and enabled AvMiniAppBar via APP_KEY in AppShell.
 - 2026-01-25 Replaced features grid with timeline section and added hero CTA spacing on landing page.
 - 2026-01-25 Rebuilt / landing page with hero, templates, features, how-it-works, and final CTA using Av components + local CSS; tested with `npm run typecheck` and `npm run build --remote`.
 - 2026-01-25 End-to-end verification (local): web webhook returned 204 and Dashboard row inserted for appId resume-builder using file-based remote DB.
