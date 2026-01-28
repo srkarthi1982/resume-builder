@@ -9,18 +9,22 @@ const templates = [
   {
     name: "Classic",
     description: "Traditional layout with strong hierarchy for timeless roles.",
+    layout: "classic",
   },
   {
     name: "Modern",
     description: "Clean blocks and bold headings for contemporary positions.",
+    layout: "modern",
   },
   {
     name: "Minimal",
     description: "Crisp, compact design that keeps focus on essentials.",
+    layout: "minimal",
   },
   {
     name: "Timeline",
     description: "Chronological layout that highlights career progression.",
+    layout: "timeline",
   },
 ];
 
@@ -120,6 +124,51 @@ const resumeTimelineItems = [
           <AvCard className="rb-template-card">
             <div class="av-auth-stack-sm">
               <h3 class="av-card-heading">{template.name}</h3>
+              <div class="rb-template-wireframe" aria-hidden="true">
+                {template.layout === "classic" && (
+                  <svg viewBox="0 0 240 140" role="presentation">
+                    <rect x="16" y="16" width="140" height="12" rx="6" />
+                    <rect x="16" y="34" width="96" height="8" rx="4" />
+                    <rect x="16" y="52" width="140" height="10" rx="5" />
+                    <rect x="16" y="70" width="132" height="8" rx="4" />
+                    <rect x="16" y="86" width="132" height="8" rx="4" />
+                    <rect x="16" y="102" width="132" height="8" rx="4" />
+                    <rect x="162" y="52" width="62" height="64" rx="8" />
+                  </svg>
+                )}
+                {template.layout === "modern" && (
+                  <svg viewBox="0 0 240 140" role="presentation">
+                    <rect x="16" y="16" width="112" height="12" rx="6" />
+                    <rect x="16" y="36" width="168" height="8" rx="4" />
+                    <rect x="16" y="54" width="208" height="18" rx="9" />
+                    <rect x="16" y="78" width="98" height="36" rx="10" />
+                    <rect x="126" y="78" width="98" height="36" rx="10" />
+                  </svg>
+                )}
+                {template.layout === "minimal" && (
+                  <svg viewBox="0 0 240 140" role="presentation">
+                    <rect x="58" y="16" width="124" height="10" rx="5" />
+                    <rect x="48" y="34" width="144" height="6" rx="3" />
+                    <rect x="32" y="54" width="176" height="8" rx="4" />
+                    <rect x="32" y="72" width="176" height="8" rx="4" />
+                    <rect x="32" y="90" width="96" height="8" rx="4" />
+                    <rect x="32" y="108" width="132" height="8" rx="4" />
+                  </svg>
+                )}
+                {template.layout === "timeline" && (
+                  <svg viewBox="0 0 240 140" role="presentation">
+                    <rect x="24" y="18" width="120" height="10" rx="5" />
+                    <rect x="40" y="38" width="176" height="8" rx="4" />
+                    <rect x="40" y="60" width="168" height="8" rx="4" />
+                    <rect x="40" y="82" width="160" height="8" rx="4" />
+                    <rect x="40" y="104" width="140" height="8" rx="4" />
+                    <rect x="20" y="36" width="4" height="86" rx="2" />
+                    <circle cx="22" cy="36" r="6" />
+                    <circle cx="22" cy="60" r="6" />
+                    <circle cx="22" cy="84" r="6" />
+                  </svg>
+                )}
+              </div>
               <p class="av-text-soft">{template.description}</p>
               <AvButton href="/app/resumes" size="sm" variant="ghost">
                 Use this template
@@ -318,6 +367,28 @@ const resumeTimelineItems = [
 
   .rb-template-card {
     padding: 20px;
+  }
+
+  .rb-template-wireframe {
+    display: grid;
+    place-items: center;
+    height: 160px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: linear-gradient(140deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.35));
+  }
+
+  .rb-template-wireframe svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .rb-template-wireframe rect {
+    fill: rgba(148, 163, 184, 0.45);
+  }
+
+  .rb-template-wireframe circle {
+    fill: rgba(148, 163, 184, 0.55);
   }
 
   .rb-process {
