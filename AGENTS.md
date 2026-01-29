@@ -57,6 +57,8 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-29 Added parent notification helper and wired resume create/update notifications.
+
 - 2026-01-28 Reordered template card content (title → wireframe → description/button) and increased wireframe height.
 - 2026-01-28 Aligned template wireframe SVGs to match Classic/Modern/Minimal/Timeline layouts.
 - 2026-01-28 Added wireframe SVG placeholders to Templates cards on landing page.
@@ -130,3 +132,9 @@ To add a 5th template later:
 - 2026-01-16 AppShell now calls local notification proxy; env docs updated with PARENT_APP_URL and auth secret note.
 - 2026-01-26 Fixed Astro DB scripts overriding remote envs by removing hardcoded ASTRO_DB_REMOTE_URL; added .env.example guidance and ignored .env.local/.env.*.local so Vercel uses env vars.
 - 2026-01-26 Upgraded @ansiversa/components to ^0.0.117 (published) so declaration field exists in ResumeData; typecheck/build verified.
+
+## Verification Log
+
+- 2026-01-29 `npm run typecheck` (pass; 1 hint in baseRepository).
+- 2026-01-29 `npm run build` (pass).
+- 2026-01-29 Smoke test: not run (manual create/update resume).

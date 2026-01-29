@@ -19,6 +19,12 @@ interface ImportMetaEnv {
   /** Optional: Parent app URL (fallback to root app URL) */
   readonly PARENT_APP_URL?: string;
 
+  /** Optional: Webhook secret for parent app integrations */
+  readonly ANSIVERSA_WEBHOOK_SECRET?: string;
+
+  /** Optional: Parent notification webhook URL override */
+  readonly PARENT_NOTIFICATION_WEBHOOK_URL?: string;
+
   /** Optional: Dev-only auth bypass (requires import.meta.env.DEV) */
   readonly DEV_BYPASS_AUTH?: string;
 

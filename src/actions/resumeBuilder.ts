@@ -5,6 +5,7 @@ import { ResumeItem, ResumeProject, ResumeSection, and, asc, db, desc, eq, inArr
 import { requireUser } from "./_guards";
 import { buildResumeDashboardSummary } from "../dashboard/summary.schema";
 import { pushResumeBuilderActivity } from "../lib/pushActivity";
+import { notifyParent } from "../lib/notifyParent";
 import {
   normalizeResumeItem,
   normalizeResumeProject,
@@ -176,6 +177,15 @@ export const createResumeProject = defineAction({
       entityId: project.id,
     });
 
+    void notifyParent({
+      appKey: "resume-builder",
+      userId: user.id,
+      title: "Resume created",
+      message: `Resume “${project.title}” is ready.`,
+      level: "success",
+      meta: { resumeId: project.id },
+    });
+
     return {
       project: normalizeResumeProject(project),
       sections: sections.map(normalizeResumeSection).map((section) => ({ ...section, items: [] })),
@@ -249,6 +259,17 @@ export const updateResumeProject = defineAction({
       event: "resume.updated",
       entityId: projectId,
     });
+
+    if (project?.title) {
+      void notifyParent({
+        appKey: "resume-builder",
+        userId: user.id,
+        title: "Resume updated",
+        message: `Resume “${project.title}” was updated.`,
+        level: "info",
+        meta: { resumeId: projectId },
+      });
+    }
 
     return { project: normalizeResumeProject(project) };
   },
