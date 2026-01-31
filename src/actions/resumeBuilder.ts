@@ -90,6 +90,16 @@ const getOwnedProject = async (projectId: string, userId: string) => {
   return project;
 };
 
+const getOwnedProjectWithTemplateAccess = async (
+  projectId: string,
+  userId: string,
+  isPaid: boolean,
+) => {
+  const project = await getOwnedProject(projectId, userId);
+  ensureTemplateAccess(project.templateKey, isPaid);
+  return project;
+};
+
 const getProjectSections = async (projectId: string) => {
   return await db
     .select()
@@ -246,7 +256,7 @@ export const updateResumeProject = defineAction({
   input: updateProjectSchema,
   async handler({ projectId, title, templateKey }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProject(projectId, user.id);
+    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
 
     const updates: Record<string, any> = { updatedAt: new Date() };
     if (title !== undefined) {
@@ -332,7 +342,7 @@ export const setDefaultResumeProject = defineAction({
   input: projectIdSchema,
   async handler({ projectId }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProject(projectId, user.id);
+    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
 
     await db
       .update(ResumeProject)
@@ -358,7 +368,7 @@ export const upsertSection = defineAction({
   input: sectionSchema,
   async handler({ projectId, key, order, isEnabled }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProject(projectId, user.id);
+    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
 
     const [existing] = await db
       .select()
@@ -416,7 +426,7 @@ export const addOrUpdateItem = defineAction({
   input: itemSchema,
   async handler({ projectId, sectionKey, itemId, order, data }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProject(projectId, user.id);
+    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
 
     const [section] = await db
       .select()
@@ -481,7 +491,7 @@ export const deleteItem = defineAction({
   input: deleteItemSchema,
   async handler({ projectId, itemId }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProject(projectId, user.id);
+    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
 
     const [existing] = await db
       .select({

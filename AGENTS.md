@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-31 Enforced server-side Pro template access with shared guard for project mutations (PAYMENT_REQUIRED).
 - 2026-01-31 Hide Pro badge for paid users in template pickers to match quiz gating UI.
 - 2026-01-31 Removed landing page “Use this template” buttons (they only linked to /app/resumes without selecting a template).
 - 2026-01-31 Locked templates 3/4 (minimal/timeline) behind Pro with shared template tier map, UI gating, and server-side PAYMENT_REQUIRED guards.
@@ -140,6 +141,7 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-01-31 Pending manual check: free user cannot mutate Pro project via update/setDefault/upsertSection/addOrUpdateItem/deleteItem (PAYMENT_REQUIRED); deleteResumeProject still allowed.
 - 2026-01-31 Pending manual check: free user blocked from minimal/timeline in UI + server returns PAYMENT_REQUIRED; paid user can select/print all templates.
 - 2026-01-31 Pending manual check: paid user sees non-null fields; free user sees null/false in `Astro.locals.user`.
 - 2026-01-31 Pending manual check: `/admin/session` shows isPaid true for paid user and false for free user.
