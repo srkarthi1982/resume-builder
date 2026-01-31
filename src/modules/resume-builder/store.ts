@@ -2,9 +2,9 @@ import type { Alpine } from "alpinejs";
 import { AvBaseStore } from "@ansiversa/components/alpine";
 import { actions } from "astro:actions";
 import type { ResumeItemDTO, ResumeProjectDTO, ResumeProjectDetail, ResumeSectionKey } from "./types";
-import { sectionLabels } from "./helpers";
+import { TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from "./helpers";
 
-const TEMPLATE_KEYS = ["classic", "modern", "minimal", "timeline"] as const;
+const PAYWALL_MESSAGE = "Template 3 & 4 are Pro templates. Upgrade to unlock.";
 
 const defaultState = () => ({
   projects: [] as ResumeProjectDTO[],
@@ -18,6 +18,9 @@ const defaultState = () => ({
   editingItemId: null as string | null,
   formData: {} as Record<string, any>,
   previewBuster: Date.now(),
+  isPaid: false,
+  paywallMessage: null as string | null,
+  templateOptions: TEMPLATE_OPTIONS,
   newProject: {
     title: "",
     templateKey: "classic",
@@ -372,6 +375,9 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   editingItemId: string | null = null;
   formData: Record<string, any> = {};
   previewBuster = Date.now();
+  isPaid = false;
+  paywallMessage: string | null = null;
+  templateOptions = TEMPLATE_OPTIONS;
   newProject = {
     title: "",
     templateKey: "classic",
@@ -398,6 +404,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
         templateKey: this.activeProject.project.templateKey,
       };
     }
+    this.isPaid = Boolean(initial.isPaid);
   }
 
   get sectionKeys() {
@@ -411,6 +418,28 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
   get activeSectionItems() {
     return this.activeSection?.items ?? [];
+  }
+
+  isTemplateLocked(templateKey: string) {
+    return isProTemplate(templateKey) && !this.isPaid;
+  }
+
+  selectNewTemplate(templateKey: string) {
+    if (this.isTemplateLocked(templateKey)) {
+      this.paywallMessage = PAYWALL_MESSAGE;
+      return;
+    }
+    this.paywallMessage = null;
+    this.newProject.templateKey = templateKey;
+  }
+
+  selectProjectTemplate(templateKey: string) {
+    if (this.isTemplateLocked(templateKey)) {
+      this.paywallMessage = PAYWALL_MESSAGE;
+      return;
+    }
+    this.paywallMessage = null;
+    this.projectMeta.templateKey = templateKey;
   }
 
   getSectionLabel(key: ResumeSectionKey | null) {
@@ -557,12 +586,17 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.loading = true;
     this.error = null;
     this.success = null;
+    this.paywallMessage = null;
 
     try {
       const res = await actions.resumeBuilder.createResumeProject({
         title,
         templateKey: templateKey as any,
       });
+      if (res?.error?.code === "PAYMENT_REQUIRED") {
+        this.paywallMessage = res.error.message || PAYWALL_MESSAGE;
+        return;
+      }
       const data = this.unwrapResult(res) as ResumeProjectDetail;
       if (data?.project) {
         this.projects = [data.project, ...this.projects];
@@ -584,9 +618,14 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
     this.loading = true;
     this.error = null;
+    this.paywallMessage = null;
 
     try {
       const res = await actions.resumeBuilder.getResumeProject({ projectId: id });
+      if (res?.error?.code === "PAYMENT_REQUIRED") {
+        this.paywallMessage = res.error.message || PAYWALL_MESSAGE;
+        return;
+      }
       const data = this.unwrapResult(res) as ResumeProjectDetail;
       this.activeProject = data;
       this.activeProjectId = data.project?.id ?? id;
@@ -605,6 +644,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.loading = true;
     this.error = null;
     this.success = null;
+    this.paywallMessage = null;
 
     try {
       const res = await actions.resumeBuilder.updateResumeProject({
@@ -612,6 +652,10 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
         title: this.projectMeta.title,
         templateKey: this.projectMeta.templateKey as any,
       });
+      if (res?.error?.code === "PAYMENT_REQUIRED") {
+        this.paywallMessage = res.error.message || PAYWALL_MESSAGE;
+        return;
+      }
       const data = this.unwrapResult(res) as { project: ResumeProjectDTO };
       if (data?.project) {
         this.activeProject.project = data.project;

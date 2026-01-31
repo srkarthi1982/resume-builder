@@ -11,13 +11,22 @@ import {
   normalizeResumeProject,
   normalizeResumeSection,
   normalizeText,
+  TEMPLATE_KEYS,
+  isProTemplate,
 } from "../modules/resume-builder/helpers";
 
-const templateKeys = ["classic", "modern", "minimal", "timeline"] as const;
+const ensureTemplateAccess = (templateKey: string, isPaid: boolean) => {
+  if (isProTemplate(templateKey) && !isPaid) {
+    throw new ActionError({
+      code: "PAYMENT_REQUIRED",
+      message: "Upgrade to Pro to use this template.",
+    });
+  }
+};
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  templateKey: z.enum(templateKeys),
+  templateKey: z.enum(TEMPLATE_KEYS),
 });
 
 const projectIdSchema = z.object({
@@ -28,7 +37,7 @@ const updateProjectSchema = z
   .object({
     projectId: z.string().min(1),
     title: z.string().min(1).optional(),
-    templateKey: z.enum(templateKeys).optional(),
+    templateKey: z.enum(TEMPLATE_KEYS).optional(),
   })
   .refine((input) => input.title !== undefined || input.templateKey !== undefined, {
     message: "Provide a title or template to update.",
@@ -135,6 +144,7 @@ export const createResumeProject = defineAction({
   input: projectSchema,
   async handler(input, context: ActionAPIContext) {
     const user = requireUser(context);
+    ensureTemplateAccess(input.templateKey, user.isPaid);
     const title = normalizeText(input.title);
     if (!title) {
       throw new ActionError({ code: "BAD_REQUEST", message: "Title is required." });
@@ -198,6 +208,7 @@ export const getResumeProject = defineAction({
   async handler({ projectId }, context: ActionAPIContext) {
     const user = requireUser(context);
     const project = await getOwnedProject(projectId, user.id);
+    ensureTemplateAccess(project.templateKey, user.isPaid);
 
     const sections = await getProjectSections(projectId);
     const sectionIds = sections.map((section) => section.id);
@@ -246,6 +257,7 @@ export const updateResumeProject = defineAction({
       updates.title = normalized;
     }
     if (templateKey !== undefined) {
+      ensureTemplateAccess(templateKey, user.isPaid);
       updates.templateKey = templateKey;
     }
 

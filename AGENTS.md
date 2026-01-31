@@ -57,6 +57,9 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-31 Locked templates 3/4 (minimal/timeline) behind Pro with shared template tier map, UI gating, and server-side PAYMENT_REQUIRED guards.
+- 2026-01-31 Normalized payment fields in `Astro.locals.user` to avoid undefined values (stripeCustomerId/plan/planStatus/isPaid/renewalAt).
+- 2026-01-31 Added locals.session payment flags in middleware/types and a temporary `/admin/session` debug page for Phase 2 verification.
 - 2026-01-29 Added parent notification helper and wired resume create/update notifications.
 
 - 2026-01-28 Reordered template card content (title → wireframe → description/button) and increased wireframe height.
@@ -135,6 +138,9 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-01-31 Pending manual check: free user blocked from minimal/timeline in UI + server returns PAYMENT_REQUIRED; paid user can select/print all templates.
+- 2026-01-31 Pending manual check: paid user sees non-null fields; free user sees null/false in `Astro.locals.user`.
+- 2026-01-31 Pending manual check: `/admin/session` shows isPaid true for paid user and false for free user.
 - 2026-01-29 `npm run typecheck` (pass; 1 hint in baseRepository).
 - 2026-01-29 `npm run build` (pass).
 - 2026-01-29 Smoke test: not run (manual create/update resume).

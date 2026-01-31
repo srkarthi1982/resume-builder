@@ -8,18 +8,19 @@ import {
   AvIcon,
   AvInput,
   AvLoading,
-  AvSelect,
   AvTextarea,
 } from "@ansiversa/components";
 import { actions } from "astro:actions";
 import AppShell from "../../../layouts/AppShell.astro";
 import type { ResumeProjectDetail } from "../../../modules/resume-builder/types";
-import { sectionLabels } from "../../../modules/resume-builder/helpers";
+import { TEMPLATE_OPTIONS, sectionLabels } from "../../../modules/resume-builder/helpers";
 
 const projectId = Astro.params.id ?? "";
+const isPaid = Astro.locals.user?.isPaid === true;
 
 let projectData: ResumeProjectDetail | null = null;
 let loadError: string | null = null;
+let isPaywall = false;
 
 try {
   const result = await Astro.callAction(actions.resumeBuilder.getResumeProject, {
@@ -29,6 +30,7 @@ try {
   projectData = data as ResumeProjectDetail;
 } catch (err) {
   loadError = (err as Error)?.message ?? "Unable to load resume.";
+  isPaywall = loadError.toLowerCase().includes("upgrade to pro");
 }
 
 const title = projectData?.project?.title
@@ -40,6 +42,9 @@ const initialState = {
   activeProject: projectData,
   activeProjectId: projectData?.project?.id ?? projectId,
   projects: [],
+  isPaid,
+  paywallMessage: null,
+  templateOptions: TEMPLATE_OPTIONS,
 };
 
 const sectionOrder = [
@@ -70,6 +75,9 @@ const sectionOrder = [
           <AvCard variant="soft" className="av-auth-stack-sm">
             <AvEmptyState headline="Unable to load resume" description={loadError} />
             <AvButton href="/app/resumes" variant="ghost">Back to resumes</AvButton>
+            {isPaywall ? (
+              <AvButton href="https://ansiversa.com/pricing" variant="primary">View pricing</AvButton>
+            ) : null}
           </AvCard>
         ) : (
           <>
@@ -91,16 +99,29 @@ const sectionOrder = [
                     x-model="projectMeta.title"
                     required
                   />
-                  <AvSelect
-                    label="Template"
-                    name="template"
-                    x-model="projectMeta.templateKey"
-                  >
-                    <option value="classic">Classic</option>
-                    <option value="modern">Modern</option>
-                    <option value="minimal">Minimal</option>
-                    <option value="timeline">Timeline</option>
-                  </AvSelect>
+                  <div class="rb-template-picker">
+                    <template x-for="template in templateOptions" :key="template.key">
+                      <button
+                        class="rb-template-option"
+                        :class="projectMeta.templateKey === template.key ? 'is-selected' : ''"
+                        type="button"
+                        @click.prevent="selectProjectTemplate(template.key)"
+                        :disabled="isTemplateLocked(template.key)"
+                      >
+                        <div class="rb-template-option__head">
+                          <p class="rb-template-option__title" x-text="template.label"></p>
+                          <span class="av-badge av-badge-soft" x-show="template.tier === 'pro'" x-cloak>Pro</span>
+                        </div>
+                        <p class="rb-template-option__meta" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
+                      </button>
+                    </template>
+                  </div>
+                  <div class="rb-paywall" x-show="paywallMessage" x-cloak>
+                    <p class="av-text-soft av-m-0" x-text="paywallMessage"></p>
+                    <AvButton href="https://ansiversa.com/pricing" variant="ghost" size="sm">
+                      View pricing
+                    </AvButton>
+                  </div>
 
                   <div class="av-row-wrap">
                     <AvButton type="submit" :disabled="loading">Save details</AvButton>
@@ -577,6 +598,67 @@ const sectionOrder = [
   </section>
 
   <style>
+    .rb-template-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .rb-template-option {
+      text-align: left;
+      padding: 0.85rem 1rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: #0b1220;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: border 0.2s ease, transform 0.2s ease;
+    }
+
+    .rb-template-option__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .rb-template-option__title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .rb-template-option__meta {
+      font-size: 0.75rem;
+      color: rgba(148, 163, 184, 0.85);
+      margin: 0;
+    }
+
+    .rb-template-option:hover {
+      border-color: rgba(14, 165, 233, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .rb-template-option.is-selected {
+      border-color: rgba(14, 165, 233, 0.9);
+      background: rgba(14, 116, 144, 0.2);
+    }
+
+    .rb-template-option:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .rb-paywall {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
     .rb-editor {
       display: grid;
       grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);

@@ -1,6 +1,25 @@
 import type { ResumeData } from "@ansiversa/components";
 import type { ResumeItemDTO, ResumeProjectDTO, ResumeSectionDTO } from "./types";
 
+export const TEMPLATE_KEYS = ["classic", "modern", "minimal", "timeline"] as const;
+
+export const TEMPLATE_OPTIONS = [
+  { key: "classic", label: "Classic", tier: "free" },
+  { key: "modern", label: "Modern", tier: "free" },
+  { key: "minimal", label: "Minimal", tier: "pro" },
+  { key: "timeline", label: "Timeline", tier: "pro" },
+] as const;
+
+const TEMPLATE_TIER_MAP = {
+  classic: "free",
+  modern: "free",
+  minimal: "pro",
+  timeline: "pro",
+} as const;
+
+export const isProTemplate = (templateKey: string) =>
+  TEMPLATE_TIER_MAP[templateKey as keyof typeof TEMPLATE_TIER_MAP] === "pro";
+
 export type ResumeProjectRow = {
   id: string;
   userId: string;

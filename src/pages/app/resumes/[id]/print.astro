@@ -9,6 +9,7 @@ const projectId = Astro.params.id ?? "";
 
 let projectData: ResumeProjectDetail | null = null;
 let loadError: string | null = null;
+let isPaywall = false;
 
 try {
   const result = await Astro.callAction(actions.resumeBuilder.getResumeProject, {
@@ -18,6 +19,7 @@ try {
   projectData = data as ResumeProjectDetail;
 } catch (err) {
   loadError = (err as Error)?.message ?? "Unable to load resume.";
+  isPaywall = loadError.toLowerCase().includes("upgrade to pro");
 }
 
 const resumeData = projectData ? buildResumeDataFromSections(projectData.sections ?? []) : null;
@@ -52,6 +54,13 @@ const pageTitle = projectData?.project?.title
       {loadError ? (
         <AvContainer>
           <div class="av-alert av-alert-danger" role="status">{loadError}</div>
+          {isPaywall ? (
+            <div style="margin-top: 1rem;">
+              <AvButton href="https://ansiversa.com/pricing" variant="primary">
+                View pricing
+              </AvButton>
+            </div>
+          ) : null}
         </AvContainer>
       ) : resumeData ? (
         <AvContainer size="full" className="rb-print__content">
