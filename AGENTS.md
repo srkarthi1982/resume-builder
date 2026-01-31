@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-01-31 Restored AvSelect import in resume editor to fix runtime ReferenceError.
 - 2026-01-31 Enforced server-side Pro template access with shared guard for project mutations (PAYMENT_REQUIRED).
 - 2026-01-31 Hide Pro badge for paid users in template pickers to match quiz gating UI.
 - 2026-01-31 Removed landing page “Use this template” buttons (they only linked to /app/resumes without selecting a template).
