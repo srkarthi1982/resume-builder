@@ -69,7 +69,7 @@ const initialState = {
                   >
                     <div class="rb-template-option__head">
                       <p class="rb-template-option__title" x-text="template.label"></p>
-                      <span class="av-badge av-badge-soft" x-show="template.tier === 'pro'" x-cloak>Pro</span>
+                      <span class="av-badge av-badge-soft" x-show="template.tier === 'pro' && !isPaid" x-cloak>Pro</span>
                     </div>
                     <p class="rb-template-option__meta" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
                   </button>
