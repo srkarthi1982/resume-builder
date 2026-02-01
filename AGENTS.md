@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-01 Added `/help` page and wired Help link into the mini-app menu.
 - 2026-01-31 Restored AvSelect import in resume editor to fix runtime ReferenceError.
 - 2026-01-31 Enforced server-side Pro template access with shared guard for project mutations (PAYMENT_REQUIRED).
 - 2026-01-31 Hide Pro badge for paid users in template pickers to match quiz gating UI.
@@ -142,6 +143,8 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-01 `npm run typecheck` (pass; 1 hint in baseRepository).
+- 2026-02-01 `npm run build` (pass).
 - 2026-01-31 Pending manual check: free user cannot mutate Pro project via update/setDefault/upsertSection/addOrUpdateItem/deleteItem (PAYMENT_REQUIRED); deleteResumeProject still allowed.
 - 2026-01-31 Pending manual check: free user blocked from minimal/timeline in UI + server returns PAYMENT_REQUIRED; paid user can select/print all templates.
 - 2026-01-31 Pending manual check: paid user sees non-null fields; free user sees null/false in `Astro.locals.user`.
