@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Form-layer hardening pass (no template/print edits): aligned limits to architect contract (full name 60, job title 80, summary 300, experience summary 400, bullet line 120, project summary 200, declaration 180, skill 30, certification 80), switched basics editor to semantic contact inputs (email/tel + location text + labeled URL list), added input/paste truncation hooks (including per-line bullet clamp), enforced structured date payload shape (`start/end + isPresent` with legacy compatibility), added present/end exclusivity checks, and added non-blocking education overlap warning in store.
 - 2026-02-08 Final visual polish sync: upgraded to `@ansiversa/components@0.0.124` to pick up template hierarchy refinements (Classic name/title/contact balance, Minimal header-contact cohesion + declaration placement treatment, Modern sidebar weight tuning, declaration closing hierarchy polish across templates).
 - 2026-02-08 Final polish pass (Astra): enforced tighter form constraints and server validation (`src/modules/resume-builder/constraints.ts`, `src/actions/resumeBuilder.ts`) including year floor 1950, current-year max, stricter section limits (summary/declaration/experience/project/bullets), and template-aware Minimal caps (summary 220, bullet line 140) on save.
 - 2026-02-08 Output hygiene pass: published `@ansiversa/components@0.0.123`, upgraded dependency in resume-builder, and regenerated print artifacts with bad-input data to verify dedupe/truncation behavior.
@@ -152,6 +153,13 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 Form guardrail proof artifacts generated with Playwright under `artifacts/form-guardrails-20260208/`:
+  - `full_name_clamp.png`
+  - `invalid_date_blocked.png`
+  - `present_toggle.png`
+  - `proof.json` (captured metrics: `fullNameLen=60`, `summaryLen=400`, `bulletFirstLineLen=120`, invalid date blocked, present toggle clears/disables end date).
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
 - 2026-02-08 `npm install @ansiversa/components@0.0.125` (pass).
 - 2026-02-08 `npm run typecheck && npm run build` (pass; typecheck has 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`; build completed successfully).
 - 2026-02-08 v5 visual-polish artifacts generated from live print routes via DEV bypass + Playwright + PyMuPDF under `artifacts/print-fix-20260208-v5/`:

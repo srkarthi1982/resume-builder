@@ -3,6 +3,7 @@ import { AvBaseStore } from "@ansiversa/components/alpine";
 import { actions } from "astro:actions";
 import type { ResumeItemDTO, ResumeProjectDTO, ResumeProjectDetail, ResumeSectionKey } from "./types";
 import { TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from "./helpers";
+import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "./constraints";
 
 const PAYWALL_MESSAGE = "Template 3 & 4 are Pro templates. Upgrade to unlock.";
 
@@ -12,6 +13,7 @@ const defaultState = () => ({
   activeProjectId: null as string | null,
   loading: false,
   error: null as string | null,
+  warning: null as string | null,
   success: null as string | null,
   drawerOpen: false,
   activeSectionKey: null as ResumeSectionKey | null,
@@ -74,18 +76,38 @@ const fromArrayToTags = (value?: string[] | null) => {
   return value.join(", ");
 };
 
+const getAtPath = (source: Record<string, any>, path: string) => {
+  return path.split(".").reduce<any>((cursor, segment) => {
+    if (!cursor || typeof cursor !== "object") return undefined;
+    return cursor[segment];
+  }, source);
+};
+
+const setAtPath = (target: Record<string, any>, path: string, value: any) => {
+  const segments = path.split(".");
+  let cursor: Record<string, any> = target;
+  for (let index = 0; index < segments.length - 1; index += 1) {
+    const segment = segments[index];
+    if (!cursor[segment] || typeof cursor[segment] !== "object") {
+      cursor[segment] = {};
+    }
+    cursor = cursor[segment];
+  }
+  cursor[segments[segments.length - 1]] = value;
+};
+
+const toDateKey = (year?: number, month?: number) => {
+  if (!year) return undefined;
+  return year * 100 + (month ?? 1);
+};
+
 const emptyBasics = () => ({
   fullName: "",
   headline: "",
+  locationText: "",
   contact: {
     email: "",
     phone: "",
-    website: "",
-  },
-  location: {
-    label: "",
-    city: "",
-    country: "",
   },
   links: [{ label: "", url: "" }],
 });
@@ -100,6 +122,7 @@ const emptyExperience = () => ({
   startMonth: "",
   endYear: "",
   endMonth: "",
+  isPresent: false,
   present: false,
   summary: "",
   bullets: "",
@@ -125,6 +148,7 @@ const emptyProject = () => ({
   startMonth: "",
   endYear: "",
   endMonth: "",
+  isPresent: false,
   present: false,
   summary: "",
   bullets: "",
@@ -181,16 +205,16 @@ const defaultFormForSection = (key: ResumeSectionKey) => {
 
 const toFormData = (key: ResumeSectionKey, data: any) => {
   if (key === "basics") {
+    const locationText = normalizeText(
+      data?.locationText ?? data?.location?.label ?? [data?.location?.city, data?.location?.country].filter(Boolean).join(", "),
+    );
     return {
       ...emptyBasics(),
       ...data,
+      locationText,
       contact: {
         ...emptyBasics().contact,
         ...(data?.contact ?? {}),
-      },
-      location: {
-        ...emptyBasics().location,
-        ...(data?.location ?? {}),
       },
       links: Array.isArray(data?.links) && data.links.length > 0 ? data.links : emptyBasics().links,
     };
@@ -210,6 +234,8 @@ const toFormData = (key: ResumeSectionKey, data: any) => {
       startMonth: data?.startMonth ?? data?.start?.month ?? "",
       endYear: data?.endYear ?? data?.end?.year ?? "",
       endMonth: data?.endMonth ?? data?.end?.month ?? "",
+      isPresent: Boolean(data?.isPresent ?? data?.present),
+      present: Boolean(data?.isPresent ?? data?.present),
     };
   }
 
@@ -231,6 +257,12 @@ const toFormData = (key: ResumeSectionKey, data: any) => {
       ...data,
       bullets: fromArrayToText(data?.bullets),
       tags: fromArrayToTags(data?.tags),
+      startYear: data?.startYear ?? data?.start?.year ?? "",
+      startMonth: data?.startMonth ?? data?.start?.month ?? "",
+      endYear: data?.endYear ?? data?.end?.year ?? "",
+      endMonth: data?.endMonth ?? data?.end?.month ?? "",
+      isPresent: Boolean(data?.isPresent ?? data?.present),
+      present: Boolean(data?.isPresent ?? data?.present),
     };
   }
 
@@ -245,27 +277,31 @@ const toFormData = (key: ResumeSectionKey, data: any) => {
 
 const toPayload = (key: ResumeSectionKey, data: Record<string, any>) => {
   if (key === "basics") {
+    const locationText = normalizeText(data.locationText);
+    const links = Array.isArray(data.links)
+      ? data.links
+          .map((link: any) => ({
+            label: normalizeText(link?.label),
+            url: normalizeText(link?.url),
+          }))
+          .filter((link: any) => link.label && link.url)
+      : [];
+
     return {
       fullName: normalizeText(data.fullName),
       headline: normalizeText(data.headline),
       contact: {
         email: normalizeText(data?.contact?.email),
         phone: normalizeText(data?.contact?.phone),
-        website: normalizeText(data?.contact?.website),
+        website: links[0]?.url ?? "",
       },
       location: {
-        label: normalizeText(data?.location?.label),
-        city: normalizeText(data?.location?.city),
-        country: normalizeText(data?.location?.country),
+        label: locationText,
+        city: "",
+        country: "",
       },
-      links: Array.isArray(data.links)
-        ? data.links
-            .map((link: any) => ({
-              label: normalizeText(link?.label),
-              url: normalizeText(link?.url),
-            }))
-            .filter((link: any) => link.label || link.url)
-        : [],
+      locationText,
+      links,
     };
   }
 
@@ -274,15 +310,24 @@ const toPayload = (key: ResumeSectionKey, data: Record<string, any>) => {
   }
 
   if (key === "experience") {
+    const startYear = normalizeNumber(data.startYear);
+    const startMonth = normalizeNumber(data.startMonth);
+    const endYear = normalizeNumber(data.endYear);
+    const endMonth = normalizeNumber(data.endMonth);
+    const isPresent = Boolean(data.isPresent ?? data.present);
+
     return {
       role: normalizeText(data.role),
       company: normalizeText(data.company),
       location: normalizeText(data.location),
-      startYear: normalizeNumber(data.startYear),
-      startMonth: normalizeNumber(data.startMonth),
-      endYear: normalizeNumber(data.endYear),
-      endMonth: normalizeNumber(data.endMonth),
-      present: Boolean(data.present),
+      start: startYear ? { year: startYear, month: startMonth } : undefined,
+      startYear,
+      startMonth,
+      end: isPresent || !endYear ? undefined : { year: endYear, month: endMonth },
+      endYear: isPresent ? undefined : endYear,
+      endMonth: isPresent ? undefined : endMonth,
+      isPresent,
+      present: isPresent,
       summary: normalizeText(data.summary),
       bullets: toBullets(data.bullets),
       tags: toTags(data.tags),
@@ -290,28 +335,44 @@ const toPayload = (key: ResumeSectionKey, data: Record<string, any>) => {
   }
 
   if (key === "education") {
+    const startYear = normalizeNumber(data.startYear);
+    const startMonth = normalizeNumber(data.startMonth);
+    const endYear = normalizeNumber(data.endYear);
+    const endMonth = normalizeNumber(data.endMonth);
+
     return {
       degree: normalizeText(data.degree),
       school: normalizeText(data.school),
       location: normalizeText(data.location),
-      startYear: normalizeNumber(data.startYear),
-      startMonth: normalizeNumber(data.startMonth),
-      endYear: normalizeNumber(data.endYear),
-      endMonth: normalizeNumber(data.endMonth),
+      start: startYear ? { year: startYear, month: startMonth } : undefined,
+      startYear,
+      startMonth,
+      end: endYear ? { year: endYear, month: endMonth } : undefined,
+      endYear,
+      endMonth,
       grade: normalizeText(data.grade),
       bullets: toBullets(data.bullets),
     };
   }
 
   if (key === "projects") {
+    const startYear = normalizeNumber(data.startYear);
+    const startMonth = normalizeNumber(data.startMonth);
+    const endYear = normalizeNumber(data.endYear);
+    const endMonth = normalizeNumber(data.endMonth);
+    const isPresent = Boolean(data.isPresent ?? data.present);
+
     return {
       name: normalizeText(data.name),
       link: normalizeText(data.link),
-      startYear: normalizeNumber(data.startYear),
-      startMonth: normalizeNumber(data.startMonth),
-      endYear: normalizeNumber(data.endYear),
-      endMonth: normalizeNumber(data.endMonth),
-      present: Boolean(data.present),
+      start: startYear ? { year: startYear, month: startMonth } : undefined,
+      startYear,
+      startMonth,
+      end: isPresent || !endYear ? undefined : { year: endYear, month: endMonth },
+      endYear: isPresent ? undefined : endYear,
+      endMonth: isPresent ? undefined : endMonth,
+      isPresent,
+      present: isPresent,
       summary: normalizeText(data.summary),
       bullets: toBullets(data.bullets),
       tags: toTags(data.tags),
@@ -369,6 +430,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   activeProjectId: string | null = null;
   loading = false;
   error: string | null = null;
+  warning: string | null = null;
   success: string | null = null;
   drawerOpen = false;
   activeSectionKey: ResumeSectionKey | null = null;
@@ -378,6 +440,8 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   isPaid = false;
   paywallMessage: string | null = null;
   templateOptions = TEMPLATE_OPTIONS;
+  yearOptions = getResumeYearOptions();
+  monthOptions = RESUME_MONTH_OPTIONS;
   newProject = {
     title: "",
     templateKey: "classic",
@@ -490,6 +554,109 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     return "Item";
   }
 
+  enforceLimit(path: string, max: number) {
+    const current = getAtPath(this.formData, path);
+    if (typeof current !== "string") return;
+    if (current.length <= max) return;
+    setAtPath(this.formData, path, current.slice(0, max));
+  }
+
+  enforceLineLimit(path: string, maxPerLine: number) {
+    const current = getAtPath(this.formData, path);
+    if (typeof current !== "string") return;
+    const clamped = current
+      .split("\n")
+      .map((line) => line.slice(0, maxPerLine))
+      .join("\n");
+    if (clamped !== current) {
+      setAtPath(this.formData, path, clamped);
+    }
+  }
+
+  togglePresent(flagPath = "present") {
+    const active = Boolean(getAtPath(this.formData, flagPath));
+    setAtPath(this.formData, "present", active);
+    setAtPath(this.formData, "isPresent", active);
+    if (active) {
+      setAtPath(this.formData, "endYear", "");
+      setAtPath(this.formData, "endMonth", "");
+    }
+  }
+
+  private validateDateRules(sectionKey: ResumeSectionKey, payload: Record<string, any>) {
+    if (!["experience", "education", "projects"].includes(sectionKey)) {
+      return;
+    }
+
+    const startYear = Number(payload.startYear) || undefined;
+    const startMonth = Number(payload.startMonth) || undefined;
+    const endYear = Number(payload.endYear) || undefined;
+    const endMonth = Number(payload.endMonth) || undefined;
+    const isPresent = Boolean(payload.isPresent ?? payload.present);
+    const maxYear = this.yearOptions[0];
+    const minYear = this.yearOptions[this.yearOptions.length - 1];
+
+    if ((startYear && (startYear < minYear || startYear > maxYear)) || (endYear && (endYear < minYear || endYear > maxYear))) {
+      throw new Error(`Years must be between ${minYear} and ${maxYear}.`);
+    }
+
+    if (isPresent && (endYear || endMonth)) {
+      throw new Error("End date must be empty when marked as present.");
+    }
+
+    if (startMonth && !startYear) {
+      throw new Error("Start year is required when start month is selected.");
+    }
+
+    if (endMonth && !endYear) {
+      throw new Error("End year is required when end month is selected.");
+    }
+
+    if ((endYear || endMonth) && !startYear) {
+      throw new Error("Start year is required when end date is selected.");
+    }
+
+    const startKey = toDateKey(startYear, startMonth);
+    const endKey = toDateKey(endYear, endMonth ?? 12);
+    if (startKey && endKey && endKey < startKey) {
+      throw new Error("End date must be after start date.");
+    }
+  }
+
+  private warnOnEducationOverlap(nextPayload: Record<string, any>, editingItemId?: string | null) {
+    if (this.activeSectionKey !== "education" || !this.activeSection) return;
+
+    const currentStart = toDateKey(
+      Number(nextPayload.startYear) || undefined,
+      Number(nextPayload.startMonth) || undefined,
+    );
+    const currentEnd = toDateKey(
+      Number(nextPayload.endYear) || undefined,
+      Number(nextPayload.endMonth) || 12,
+    );
+
+    if (!currentStart || !currentEnd) return;
+
+    const hasOverlap = this.activeSection.items
+      .filter((item) => item.id !== editingItemId)
+      .some((item) => {
+        const otherStart = toDateKey(
+          Number(item.data?.startYear ?? item.data?.start?.year) || undefined,
+          Number(item.data?.startMonth ?? item.data?.start?.month) || undefined,
+        );
+        const otherEnd = toDateKey(
+          Number(item.data?.endYear ?? item.data?.end?.year) || undefined,
+          Number(item.data?.endMonth ?? item.data?.end?.month) || 12,
+        );
+        if (!otherStart || !otherEnd) return false;
+        return currentStart <= otherEnd && otherStart <= currentEnd;
+      });
+
+    if (hasOverlap) {
+      this.warning = "Education dates overlap with another entry. Please verify chronology.";
+    }
+  }
+
   private unwrapResult<T = any>(result: any): T {
     if (result?.error) {
       const message = result.error?.message || result.error;
@@ -577,6 +744,10 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       this.error = "Title is required.";
       return;
     }
+    if (title.length > RESUME_MAX.projectTitle) {
+      this.error = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
+      return;
+    }
 
     if (!TEMPLATE_KEYS.includes(templateKey as any)) {
       this.error = "Select a valid template.";
@@ -640,6 +811,15 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
   async saveProjectMeta() {
     if (!this.activeProject?.project) return;
+    const title = normalizeText(this.projectMeta.title);
+    if (!title) {
+      this.error = "Title is required.";
+      return;
+    }
+    if (title.length > RESUME_MAX.projectTitle) {
+      this.error = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
+      return;
+    }
 
     this.loading = true;
     this.error = null;
@@ -649,7 +829,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     try {
       const res = await actions.resumeBuilder.updateResumeProject({
         projectId: this.activeProject.project.id,
-        title: this.projectMeta.title,
+        title,
         templateKey: this.projectMeta.templateKey as any,
       });
       if (res?.error?.code === "PAYMENT_REQUIRED") {
@@ -720,6 +900,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.activeSectionKey = key;
     this.drawerOpen = true;
     this.editingItemId = null;
+    this.warning = null;
 
     if (key === "basics" || key === "summary" || key === "declaration") {
       this.ensureSectionExists(key);
@@ -735,6 +916,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.activeSectionKey = null;
     this.editingItemId = null;
     this.formData = {};
+    this.warning = null;
   }
 
   editItem(item: ResumeItemDTO) {
@@ -770,10 +952,13 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
     this.loading = true;
     this.error = null;
+    this.warning = null;
     this.success = null;
 
     try {
       const payload = toPayload(sectionKey, this.formData);
+      this.validateDateRules(sectionKey, payload);
+      this.warnOnEducationOverlap(payload, null);
       const nextOrder =
         section.items.reduce((max, entry) => Math.max(max, Number(entry.order) || 0), 0) + 1;
       const res = await actions.resumeBuilder.addOrUpdateItem({
@@ -800,10 +985,13 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     if (!item?.id) return;
     this.loading = true;
     this.error = null;
+    this.warning = null;
     this.success = null;
 
     try {
       const payload = toPayload(sectionKey, this.formData);
+      this.validateDateRules(sectionKey, payload);
+      this.warnOnEducationOverlap(payload, item.id);
       const res = await actions.resumeBuilder.addOrUpdateItem({
         projectId: this.activeProject?.project.id ?? "",
         sectionKey,

@@ -131,6 +131,54 @@ const cleanList = (value: any, max: number, label: string, splitter: "\n" | ",")
   return [];
 };
 
+const cleanEmail = (value: any, label: string) => {
+  const email = cleanText(value, RESUME_MAX.email, label);
+  if (!email) return "";
+  const parsed = z.string().email().safeParse(email);
+  if (!parsed.success) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: `${label} must be a valid email address.`,
+    });
+  }
+  return email.toLowerCase();
+};
+
+const cleanUrl = (value: any, label: string) => {
+  const raw = cleanText(value, RESUME_MAX.linkUrl, label);
+  if (!raw) return "";
+
+  const compact = raw.replace(/\s+/g, "");
+  const protocolFixed = compact.replace(/^(https?:\/\/)+/i, "$1");
+  const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(protocolFixed)
+    ? protocolFixed
+    : `https://${protocolFixed}`;
+
+  let normalized: URL;
+  try {
+    normalized = new URL(withProtocol);
+  } catch {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: `${label} must be a valid URL.`,
+    });
+  }
+
+  normalized.hostname = normalized.hostname.toLowerCase();
+  return normalized.toString();
+};
+
+const deriveLocationLabel = (data: any) => {
+  const fromText = cleanText(data?.locationText, RESUME_MAX.locationLabel, "Location");
+  if (fromText) return fromText;
+
+  const label = cleanText(data?.location?.label, RESUME_MAX.locationLabel, "Location");
+  const city = cleanText(data?.location?.city, RESUME_MAX.city, "City");
+  const country = cleanText(data?.location?.country, RESUME_MAX.country, "Country");
+  if (label) return label;
+  return [city, country].filter(Boolean).join(", ");
+};
+
 const parseYear = (value: any, label: string, required = false) => {
   if (value === "" || value === null || value === undefined) {
     if (required) {
@@ -181,14 +229,21 @@ const validateChronology = (values: {
   startMonth?: number;
   endYear?: number;
   endMonth?: number;
-  present?: boolean;
+  isPresent?: boolean;
 }) => {
-  const { startYear, startMonth, endYear, endMonth, present } = values;
+  const { startYear, startMonth, endYear, endMonth, isPresent } = values;
 
-  if (present && !startYear) {
+  if (isPresent && !startYear) {
     throw new ActionError({
       code: "BAD_REQUEST",
       message: "Start year is required when marked as present.",
+    });
+  }
+
+  if (isPresent && (endYear || endMonth)) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: "End date must be empty when marked as present.",
     });
   }
 
@@ -199,14 +254,14 @@ const validateChronology = (values: {
     });
   }
 
-  if ((endYear || endMonth) && !present && !startYear) {
+  if ((endYear || endMonth) && !isPresent && !startYear) {
     throw new ActionError({
       code: "BAD_REQUEST",
       message: "Start year is required when end date is set.",
     });
   }
 
-  if (!present && endMonth && !endYear) {
+  if (!isPresent && endMonth && !endYear) {
     throw new ActionError({
       code: "BAD_REQUEST",
       message: "End year is required when end month is set.",
@@ -228,36 +283,45 @@ const validateChronology = (values: {
 const sanitizeSectionData = (
   sectionKey: ResumeSectionKey,
   data: any,
-  templateKey: string,
+  _templateKey: string,
 ) => {
-  const isMinimalTemplate = templateKey === "minimal";
-  const summaryMax = isMinimalTemplate ? RESUME_MAX.minimalSummary : RESUME_MAX.summary;
-  const bulletLineMax = isMinimalTemplate ? RESUME_MAX.minimalBulletLine : RESUME_MAX.bulletLine;
+  const summaryMax = RESUME_MAX.summary;
+  const bulletLineMax = RESUME_MAX.bulletLine;
 
   if (sectionKey === "basics") {
+    const email = cleanEmail(data?.contact?.email, "Email");
     const links = Array.isArray(data?.links)
       ? data.links
           .map((link: any) => ({
             label: cleanText(link?.label, RESUME_MAX.linkLabel, "Link label"),
-            url: cleanText(link?.url, RESUME_MAX.linkUrl, "Link URL"),
+            url: cleanUrl(link?.url, "Link URL"),
           }))
-          .filter((link: any) => link.label || link.url)
+          .filter((link: any) => link.label && link.url)
       : [];
+    const dedupedLinks = links.filter((entry: { label: string; url: string }, index: number, list: { label: string; url: string }[]) => {
+      const key = `${entry.label.toLowerCase()}|${entry.url.toLowerCase()}`;
+      return list.findIndex((candidate: { label: string; url: string }) => {
+        const candidateKey = `${candidate.label.toLowerCase()}|${candidate.url.toLowerCase()}`;
+        return candidateKey === key;
+      }) === index;
+    });
+    const primaryWebsite = cleanUrl(data?.contact?.website, "Website") || dedupedLinks[0]?.url || "";
+    const locationLabel = deriveLocationLabel(data);
 
     return {
       fullName: cleanText(data?.fullName, RESUME_MAX.fullName, "Full name", true),
       headline: cleanText(data?.headline, RESUME_MAX.headline, "Headline"),
       contact: {
-        email: cleanText(data?.contact?.email, RESUME_MAX.email, "Email"),
+        email,
         phone: cleanText(data?.contact?.phone, RESUME_MAX.phone, "Phone"),
-        website: cleanText(data?.contact?.website, RESUME_MAX.website, "Website"),
+        website: cleanText(primaryWebsite, RESUME_MAX.website, "Website"),
       },
       location: {
-        label: cleanText(data?.location?.label, RESUME_MAX.locationLabel, "Location label"),
-        city: cleanText(data?.location?.city, RESUME_MAX.city, "City"),
-        country: cleanText(data?.location?.country, RESUME_MAX.country, "Country"),
+        label: cleanText(locationLabel, RESUME_MAX.locationLabel, "Location"),
+        city: "",
+        country: "",
       },
-      links,
+      links: dedupedLinks,
     };
   }
 
@@ -276,22 +340,28 @@ const sanitizeSectionData = (
   }
 
   if (sectionKey === "experience") {
-    const startYear = parseYear(data?.startYear, "Start year");
-    const startMonth = parseMonth(data?.startMonth, "Start month");
-    const endYear = parseYear(data?.endYear, "End year");
-    const endMonth = parseMonth(data?.endMonth, "End month");
-    const present = Boolean(data?.present);
+    const startYear = parseYear(data?.startYear ?? data?.start?.year, "Start year");
+    const startMonth = parseMonth(data?.startMonth ?? data?.start?.month, "Start month");
+    const endYear = parseYear(data?.endYear ?? data?.end?.year, "End year");
+    const endMonth = parseMonth(data?.endMonth ?? data?.end?.month, "End month");
+    const isPresent = Boolean(data?.isPresent ?? data?.present);
 
-    validateChronology({ startYear, startMonth, endYear, endMonth, present });
+    validateChronology({ startYear, startMonth, endYear, endMonth, isPresent });
+    const start = startYear ? { year: startYear, month: startMonth } : undefined;
+    const end = isPresent || !endYear ? undefined : { year: endYear, month: endMonth };
+
     return {
       role: cleanText(data?.role, RESUME_MAX.role, "Role", true),
       company: cleanText(data?.company, RESUME_MAX.company, "Company", true),
       location: cleanText(data?.location, RESUME_MAX.location, "Location"),
+      start,
       startYear,
       startMonth,
-      endYear: present ? undefined : endYear,
-      endMonth: present ? undefined : endMonth,
-      present,
+      end,
+      endYear: isPresent ? undefined : endYear,
+      endMonth: isPresent ? undefined : endMonth,
+      isPresent,
+      present: isPresent,
       summary: cleanText(data?.summary, RESUME_MAX.experienceSummary, "Summary"),
       bullets: cleanList(data?.bullets, bulletLineMax, "Highlight", "\n"),
       tags: cleanList(data?.tags, RESUME_MAX.tagsLine, "Tag", ","),
@@ -299,18 +369,23 @@ const sanitizeSectionData = (
   }
 
   if (sectionKey === "education") {
-    const startYear = parseYear(data?.startYear, "Start year");
-    const startMonth = parseMonth(data?.startMonth, "Start month");
-    const endYear = parseYear(data?.endYear, "End year");
-    const endMonth = parseMonth(data?.endMonth, "End month");
+    const startYear = parseYear(data?.startYear ?? data?.start?.year, "Start year");
+    const startMonth = parseMonth(data?.startMonth ?? data?.start?.month, "Start month");
+    const endYear = parseYear(data?.endYear ?? data?.end?.year, "End year");
+    const endMonth = parseMonth(data?.endMonth ?? data?.end?.month, "End month");
 
-    validateChronology({ startYear, startMonth, endYear, endMonth, present: false });
+    validateChronology({ startYear, startMonth, endYear, endMonth, isPresent: false });
+    const start = startYear ? { year: startYear, month: startMonth } : undefined;
+    const end = endYear ? { year: endYear, month: endMonth } : undefined;
+
     return {
       degree: cleanText(data?.degree, RESUME_MAX.degree, "Degree", true),
       school: cleanText(data?.school, RESUME_MAX.school, "School", true),
       location: cleanText(data?.location, RESUME_MAX.location, "Location"),
+      start,
       startYear,
       startMonth,
+      end,
       endYear,
       endMonth,
       grade: cleanText(data?.grade, RESUME_MAX.grade, "Grade"),
@@ -319,21 +394,27 @@ const sanitizeSectionData = (
   }
 
   if (sectionKey === "projects") {
-    const startYear = parseYear(data?.startYear, "Start year");
-    const startMonth = parseMonth(data?.startMonth, "Start month");
-    const endYear = parseYear(data?.endYear, "End year");
-    const endMonth = parseMonth(data?.endMonth, "End month");
-    const present = Boolean(data?.present);
+    const startYear = parseYear(data?.startYear ?? data?.start?.year, "Start year");
+    const startMonth = parseMonth(data?.startMonth ?? data?.start?.month, "Start month");
+    const endYear = parseYear(data?.endYear ?? data?.end?.year, "End year");
+    const endMonth = parseMonth(data?.endMonth ?? data?.end?.month, "End month");
+    const isPresent = Boolean(data?.isPresent ?? data?.present);
 
-    validateChronology({ startYear, startMonth, endYear, endMonth, present });
+    validateChronology({ startYear, startMonth, endYear, endMonth, isPresent });
+    const start = startYear ? { year: startYear, month: startMonth } : undefined;
+    const end = isPresent || !endYear ? undefined : { year: endYear, month: endMonth };
+
     return {
       name: cleanText(data?.name, RESUME_MAX.projectName, "Project name", true),
-      link: cleanText(data?.link, RESUME_MAX.projectLink, "Project link"),
+      link: cleanUrl(data?.link, "Project link"),
+      start,
       startYear,
       startMonth,
-      endYear: present ? undefined : endYear,
-      endMonth: present ? undefined : endMonth,
-      present,
+      end,
+      endYear: isPresent ? undefined : endYear,
+      endMonth: isPresent ? undefined : endMonth,
+      isPresent,
+      present: isPresent,
       summary: cleanText(data?.summary, RESUME_MAX.projectSummary, "Summary"),
       bullets: cleanList(data?.bullets, bulletLineMax, "Highlight", "\n"),
       tags: cleanList(data?.tags, RESUME_MAX.tagsLine, "Tag", ","),
@@ -352,7 +433,7 @@ const sanitizeSectionData = (
       name: cleanText(data?.name, RESUME_MAX.certificationName, "Certification", true),
       issuer: cleanText(data?.issuer, RESUME_MAX.issuer, "Issuer"),
       year: parseYear(data?.year, "Year"),
-      link: cleanText(data?.link, RESUME_MAX.projectLink, "Link"),
+      link: cleanUrl(data?.link, "Link"),
     };
   }
 

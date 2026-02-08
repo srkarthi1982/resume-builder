@@ -201,6 +201,7 @@ export const buildResumeDataFromSections = (
 
   base.experience = getSectionItems(enabledSections, "experience")
     .map((item) => {
+      const isPresent = Boolean(item.data?.isPresent ?? item.data?.present);
       const endYear = coerceNumber(item.data?.end?.year ?? item.data?.endYear);
       const endMonth = coerceNumber(item.data?.end?.month ?? item.data?.endMonth);
 
@@ -215,7 +216,7 @@ export const buildResumeDataFromSections = (
             new Date().getFullYear(),
           month: coerceNumber(item.data?.start?.month ?? item.data?.startMonth),
         },
-        end: item.data?.present
+        end: isPresent
           ? undefined
           : endYear
             ? {
@@ -223,7 +224,7 @@ export const buildResumeDataFromSections = (
                 month: endMonth,
               }
             : undefined,
-        present: Boolean(item.data?.present),
+        present: isPresent,
         summary: normalizeText(item.data?.summary ?? "") || undefined,
         bullets: coerceStringArray(item.data?.bullets),
         tags: coerceTagArray(item.data?.tags),
@@ -233,10 +234,11 @@ export const buildResumeDataFromSections = (
 
   base.projects = getSectionItems(enabledSections, "projects")
     .map((item) => {
-      const startYear = coerceNumber(item.data?.startYear);
-      const startMonth = coerceNumber(item.data?.startMonth);
-      const endYear = coerceNumber(item.data?.endYear);
-      const endMonth = coerceNumber(item.data?.endMonth);
+      const isPresent = Boolean(item.data?.isPresent ?? item.data?.present);
+      const startYear = coerceNumber(item.data?.start?.year ?? item.data?.startYear);
+      const startMonth = coerceNumber(item.data?.start?.month ?? item.data?.startMonth);
+      const endYear = coerceNumber(item.data?.end?.year ?? item.data?.endYear);
+      const endMonth = coerceNumber(item.data?.end?.month ?? item.data?.endMonth);
 
       return {
         id: item.data?.id ?? item.id,
@@ -248,7 +250,7 @@ export const buildResumeDataFromSections = (
               month: startMonth,
             }
           : undefined,
-        end: item.data?.present
+        end: isPresent
           ? undefined
           : endYear
             ? {
@@ -256,7 +258,7 @@ export const buildResumeDataFromSections = (
                 month: endMonth,
               }
             : undefined,
-        present: Boolean(item.data?.present),
+        present: isPresent,
         summary: normalizeText(item.data?.summary ?? "") || undefined,
         bullets: coerceStringArray(item.data?.bullets),
         tags: coerceTagArray(item.data?.tags),
