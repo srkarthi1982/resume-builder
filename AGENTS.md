@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 UI polish pass for `/app/resumes/[id]` and print preview: compacted template selection cards, switched sections chips to single-column mobile stack with responsive two-column enhancement, and moved print/preview header to Ansiversa dark surface with clear CTA contrast. Added reusable `av-resume-*` classes in `src/styles/global.css` and removed remaining raw utility classes/inline styling from impacted pages.
 - 2026-02-08 Committed previously pending page cleanups that were left unstaged in an earlier push: `src/pages/index.astro`, `src/pages/app/resumes/index.astro`, `src/pages/app/resumes/[id]/print.astro`, and `src/pages/dev/resume-preview.astro` (Av utility/layout migration; removed page-scoped style blocks).
 - 2026-02-08 Form-layer hardening pass (no template/print edits): aligned limits to architect contract (full name 60, job title 80, summary 300, experience summary 400, bullet line 120, project summary 200, declaration 180, skill 30, certification 80), switched basics editor to semantic contact inputs (email/tel + location text + labeled URL list), added input/paste truncation hooks (including per-line bullet clamp), enforced structured date payload shape (`start/end + isPresent` with legacy compatibility), added present/end exclusivity checks, and added non-blocking education overlap warning in store.
 - 2026-02-08 Final visual polish sync: upgraded to `@ansiversa/components@0.0.124` to pick up template hierarchy refinements (Classic name/title/contact balance, Minimal header-contact cohesion + declaration placement treatment, Modern sidebar weight tuning, declaration closing hierarchy polish across templates).
@@ -154,6 +155,13 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 UI polish verification:
+  - `rg -n "<style" src/pages` (no matches).
+  - `rg -n 'style="' src/pages` (no matches).
+  - `rg -n -e 'class="[^"]*(^| )(bg-|text-|border-|grid|gap-|sm:|md:|lg:|xl:)' src/pages` (no matches).
+  - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+  - `npm run build` (pass).
+  - Proof artifacts: `artifacts/ui-polish-verify-20260208/` (`template-cards-compact.png`, `sections-mobile-stack.png`, `print-header-dark.png`, `proof.json`).
 - 2026-02-08 Form guardrail proof artifacts generated with Playwright under `artifacts/form-guardrails-20260208/`:
   - `full_name_clamp.png`
   - `invalid_date_blocked.png`

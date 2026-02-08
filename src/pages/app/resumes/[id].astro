@@ -71,7 +71,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
   <section class="av-section">
     <AvContainer>
       <div
-        class="grid gap-6 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]"
+        class="av-resume-editor-layout"
         x-data="$store.resumeBuilder"
         x-init="init && init(JSON.parse($el.dataset.initial))"
         data-initial={JSON.stringify(initialState)}
@@ -88,7 +88,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
           </AvCard>
         ) : (
           <>
-            <div class="flex flex-col gap-6">
+            <div class="av-resume-editor-column">
               <AvCard variant="soft" className="av-auth-stack-md">
                 <div class="av-auth-stack-xs">
                   <p class="av-kicker">Resume Builder</p>
@@ -109,11 +109,11 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                   />
                   <p class="av-form-hint" x-text="`${(projectMeta.title || '').length} / ${RESUME_MAX.projectTitle}`"></p>
 
-                  <div class="av-grid-auto av-grid-auto--260">
+                  <div class="av-resume-template-grid">
                     <template x-for="template in templateOptions" :key="template.key">
                       <button
-                        class="av-card av-auth-stack-xs text-left border border-slate-700 bg-slate-950/60"
-                        :class="projectMeta.templateKey === template.key ? 'border-cyan-400/80 ring-1 ring-cyan-400/30' : ''"
+                        class="av-resume-template-card"
+                        :class="projectMeta.templateKey === template.key ? 'is-selected' : ''"
                         type="button"
                         @click.prevent="selectProjectTemplate(template.key)"
                         :disabled="isTemplateLocked(template.key)"
@@ -159,15 +159,15 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                   <p class="av-text-soft">Edit each section</p>
                 </div>
 
-                <div class="av-auth-stack-xs">
+                <div class="av-resume-sections-grid">
                   {sectionOrder.map((key) => (
                     <button
-                      class="av-row-between rounded-full border border-slate-700 bg-slate-950/60 px-4 py-3 text-left text-sm"
+                      class="av-resume-section-chip"
                       type="button"
                       @click.prevent={`openSection('${key}')`}
                     >
                       <span>{sectionLabels[key]}</span>
-                      <span class="text-slate-400">
+                      <span class="av-resume-section-chip-icon">
                         <AvIcon name="chevron-right" size="sm" />
                       </span>
                     </button>
@@ -176,14 +176,14 @@ const monthOptions = RESUME_MONTH_OPTIONS;
               </AvCard>
             </div>
 
-            <div class="flex flex-col gap-6">
+            <div class="av-resume-editor-column">
               <AvCard variant="soft" className="av-auth-stack-sm">
                 <div class="av-row-between">
                   <h2 class="av-card-heading">Live preview</h2>
                   <p class="av-text-soft">Saved changes appear here</p>
                 </div>
                 <iframe
-                  class="w-full min-h-[560px] lg:min-h-[880px] rounded-2xl border border-slate-700 bg-white"
+                  class="av-resume-preview-frame"
                   title="Resume preview"
                   x-bind:src="previewSrc"
                 ></iframe>
@@ -217,7 +217,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <AvInput label="Job title" name="headline" x-model="formData.headline" maxlength={RESUME_MAX.headline} @input={`enforceLimit('headline', ${RESUME_MAX.headline})`} />
                     <p class="av-form-hint" x-text="`${(formData.headline || '').length} / ${RESUME_MAX.headline}`"></p>
 
-                    <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="av-resume-field-grid-2">
                       <AvInput label="Email" type="email" name="email" x-model="formData.contact.email" maxlength={RESUME_MAX.email} @input={`enforceLimit('contact.email', ${RESUME_MAX.email})`} />
                       <AvInput label="Phone" type="tel" name="phone" x-model="formData.contact.phone" maxlength={RESUME_MAX.phone} @input={`enforceLimit('contact.phone', ${RESUME_MAX.phone})`} />
                     </div>
@@ -233,7 +233,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                         </AvButton>
                       </div>
                       <template x-for="(link, index) in formData.links" :key="index">
-                        <div class="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-end">
+                        <div class="av-resume-field-grid-link">
                           <AvInput
                             label="Label"
                             name="link-label"
@@ -290,7 +290,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                       placeholder="I hereby declare that the information furnished above is true to the best of my knowledge."
                     />
                     <p class="av-form-hint" x-text="`${(formData.text || '').length} / ${RESUME_MAX.declaration}`"></p>
-                    <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="av-resume-field-grid-2">
                       <AvInput label="Place" name="declaration-place" x-model="formData.place" maxlength={RESUME_MAX.declarationPlace} @input={`enforceLimit('place', ${RESUME_MAX.declarationPlace})`} />
                       <AvInput label="Name" name="declaration-name" x-model="formData.name" maxlength={RESUME_MAX.declarationName} @input={`enforceLimit('name', ${RESUME_MAX.declarationName})`} />
                     </div>
@@ -302,7 +302,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -323,7 +323,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                       <AvInput label="Location" name="location" x-model="formData.location" maxlength={RESUME_MAX.location} @input={`enforceLimit('location', ${RESUME_MAX.location})`} />
 
-                      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div class="av-resume-field-grid-date">
                         <AvSelect label="Start year" name="start-year" x-model="formData.startYear">
                           <option value="">Select year</option>
                           {yearOptions.map((year) => <option value={year}>{year}</option>)}
@@ -363,7 +363,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -384,7 +384,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                       <AvInput label="Location" name="location" x-model="formData.location" maxlength={RESUME_MAX.location} @input={`enforceLimit('location', ${RESUME_MAX.location})`} />
 
-                      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div class="av-resume-field-grid-date">
                         <AvSelect label="Start year" name="start-year" x-model="formData.startYear">
                           <option value="">Select year</option>
                           {yearOptions.map((year) => <option value={year}>{year}</option>)}
@@ -415,7 +415,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -447,7 +447,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -465,7 +465,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                       <AvInput label="Project link" type="url" name="project-link" x-model="formData.link" maxlength={RESUME_MAX.projectLink} @input={`enforceLimit('link', ${RESUME_MAX.projectLink})`} />
 
-                      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div class="av-resume-field-grid-date">
                         <AvSelect label="Start year" name="start-year" x-model="formData.startYear">
                           <option value="">Select year</option>
                           {yearOptions.map((year) => <option value={year}>{year}</option>)}
@@ -505,7 +505,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -536,7 +536,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -568,7 +568,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
@@ -601,7 +601,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     <template x-if="activeSectionItems.length">
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
-                          <div class="av-row-between rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 gap-3">
+                          <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>

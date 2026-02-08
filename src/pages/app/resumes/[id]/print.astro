@@ -1,5 +1,6 @@
 ---
 import "@ansiversa/components/styles/global.css";
+import "../../../../styles/global.css";
 import { AvButton, AvContainer, ResumeBuilderShell } from "@ansiversa/components";
 import { actions } from "astro:actions";
 import { buildResumeDataFromSections } from "../../../../modules/resume-builder/helpers";
@@ -35,13 +36,13 @@ const pageTitle = projectData?.project?.title
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
   </head>
-  <body class="min-h-screen bg-white text-slate-900">
-    <div class="print:hidden border-b border-slate-200 bg-white">
+  <body class="av-resume-print-body">
+    <div class="av-resume-print-header print:hidden">
       <AvContainer size="full">
-        <div class="av-row-wrap justify-between py-6">
+        <div class="av-resume-print-header-inner">
           <div class="av-auth-stack-xxs">
             <p class="av-kicker">Resume Builder</p>
-            <h1 class="av-section-title text-slate-900">Print / Preview</h1>
+            <h1 class="av-section-title av-resume-print-heading">Print / Preview</h1>
             <p class="av-text-soft">Use browser print to download as PDF.</p>
           </div>
           <div class="av-row-wrap">
@@ -52,12 +53,12 @@ const pageTitle = projectData?.project?.title
       </AvContainer>
     </div>
 
-    <main class="bg-white py-4 print:py-0">
+    <main class="av-resume-print-main print:py-0">
       {loadError ? (
         <AvContainer>
           <div class="av-alert av-alert-danger" role="status">{loadError}</div>
           {isPaywall ? (
-            <div class="mt-4">
+            <div class="av-resume-print-paywall-cta">
               <AvButton href="https://ansiversa.com/pricing" variant="primary">
                 View pricing
               </AvButton>

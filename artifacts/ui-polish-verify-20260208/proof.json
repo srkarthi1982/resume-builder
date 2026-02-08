@@ -1,0 +1,6 @@
+{
+  "templateCards": "template-cards-compact.png",
+  "sectionsMobile": "sections-mobile-stack.png",
+  "printHeader": "print-header-dark.png",
+  "baseUrl": "http://localhost:4340"
+}

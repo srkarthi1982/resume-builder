@@ -1,0 +1,163 @@
+.av-resume-editor-layout {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+.av-resume-editor-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.av-resume-preview-frame {
+  width: 100%;
+  min-height: 560px;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+}
+
+.av-resume-template-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+.av-resume-template-card {
+  display: grid;
+  gap: 0.45rem;
+  width: 100%;
+  text-align: left;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--av-surface-soft, rgba(255, 255, 255, 0.04));
+  padding: 0.8rem 0.95rem;
+  min-height: 90px;
+}
+
+.av-resume-template-card.is-selected {
+  border-color: rgba(56, 189, 248, 0.48);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.36);
+}
+
+.av-resume-sections-grid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1fr;
+}
+
+.av-resume-section-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--av-surface-soft, rgba(255, 255, 255, 0.04));
+}
+
+.av-resume-section-chip-icon {
+  color: var(--av-text-soft);
+}
+
+.av-resume-field-grid-2 {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+.av-resume-field-grid-link {
+  display: grid;
+  gap: 0.75rem;
+  align-items: end;
+  grid-template-columns: 1fr;
+}
+
+.av-resume-field-grid-date {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+.av-resume-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--av-surface-soft, rgba(255, 255, 255, 0.04));
+  padding: 0.75rem 1rem;
+}
+
+.av-resume-print-body {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.av-resume-print-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0b1220;
+}
+
+.av-resume-print-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+.av-resume-print-heading {
+  color: #ffffff;
+}
+
+.av-resume-print-main {
+  background: #ffffff;
+  padding: 1rem 0;
+}
+
+.av-resume-print-paywall-cta {
+  margin-top: 1rem;
+}
+
+@media (min-width: 640px) {
+  .av-resume-field-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .av-resume-field-grid-link {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .av-resume-field-grid-date {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .av-resume-sections-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .av-resume-editor-layout {
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  }
+
+  .av-resume-field-grid-date {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .av-resume-preview-frame {
+    min-height: 880px;
+  }
+}

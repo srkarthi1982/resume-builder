@@ -62,11 +62,11 @@ const initialState = {
               />
               <p class="av-form-hint" x-text="`${(newProject.title || '').length} / ${RESUME_MAX.projectTitle}`"></p>
 
-              <div class="av-grid-auto av-grid-auto--260">
+              <div class="av-resume-template-grid">
                 <template x-for="template in templateOptions" :key="template.key">
                   <button
-                    class="av-card av-auth-stack-xs text-left border border-slate-700 bg-slate-950/60"
-                    :class="newProject.templateKey === template.key ? 'border-cyan-400/80 ring-1 ring-cyan-400/30' : ''"
+                    class="av-resume-template-card"
+                    :class="newProject.templateKey === template.key ? 'is-selected' : ''"
                     type="button"
                     @click.prevent="selectNewTemplate(template.key)"
                     :disabled="isTemplateLocked(template.key)"
