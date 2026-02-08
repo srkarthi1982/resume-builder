@@ -9,22 +9,18 @@ const templates = [
   {
     name: "Classic",
     description: "Traditional layout with strong hierarchy for timeless roles.",
-    layout: "classic",
   },
   {
     name: "Modern",
     description: "Clean blocks and bold headings for contemporary positions.",
-    layout: "modern",
   },
   {
     name: "Minimal",
     description: "Crisp, compact design that keeps focus on essentials.",
-    layout: "minimal",
   },
   {
     name: "Timeline",
     description: "Chronological layout that highlights career progression.",
-    layout: "timeline",
   },
 ];
 
@@ -63,114 +59,57 @@ const resumeTimelineItems = [
 ---
 
 <AppShell title={title} description={description}>
-  <section class="rb-hero">
+  <section class="av-hero">
     <AvContainer size="default">
-      <div class="rb-hero__grid">
-        <div class="rb-hero__text">
+      <div class="av-hero__grid">
+        <div class="av-hero__content av-auth-stack-md">
           <div class="av-kicker">
             <span>Career · Ansiversa Mini App</span>
           </div>
-          <h1 class="rb-hero__title">Resume Builder</h1>
-          <p class="rb-hero__lead">
+          <h1 class="av-section-title">Resume Builder</h1>
+          <p class="av-section-lead">
             Build ATS-safe resumes with beautiful templates in minutes.
           </p>
-          <div class="rb-hero__bullets">
-            <span>Focused editor with section-based workflow</span>
-            <span>Multiple resumes per user, one click to set default</span>
-            <span>Print-ready output with clean templates</span>
-          </div>
-          <div class="rb-hero__cta">
+          <ul class="av-list">
+            <li>Focused editor with section-based workflow</li>
+            <li>Multiple resumes per user, one click to set default</li>
+            <li>Print-ready output with clean templates</li>
+          </ul>
+          <div class="av-row-wrap">
             <AvButton href="/app/resumes">Create Resume</AvButton>
             <AvButton href="#templates" variant="ghost">View Templates</AvButton>
           </div>
-          <p class="rb-hero__note">Fast edits. Clean exports. No clutter.</p>
+          <p class="av-text-soft">Fast edits. Clean exports. No clutter.</p>
         </div>
 
-        <div class="rb-hero__panel">
-          <AvCard className="rb-hero__panel-card">
-            <p class="rb-hero__panel-kicker">Resume flow</p>
-            <h3 class="rb-hero__panel-title">Create → Fill → Download</h3>
-            <ol class="rb-hero__panel-steps">
-              <li><span>1</span>Choose a template</li>
-              <li><span>2</span>Add sections and details</li>
-              <li><span>3</span>Preview + print to PDF</li>
-            </ol>
-            <div class="rb-hero__panel-footer">
-              <div>
-                <p class="rb-hero__panel-label">Templates</p>
-                <p class="rb-hero__panel-value">4 clean styles</p>
-              </div>
-              <div>
-                <p class="rb-hero__panel-label">Output</p>
-                <p class="rb-hero__panel-value">ATS-ready</p>
-              </div>
-            </div>
-          </AvCard>
-        </div>
+        <AvCard variant="soft" className="av-auth-stack-sm">
+          <p class="av-kicker">Resume flow</p>
+          <h2 class="av-card-heading">Create → Fill → Download</h2>
+          <ol class="av-list">
+            <li>1. Choose a template</li>
+            <li>2. Add sections and details</li>
+            <li>3. Preview + print to PDF</li>
+          </ol>
+          <div class="av-row-between">
+            <p class="av-text-soft">Templates: 4 clean styles</p>
+            <p class="av-text-soft">Output: ATS-ready</p>
+          </div>
+        </AvCard>
       </div>
     </AvContainer>
   </section>
 
   <section class="av-section" id="templates">
     <AvContainer size="default">
-      <div class="rb-section__header">
+      <div class="av-section-header">
         <h2 class="av-section-title">Templates</h2>
-        <p class="av-section-lead">
-          Four clean layouts that balance structure, whitespace, and clarity.
-        </p>
+        <p class="av-section-lead">Four clean layouts that balance structure and clarity.</p>
       </div>
-      <div class="rb-template-grid">
+      <div class="av-grid-auto av-grid-auto--260">
         {templates.map((template) => (
-          <AvCard className="rb-template-card">
-            <div class="av-auth-stack-sm">
-              <h3 class="av-card-heading">{template.name}</h3>
-              <div class="rb-template-wireframe" aria-hidden="true">
-                {template.layout === "classic" && (
-                  <svg viewBox="0 0 240 140" role="presentation">
-                    <rect x="16" y="16" width="140" height="12" rx="6" />
-                    <rect x="16" y="34" width="96" height="8" rx="4" />
-                    <rect x="16" y="52" width="140" height="10" rx="5" />
-                    <rect x="16" y="70" width="132" height="8" rx="4" />
-                    <rect x="16" y="86" width="132" height="8" rx="4" />
-                    <rect x="16" y="102" width="132" height="8" rx="4" />
-                    <rect x="162" y="52" width="62" height="64" rx="8" />
-                  </svg>
-                )}
-                {template.layout === "modern" && (
-                  <svg viewBox="0 0 240 140" role="presentation">
-                    <rect x="16" y="16" width="112" height="12" rx="6" />
-                    <rect x="16" y="36" width="168" height="8" rx="4" />
-                    <rect x="16" y="54" width="208" height="18" rx="9" />
-                    <rect x="16" y="78" width="98" height="36" rx="10" />
-                    <rect x="126" y="78" width="98" height="36" rx="10" />
-                  </svg>
-                )}
-                {template.layout === "minimal" && (
-                  <svg viewBox="0 0 240 140" role="presentation">
-                    <rect x="58" y="16" width="124" height="10" rx="5" />
-                    <rect x="48" y="34" width="144" height="6" rx="3" />
-                    <rect x="32" y="54" width="176" height="8" rx="4" />
-                    <rect x="32" y="72" width="176" height="8" rx="4" />
-                    <rect x="32" y="90" width="96" height="8" rx="4" />
-                    <rect x="32" y="108" width="132" height="8" rx="4" />
-                  </svg>
-                )}
-                {template.layout === "timeline" && (
-                  <svg viewBox="0 0 240 140" role="presentation">
-                    <rect x="24" y="18" width="120" height="10" rx="5" />
-                    <rect x="40" y="38" width="176" height="8" rx="4" />
-                    <rect x="40" y="60" width="168" height="8" rx="4" />
-                    <rect x="40" y="82" width="160" height="8" rx="4" />
-                    <rect x="40" y="104" width="140" height="8" rx="4" />
-                    <rect x="20" y="36" width="4" height="86" rx="2" />
-                    <circle cx="22" cy="36" r="6" />
-                    <circle cx="22" cy="60" r="6" />
-                    <circle cx="22" cy="84" r="6" />
-                  </svg>
-                )}
-              </div>
-              <p class="av-text-soft">{template.description}</p>
-            </div>
+          <AvCard variant="soft" className="av-auth-stack-sm av-card--fullheight">
+            <h3 class="av-card-heading">{template.name}</h3>
+            <p class="av-text-soft">{template.description}</p>
           </AvCard>
         ))}
       </div>
@@ -179,28 +118,21 @@ const resumeTimelineItems = [
 
   <section class="av-section">
     <AvContainer size="default">
-      <div class="rb-section__header">
+      <div class="av-section-header">
         <h2 class="av-section-title">Why Resume Builder</h2>
-        <p class="av-section-lead">
-          Everything you need to ship a polished resume without busywork.
-        </p>
+        <p class="av-section-lead">Everything you need to ship a polished resume without busywork.</p>
       </div>
       <AvTimeline items={resumeTimelineItems} />
     </AvContainer>
   </section>
 
-  <section class="av-section rb-process">
+  <section class="av-section">
     <AvContainer size="default">
       <div class="av-section-header">
-        <div class="av-kicker">
-          <span>How it works</span>
-        </div>
+        <div class="av-kicker"><span>How it works</span></div>
         <h2 class="av-section-title">Create → Fill → Download</h2>
-        <p class="av-section-lead">
-          Three steps from empty canvas to final PDF.
-        </p>
+        <p class="av-section-lead">Three steps from empty canvas to final PDF.</p>
       </div>
-
       <ol class="av-steps">
         <li class="av-step">
           <span class="av-step-number">1</span>
@@ -209,7 +141,6 @@ const resumeTimelineItems = [
             <p>Pick a template and name your resume in seconds.</p>
           </div>
         </li>
-
         <li class="av-step">
           <span class="av-step-number">2</span>
           <div class="av-step-body">
@@ -217,7 +148,6 @@ const resumeTimelineItems = [
             <p>Use the left navigation to focus on one section at a time.</p>
           </div>
         </li>
-
         <li class="av-step">
           <span class="av-step-number">3</span>
           <div class="av-step-body">
@@ -231,176 +161,13 @@ const resumeTimelineItems = [
 
   <section class="av-section">
     <AvContainer size="default">
-      <AvCard className="rb-cta">
-        <div class="rb-cta__content">
-          <div class="av-auth-stack-xxs">
-            <h2 class="av-section-title">Ready to build your resume?</h2>
-            <p class="av-text-soft">
-              Start a new resume and get to a printable draft in minutes.
-            </p>
-          </div>
-          <AvButton href="/app/resumes">Create Resume</AvButton>
+      <AvCard variant="soft" className="av-row-between av-card--fullheight">
+        <div class="av-auth-stack-xxs">
+          <h2 class="av-section-title">Ready to build your resume?</h2>
+          <p class="av-text-soft">Start a new resume and get to a printable draft in minutes.</p>
         </div>
+        <AvButton href="/app/resumes">Create Resume</AvButton>
       </AvCard>
     </AvContainer>
   </section>
 </AppShell>
-
-<style>
-  .rb-hero {
-    padding: 72px 0 48px;
-  }
-
-  .rb-hero__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 32px;
-    align-items: center;
-  }
-
-  .rb-hero__title {
-    font-size: clamp(2.5rem, 4vw, 3.5rem);
-    line-height: 1.05;
-    margin: 0;
-  }
-
-  .rb-hero__lead {
-    font-size: 1.1rem;
-    color: var(--av-text-soft);
-  }
-
-  .rb-hero__bullets {
-    display: grid;
-    gap: 8px;
-    color: var(--av-text-soft);
-  }
-
-  .rb-hero__cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-  }
-
-  .rb-hero__note {
-    margin: 0;
-    color: var(--av-text-soft);
-  }
-
-  .rb-hero__panel-card {
-    padding: 24px;
-  }
-
-  .rb-hero__panel-kicker {
-    margin: 0 0 4px;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--av-text-soft);
-  }
-
-  .rb-hero__panel-title {
-    margin: 0 0 16px;
-  }
-
-  .rb-hero__panel-steps {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: 10px;
-  }
-
-  .rb-hero__panel-steps li {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    color: var(--av-text-soft);
-  }
-
-  .rb-hero__panel-steps span {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--av-surface-subtle, rgba(255, 255, 255, 0.08));
-    color: var(--av-text-strong, #fff);
-    font-size: 0.85rem;
-  }
-
-  .rb-hero__panel-footer {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 20px;
-    color: var(--av-text-soft);
-  }
-
-  .rb-hero__panel-label {
-    margin: 0;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .rb-hero__panel-value {
-    margin: 4px 0 0;
-    font-weight: 600;
-    color: var(--av-text-strong, #fff);
-  }
-
-  .rb-section__header {
-    margin-bottom: 24px;
-  }
-
-  .rb-template-grid {
-    display: grid;
-    gap: 16px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
-
-  .rb-template-card {
-    padding: 20px;
-  }
-
-  .rb-template-wireframe {
-    display: grid;
-    place-items: center;
-    height: 160px;
-    border-radius: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    background: linear-gradient(140deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.35));
-  }
-
-  .rb-template-wireframe svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .rb-template-wireframe rect {
-    fill: rgba(148, 163, 184, 0.45);
-  }
-
-  .rb-template-wireframe circle {
-    fill: rgba(148, 163, 184, 0.55);
-  }
-
-  .rb-process {
-    padding-top: 32px;
-  }
-
-  .rb-cta {
-    padding: 24px;
-  }
-
-  .rb-cta__content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-</style>

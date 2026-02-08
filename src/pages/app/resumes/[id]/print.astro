@@ -35,27 +35,29 @@ const pageTitle = projectData?.project?.title
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
   </head>
-  <body class="rb-print">
-    <AvContainer size="full" className="rb-print__toolbar-container">
-      <div class="rb-print__toolbar rb-print__toolbar-surface">
-        <div>
-          <p class="av-kicker">Resume Builder</p>
-          <h1 class="av-section-title">Print / Preview</h1>
-          <p class="av-text-soft">Use browser print to download as PDF.</p>
+  <body class="min-h-screen bg-white text-slate-900">
+    <div class="print:hidden border-b border-slate-200 bg-white">
+      <AvContainer size="full">
+        <div class="av-row-wrap justify-between py-6">
+          <div class="av-auth-stack-xxs">
+            <p class="av-kicker">Resume Builder</p>
+            <h1 class="av-section-title text-slate-900">Print / Preview</h1>
+            <p class="av-text-soft">Use browser print to download as PDF.</p>
+          </div>
+          <div class="av-row-wrap">
+            <AvButton href={`/app/resumes/${projectId}`} variant="ghost">Back to editor</AvButton>
+            <AvButton type="button" onclick="window.print()">Print / Download PDF</AvButton>
+          </div>
         </div>
-        <div class="rb-print__actions">
-          <AvButton href={`/app/resumes/${projectId}`} variant="ghost">Back to editor</AvButton>
-          <AvButton type="button" onclick="window.print()">Print / Download PDF</AvButton>
-        </div>
-      </div>
-    </AvContainer>
+      </AvContainer>
+    </div>
 
-    <main class="rb-print__page">
+    <main class="bg-white py-4 print:py-0">
       {loadError ? (
         <AvContainer>
           <div class="av-alert av-alert-danger" role="status">{loadError}</div>
           {isPaywall ? (
-            <div style="margin-top: 1rem;">
+            <div class="mt-4">
               <AvButton href="https://ansiversa.com/pricing" variant="primary">
                 View pricing
               </AvButton>
@@ -63,86 +65,10 @@ const pageTitle = projectData?.project?.title
           ) : null}
         </AvContainer>
       ) : resumeData ? (
-        <AvContainer size="full" className="rb-print__content">
+        <AvContainer size="full">
           <ResumeBuilderShell type={templateKey} data={resumeData} />
         </AvContainer>
       ) : null}
     </main>
-
-    <style>
-      .rb-print {
-        background: #fff;
-        color: #0f172a;
-        min-height: 100vh;
-        color-scheme: light;
-        --av-bg: #ffffff;
-        --av-surface: #ffffff;
-        --av-surface-soft: #f8fafc;
-        --av-border-subtle: rgba(15, 23, 42, 0.12);
-        --av-border-strong: rgba(15, 23, 42, 0.25);
-        --av-text: #0f172a;
-        --av-text-muted: #475569;
-        --av-text-soft: #64748b;
-        --av-text-strong: #0b1220;
-      }
-
-      .rb-print__toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.5rem;
-        padding: 2rem 0 1rem;
-      }
-
-      .rb-print__toolbar-container {
-        padding: 0;
-      }
-
-      .rb-print__toolbar-surface {
-        background: radial-gradient(circle at top left, rgba(0, 234, 255, 0.18), transparent 55%),
-          radial-gradient(circle at bottom right, rgba(122, 0, 255, 0.2), transparent 60%),
-          #0b1120;
-        border-radius: 0;
-        margin-top: 0;
-        padding: 2rem;
-        box-shadow: 0 14px 32px rgba(2, 6, 23, 0.35);
-      }
-
-      .rb-print__actions {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-
-      .rb-print__page {
-        background: #fff;
-        padding: 1rem 0 3rem;
-      }
-
-      .rb-print__content {
-        padding: 0 0.5rem;
-      }
-
-      .rb-print__page .resume-template > main {
-        max-width: 80rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-      }
-
-      @media print {
-        .rb-print__toolbar {
-          display: none;
-        }
-
-        .rb-print__page {
-          padding: 0;
-        }
-
-        .rb-print__content {
-          padding: 0;
-        }
-      }
-    </style>
   </body>
 </html>

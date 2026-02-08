@@ -9,6 +9,7 @@ import {
 } from "@ansiversa/components";
 import { actions } from "astro:actions";
 import AppShell from "../../../layouts/AppShell.astro";
+import { RESUME_MAX } from "../../../modules/resume-builder/constraints";
 import { TEMPLATE_OPTIONS } from "../../../modules/resume-builder/helpers";
 import type { ResumeProjectDTO } from "../../../modules/resume-builder/types";
 
@@ -56,31 +57,36 @@ const initialState = {
                 name="resume-title"
                 placeholder="e.g. Product Designer Resume"
                 x-model="newProject.title"
+                maxlength={RESUME_MAX.projectTitle}
                 required
               />
-              <div class="rb-template-picker">
+              <p class="av-form-hint" x-text="`${(newProject.title || '').length} / ${RESUME_MAX.projectTitle}`"></p>
+
+              <div class="av-grid-auto av-grid-auto--260">
                 <template x-for="template in templateOptions" :key="template.key">
                   <button
-                    class="rb-template-option"
-                    :class="newProject.templateKey === template.key ? 'is-selected' : ''"
+                    class="av-card av-auth-stack-xs text-left border border-slate-700 bg-slate-950/60"
+                    :class="newProject.templateKey === template.key ? 'border-cyan-400/80 ring-1 ring-cyan-400/30' : ''"
                     type="button"
                     @click.prevent="selectNewTemplate(template.key)"
                     :disabled="isTemplateLocked(template.key)"
                   >
-                    <div class="rb-template-option__head">
-                      <p class="rb-template-option__title" x-text="template.label"></p>
+                    <div class="av-row-between">
+                      <p class="av-card-heading" x-text="template.label"></p>
                       <span class="av-badge av-badge-soft" x-show="template.tier === 'pro' && !isPaid" x-cloak>Pro</span>
                     </div>
-                    <p class="rb-template-option__meta" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
+                    <p class="av-text-soft" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
                   </button>
                 </template>
               </div>
-              <div class="rb-paywall" x-show="paywallMessage" x-cloak>
+
+              <div class="av-row-wrap" x-show="paywallMessage" x-cloak>
                 <p class="av-text-soft av-m-0" x-text="paywallMessage"></p>
                 <AvButton href="https://ansiversa.com/pricing" variant="ghost" size="sm">
                   View pricing
                 </AvButton>
               </div>
+
               <div class="av-row-wrap">
                 <AvButton type="submit" :disabled="loading">Create resume</AvButton>
               </div>
@@ -109,12 +115,12 @@ const initialState = {
           </template>
 
           <template x-if="projects.length > 0">
-            <div class="rb-resume-grid">
+            <div class="av-grid-auto av-grid-auto--260">
               <template x-for="project in projects" :key="project.id">
                 <AvCard variant="soft" className="av-card--fullheight">
                   <div class="av-auth-stack-sm">
                     <div class="av-auth-stack-xxs">
-                      <div class="rb-resume-card__head">
+                      <div class="av-row-between">
                         <h3 class="av-card-heading" x-text="project.title"></h3>
                         <template x-if="project.isDefault">
                           <span class="av-badge av-badge-soft">Default</span>
@@ -180,80 +186,4 @@ const initialState = {
       </div>
     </AvContainer>
   </section>
-
-  <style>
-    .rb-template-picker {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.75rem;
-    }
-
-    .rb-template-option {
-      text-align: left;
-      padding: 0.85rem 1rem;
-      border-radius: 0.85rem;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: #0b1220;
-      color: #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      transition: border 0.2s ease, transform 0.2s ease;
-    }
-
-    .rb-template-option__head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-
-    .rb-template-option__title {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .rb-template-option__meta {
-      font-size: 0.75rem;
-      color: rgba(148, 163, 184, 0.85);
-      margin: 0;
-    }
-
-    .rb-template-option:hover {
-      border-color: rgba(14, 165, 233, 0.6);
-      transform: translateY(-1px);
-    }
-
-    .rb-template-option.is-selected {
-      border-color: rgba(14, 165, 233, 0.9);
-      background: rgba(14, 116, 144, 0.2);
-    }
-
-    .rb-template-option:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .rb-paywall {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.5rem;
-    }
-
-    .rb-resume-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-    }
-
-    .rb-resume-card__head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-  </style>
 </AppShell>
