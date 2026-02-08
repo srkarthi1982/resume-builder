@@ -57,6 +57,8 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Updated `@ansiversa/components` to `0.0.121` (print-quality template fixes from components repo), regenerated print artifacts from local seeded data, and exported template PDFs/screenshots to `artifacts/print-fix-20260208/` for Astra visual QA.
+- 2026-02-08 Enforced Ansiversa Standard B: removed all app-level custom CSS (`<style>` blocks and `rb-*` classes) across `src/pages/index.astro`, `src/pages/app/resumes/index.astro`, `src/pages/app/resumes/[id].astro`, `src/pages/app/resumes/[id]/print.astro`, and `src/pages/dev/resume-preview.astro`; added shared constraints in `src/modules/resume-builder/constraints.ts`; added UI `maxlength` + live counters + year/month selectors; added server-side payload validation and chronology checks in `src/actions/resumeBuilder.ts`.
 - 2026-02-08 Freeze hardening: removed `/admin/session`, gated `/dev/resume-preview` to DEV only, narrowed middleware public routes to existing pages (`/`, `/help`), touched project `updatedAt` on section upsert, and fixed new-item order to use max(order)+1.
 - 2026-02-01 Added `/help` page and wired Help link into the mini-app menu.
 - 2026-01-31 Restored AvSelect import in resume editor to fix runtime ReferenceError.
@@ -144,6 +146,15 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm install @ansiversa/components@0.0.121` (pass).
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
+- 2026-02-08 PDF export run (local seeded data, DEV bypass): `classic_fixed.pdf` (2 pages), `modern_fixed.pdf` (2 pages), `minimal_fixed.pdf` (1 page), `timeline_fixed.pdf` (1 page) saved in `artifacts/print-fix-20260208/`.
+- 2026-02-08 Screenshot export from generated PDFs: `*_p1.png` and `*_p2.png` where page 2 exists (`minimal`/`timeline` include `*_p2_missing.txt` marker files because PDF is single-page).
+- 2026-02-08 `rg -n "<style|rb-|#[0-9a-fA-F]{3,8}" src -S` (pass; no matches).
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
+- 2026-02-08 `npm run lint` (not available; script missing in `package.json`).
 - 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 hint in baseRepository).
 - 2026-02-01 `npm run typecheck` (pass; 1 hint in baseRepository).
 - 2026-02-01 `npm run build` (pass).
