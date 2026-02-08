@@ -152,6 +152,14 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm install @ansiversa/components@0.0.125` (pass).
+- 2026-02-08 `npm run typecheck && npm run build` (pass; typecheck has 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`; build completed successfully).
+- 2026-02-08 v5 visual-polish artifacts generated from live print routes via DEV bypass + Playwright + PyMuPDF under `artifacts/print-fix-20260208-v5/`:
+  - `classic_v5.pdf`, `modern_v5.pdf`, `minimal_v5.pdf`, `timeline_v5.pdf`
+  - `*_v5_p1.png`, `*_v5_p2.png`, and `*_v5_screen.png`
+  - all four PDFs now render as 2 pages.
+- 2026-02-08 copied v5 review pack to workspace mirror `mnt/data/`:
+  - `classic_v5*`, `modern_v5*`, `minimal_v5*`, `timeline_v5*`.
 - 2026-02-08 `npm install @ansiversa/components@0.0.124` (pass).
 - 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
 - 2026-02-08 `npm run build` (pass).
