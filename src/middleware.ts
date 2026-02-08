@@ -13,6 +13,8 @@ const ROOT_APP_URL =
   import.meta.env.PUBLIC_ROOT_APP_URL ??
   (import.meta.env.DEV ? "http://localhost:2000" : `https://${COOKIE_DOMAIN}`);
 
+let hasLoggedDevPaidBypassWarning = false;
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const { cookies, locals, url } = context;
   const pathname = url.pathname;
@@ -84,14 +86,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  const isDevBypassEnabled =
-    import.meta.env.DEV && import.meta.env.DEV_BYPASS_AUTH === "true";
+  const isDevBypassEnabled = import.meta.env.DEV && process.env.DEV_BYPASS_AUTH === "true";
 
   if (!locals.isAuthenticated && isDevBypassEnabled) {
-    const devUserId = import.meta.env.DEV_BYPASS_USER_ID || "dev-user";
-    const devEmail = import.meta.env.DEV_BYPASS_EMAIL || "dev@local";
-    const devIsPaid = import.meta.env.DEV_BYPASS_IS_PAID === "true";
-    const devRoleIdRaw = import.meta.env.DEV_BYPASS_ROLE_ID;
+    const devUserId = process.env.DEV_BYPASS_USER_ID || "dev-user";
+    const devEmail = process.env.DEV_BYPASS_EMAIL || "dev@local";
+    const devIsPaid = import.meta.env.DEV && process.env.DEV_BYPASS_IS_PAID === "true";
+    if (devIsPaid && !hasLoggedDevPaidBypassWarning) {
+      console.warn("⚠️ DEV_BYPASS_IS_PAID enabled — Pro gating bypassed for local verification only.");
+      hasLoggedDevPaidBypassWarning = true;
+    }
+    const devRoleIdRaw = process.env.DEV_BYPASS_ROLE_ID;
     const parsedRoleId = devRoleIdRaw ? Number.parseInt(devRoleIdRaw, 10) : NaN;
     const devRoleId = Number.isFinite(parsedRoleId) ? parsedRoleId : 1;
 

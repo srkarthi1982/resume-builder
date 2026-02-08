@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Locked `DEV_BYPASS_IS_PAID` to DEV-only middleware branch with strict literal check (`process.env.DEV_BYPASS_IS_PAID === "true"` behind `import.meta.env.DEV`) and added one-time DEV warning when active.
 - 2026-02-08 Updated `@ansiversa/components` to `0.0.122` (white-background print contract across all templates) and regenerated PDFs/screenshots under `artifacts/print-fix-20260208-v2/`.
 - 2026-02-08 Added DEV-only paid bypass support in middleware via `DEV_BYPASS_IS_PAID=true` to allow local generation of Pro template print artifacts for verification.
 - 2026-02-08 Updated `@ansiversa/components` to `0.0.121` (print-quality template fixes from components repo), regenerated print artifacts from local seeded data, and exported template PDFs/screenshots to `artifacts/print-fix-20260208/` for Astra visual QA.
@@ -148,6 +149,17 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
+- 2026-02-08 `npm run preview -- --host 127.0.0.1 --port 4424` (not supported by `@astrojs/vercel` adapter; command exits with adapter error).
+- 2026-02-08 Production output proof (`.vercel/output/functions/_render.func/dist/server/_astro-internal_middleware.mjs`) shows `const isDevBypassEnabled = false;` proving bypass is dead in production builds.
+- 2026-02-08 DEV bypass runtime checks via `npx astro dev --host 127.0.0.1 --port 4324`:
+  - with `DEV_BYPASS_IS_PAID=false`, opening Pro resume editor embeds `PAYMENT_REQUIRED` in initial state payload.
+  - with `DEV_BYPASS_IS_PAID=true`, same Pro resume loads with `isPaid:true` payload and logs: `⚠️ DEV_BYPASS_IS_PAID enabled — Pro gating bypassed for local verification only.`
+- 2026-02-08 `rg -n "DEV_BYPASS_IS_PAID" -S src AGENTS.md`:
+  - resume-builder matches only `src/middleware.ts` (+ this AGENTS log line).
+  - components repo has zero matches.
+- 2026-02-08 Copied final v2 PDF/PNG artifacts to workspace mirror path `mnt/data/` with Astra filenames (`classic_v2*`, `modern_v2*`, `minimal_v2*`, `timeline_v2*`) because system `/mnt/data` is not writable in this environment.
 - 2026-02-08 `npm install @ansiversa/components@0.0.122` (pass).
 - 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
 - 2026-02-08 `npm run build` (pass).
