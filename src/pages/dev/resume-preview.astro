@@ -4,6 +4,10 @@ import { AvContainer } from "@ansiversa/components";
 import { ResumeBuilderShell, resumeData } from "@ansiversa/components";
 import type { ResumeTemplateType } from "@ansiversa/components";
 
+if (!import.meta.env.DEV) {
+  return Astro.redirect("/");
+}
+
 const types = ["classic", "modern", "minimal", "timeline"] as const satisfies ResumeTemplateType[];
 ---
 

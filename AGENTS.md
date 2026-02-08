@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Freeze hardening: removed `/admin/session`, gated `/dev/resume-preview` to DEV only, narrowed middleware public routes to existing pages (`/`, `/help`), touched project `updatedAt` on section upsert, and fixed new-item order to use max(order)+1.
 - 2026-02-01 Added `/help` page and wired Help link into the mini-app menu.
 - 2026-01-31 Restored AvSelect import in resume editor to fix runtime ReferenceError.
 - 2026-01-31 Enforced server-side Pro template access with shared guard for project mutations (PAYMENT_REQUIRED).
@@ -143,6 +144,7 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 hint in baseRepository).
 - 2026-02-01 `npm run typecheck` (pass; 1 hint in baseRepository).
 - 2026-02-01 `npm run build` (pass).
 - 2026-01-31 Pending manual check: free user cannot mutate Pro project via update/setDefault/upsertSection/addOrUpdateItem/deleteItem (PAYMENT_REQUIRED); deleteResumeProject still allowed.

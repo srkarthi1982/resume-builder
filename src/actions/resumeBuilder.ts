@@ -388,6 +388,7 @@ export const upsertSection = defineAction({
         .where(eq(ResumeSection.id, existing.id))
         .returning();
 
+      await touchProject(projectId);
       await pushDashboardActivity(user.id, {
         event: "section.toggled",
         entityId: existing.id,
@@ -411,6 +412,7 @@ export const upsertSection = defineAction({
       })
       .returning();
 
+    await touchProject(projectId);
     await pushDashboardActivity(user.id, {
       event: "section.toggled",
       entityId: created.id,

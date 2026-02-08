@@ -17,14 +17,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const { cookies, locals, url } = context;
   const pathname = url.pathname;
 
-  const publicRoutes = new Set([
-    "/",
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset",
-    "/reset-password",
-  ]);
+  const publicRoutes = new Set(["/", "/help"]);
 
   // Allow static assets
   if (

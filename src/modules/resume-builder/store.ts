@@ -774,10 +774,12 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
     try {
       const payload = toPayload(sectionKey, this.formData);
+      const nextOrder =
+        section.items.reduce((max, entry) => Math.max(max, Number(entry.order) || 0), 0) + 1;
       const res = await actions.resumeBuilder.addOrUpdateItem({
         projectId: this.activeProject?.project.id ?? "",
         sectionKey,
-        order: section.items.length + 1,
+        order: nextOrder,
         data: payload,
       });
       const data = this.unwrapResult(res) as { item: ResumeItemDTO };
