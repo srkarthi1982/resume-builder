@@ -57,6 +57,8 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Updated `@ansiversa/components` to `0.0.122` (white-background print contract across all templates) and regenerated PDFs/screenshots under `artifacts/print-fix-20260208-v2/`.
+- 2026-02-08 Added DEV-only paid bypass support in middleware via `DEV_BYPASS_IS_PAID=true` to allow local generation of Pro template print artifacts for verification.
 - 2026-02-08 Updated `@ansiversa/components` to `0.0.121` (print-quality template fixes from components repo), regenerated print artifacts from local seeded data, and exported template PDFs/screenshots to `artifacts/print-fix-20260208/` for Astra visual QA.
 - 2026-02-08 Enforced Ansiversa Standard B: removed all app-level custom CSS (`<style>` blocks and `rb-*` classes) across `src/pages/index.astro`, `src/pages/app/resumes/index.astro`, `src/pages/app/resumes/[id].astro`, `src/pages/app/resumes/[id]/print.astro`, and `src/pages/dev/resume-preview.astro`; added shared constraints in `src/modules/resume-builder/constraints.ts`; added UI `maxlength` + live counters + year/month selectors; added server-side payload validation and chronology checks in `src/actions/resumeBuilder.ts`.
 - 2026-02-08 Freeze hardening: removed `/admin/session`, gated `/dev/resume-preview` to DEV only, narrowed middleware public routes to existing pages (`/`, `/help`), touched project `updatedAt` on section upsert, and fixed new-item order to use max(order)+1.
@@ -146,6 +148,10 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm install @ansiversa/components@0.0.122` (pass).
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
+- 2026-02-08 White-background contract verification artifacts: `classic_fixed.pdf`, `modern_fixed.pdf`, `minimal_fixed.pdf`, `timeline_fixed.pdf` (+ `*_p1.png`, `*_p2.png`) exported to `artifacts/print-fix-20260208-v2/` (all four PDFs are 2 pages).
 - 2026-02-08 `npm install @ansiversa/components@0.0.121` (pass).
 - 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
 - 2026-02-08 `npm run build` (pass).

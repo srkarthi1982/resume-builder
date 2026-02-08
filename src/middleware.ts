@@ -90,6 +90,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (!locals.isAuthenticated && isDevBypassEnabled) {
     const devUserId = import.meta.env.DEV_BYPASS_USER_ID || "dev-user";
     const devEmail = import.meta.env.DEV_BYPASS_EMAIL || "dev@local";
+    const devIsPaid = import.meta.env.DEV_BYPASS_IS_PAID === "true";
     const devRoleIdRaw = import.meta.env.DEV_BYPASS_ROLE_ID;
     const parsedRoleId = devRoleIdRaw ? Number.parseInt(devRoleIdRaw, 10) : NaN;
     const devRoleId = Number.isFinite(parsedRoleId) ? parsedRoleId : 1;
@@ -99,17 +100,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
       email: devEmail,
       roleId: devRoleId,
       stripeCustomerId: null,
-      plan: null,
-      planStatus: null,
-      isPaid: false,
+      plan: devIsPaid ? "pro" : null,
+      planStatus: devIsPaid ? "active" : null,
+      isPaid: devIsPaid,
       renewalAt: null,
     };
     locals.session = {
       userId: devUserId,
       roleId: String(devRoleId),
-      plan: null,
-      planStatus: null,
-      isPaid: false,
+      plan: devIsPaid ? "pro" : null,
+      planStatus: devIsPaid ? "active" : null,
+      isPaid: devIsPaid,
       renewalAt: null,
     };
     locals.sessionToken = null;
