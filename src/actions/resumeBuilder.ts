@@ -14,6 +14,8 @@ import {
   TEMPLATE_KEYS,
   isProTemplate,
 } from "../modules/resume-builder/helpers";
+import { RESUME_MAX, RESUME_YEAR_MIN, getResumeYearMax } from "../modules/resume-builder/constraints";
+import type { ResumeSectionKey } from "../modules/resume-builder/types";
 
 const ensureTemplateAccess = (templateKey: string, isPaid: boolean) => {
   if (isProTemplate(templateKey) && !isPaid) {
@@ -76,6 +78,308 @@ const DEFAULT_SECTIONS = [
   { key: "highlights", order: 10 },
   { key: "declaration", order: 11 },
 ];
+
+const SECTION_KEYS = new Set<ResumeSectionKey>([
+  "basics",
+  "summary",
+  "experience",
+  "education",
+  "skills",
+  "projects",
+  "certifications",
+  "awards",
+  "languages",
+  "highlights",
+  "declaration",
+]);
+
+const assertMaxLength = (value: string, max: number, label: string) => {
+  if (value.length > max) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: `${label} must be ${max} characters or fewer.`,
+    });
+  }
+};
+
+const cleanText = (value: any, max: number, label: string, required = false) => {
+  const cleaned = normalizeText(value);
+  if (required && !cleaned) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: `${label} is required.`,
+    });
+  }
+  assertMaxLength(cleaned, max, label);
+  return cleaned;
+};
+
+const cleanList = (value: any, max: number, label: string, splitter: "\n" | ",") => {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => cleanText(entry, max, label))
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(splitter)
+      .map((entry) => cleanText(entry, max, label))
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
+const parseYear = (value: any, label: string, required = false) => {
+  if (value === "" || value === null || value === undefined) {
+    if (required) {
+      throw new ActionError({
+        code: "BAD_REQUEST",
+        message: `${label} is required.`,
+      });
+    }
+    return undefined;
+  }
+
+  const year = Number(value);
+  const max = getResumeYearMax();
+  if (!Number.isInteger(year) || year < RESUME_YEAR_MIN || year > max) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: `${label} must be between ${RESUME_YEAR_MIN} and ${max}.`,
+    });
+  }
+
+  return year;
+};
+
+const parseMonth = (value: any, label: string, required = false) => {
+  if (value === "" || value === null || value === undefined) {
+    if (required) {
+      throw new ActionError({
+        code: "BAD_REQUEST",
+        message: `${label} is required.`,
+      });
+    }
+    return undefined;
+  }
+
+  const month = Number(value);
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: `${label} must be a valid month.`,
+    });
+  }
+
+  return month;
+};
+
+const validateChronology = (values: {
+  startYear?: number;
+  startMonth?: number;
+  endYear?: number;
+  endMonth?: number;
+  present?: boolean;
+}) => {
+  const { startYear, startMonth, endYear, endMonth, present } = values;
+
+  if (present && !startYear) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: "Start year is required when marked as present.",
+    });
+  }
+
+  if (startMonth && !startYear) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: "Start year is required when start month is set.",
+    });
+  }
+
+  if ((endYear || endMonth) && !present && !startYear) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: "Start year is required when end date is set.",
+    });
+  }
+
+  if (!present && endMonth && !endYear) {
+    throw new ActionError({
+      code: "BAD_REQUEST",
+      message: "End year is required when end month is set.",
+    });
+  }
+
+  if (startYear && endYear) {
+    const startValue = startYear * 100 + (startMonth ?? 1);
+    const endValue = endYear * 100 + (endMonth ?? 12);
+    if (endValue < startValue) {
+      throw new ActionError({
+        code: "BAD_REQUEST",
+        message: "End date must be after start date.",
+      });
+    }
+  }
+};
+
+const sanitizeSectionData = (
+  sectionKey: ResumeSectionKey,
+  data: any,
+  templateKey: string,
+) => {
+  const isMinimalTemplate = templateKey === "minimal";
+  const summaryMax = isMinimalTemplate ? RESUME_MAX.minimalSummary : RESUME_MAX.summary;
+  const bulletLineMax = isMinimalTemplate ? RESUME_MAX.minimalBulletLine : RESUME_MAX.bulletLine;
+
+  if (sectionKey === "basics") {
+    const links = Array.isArray(data?.links)
+      ? data.links
+          .map((link: any) => ({
+            label: cleanText(link?.label, RESUME_MAX.linkLabel, "Link label"),
+            url: cleanText(link?.url, RESUME_MAX.linkUrl, "Link URL"),
+          }))
+          .filter((link: any) => link.label || link.url)
+      : [];
+
+    return {
+      fullName: cleanText(data?.fullName, RESUME_MAX.fullName, "Full name", true),
+      headline: cleanText(data?.headline, RESUME_MAX.headline, "Headline"),
+      contact: {
+        email: cleanText(data?.contact?.email, RESUME_MAX.email, "Email"),
+        phone: cleanText(data?.contact?.phone, RESUME_MAX.phone, "Phone"),
+        website: cleanText(data?.contact?.website, RESUME_MAX.website, "Website"),
+      },
+      location: {
+        label: cleanText(data?.location?.label, RESUME_MAX.locationLabel, "Location label"),
+        city: cleanText(data?.location?.city, RESUME_MAX.city, "City"),
+        country: cleanText(data?.location?.country, RESUME_MAX.country, "Country"),
+      },
+      links,
+    };
+  }
+
+  if (sectionKey === "summary") {
+    return {
+      text: cleanText(data?.text, summaryMax, "Summary"),
+    };
+  }
+
+  if (sectionKey === "declaration") {
+    return {
+      text: cleanText(data?.text, RESUME_MAX.declaration, "Declaration"),
+      place: cleanText(data?.place, RESUME_MAX.declarationPlace, "Place"),
+      name: cleanText(data?.name, RESUME_MAX.declarationName, "Name"),
+    };
+  }
+
+  if (sectionKey === "experience") {
+    const startYear = parseYear(data?.startYear, "Start year");
+    const startMonth = parseMonth(data?.startMonth, "Start month");
+    const endYear = parseYear(data?.endYear, "End year");
+    const endMonth = parseMonth(data?.endMonth, "End month");
+    const present = Boolean(data?.present);
+
+    validateChronology({ startYear, startMonth, endYear, endMonth, present });
+    return {
+      role: cleanText(data?.role, RESUME_MAX.role, "Role", true),
+      company: cleanText(data?.company, RESUME_MAX.company, "Company", true),
+      location: cleanText(data?.location, RESUME_MAX.location, "Location"),
+      startYear,
+      startMonth,
+      endYear: present ? undefined : endYear,
+      endMonth: present ? undefined : endMonth,
+      present,
+      summary: cleanText(data?.summary, RESUME_MAX.experienceSummary, "Summary"),
+      bullets: cleanList(data?.bullets, bulletLineMax, "Highlight", "\n"),
+      tags: cleanList(data?.tags, RESUME_MAX.tagsLine, "Tag", ","),
+    };
+  }
+
+  if (sectionKey === "education") {
+    const startYear = parseYear(data?.startYear, "Start year");
+    const startMonth = parseMonth(data?.startMonth, "Start month");
+    const endYear = parseYear(data?.endYear, "End year");
+    const endMonth = parseMonth(data?.endMonth, "End month");
+
+    validateChronology({ startYear, startMonth, endYear, endMonth, present: false });
+    return {
+      degree: cleanText(data?.degree, RESUME_MAX.degree, "Degree", true),
+      school: cleanText(data?.school, RESUME_MAX.school, "School", true),
+      location: cleanText(data?.location, RESUME_MAX.location, "Location"),
+      startYear,
+      startMonth,
+      endYear,
+      endMonth,
+      grade: cleanText(data?.grade, RESUME_MAX.grade, "Grade"),
+      bullets: cleanList(data?.bullets, bulletLineMax, "Note", "\n"),
+    };
+  }
+
+  if (sectionKey === "projects") {
+    const startYear = parseYear(data?.startYear, "Start year");
+    const startMonth = parseMonth(data?.startMonth, "Start month");
+    const endYear = parseYear(data?.endYear, "End year");
+    const endMonth = parseMonth(data?.endMonth, "End month");
+    const present = Boolean(data?.present);
+
+    validateChronology({ startYear, startMonth, endYear, endMonth, present });
+    return {
+      name: cleanText(data?.name, RESUME_MAX.projectName, "Project name", true),
+      link: cleanText(data?.link, RESUME_MAX.projectLink, "Project link"),
+      startYear,
+      startMonth,
+      endYear: present ? undefined : endYear,
+      endMonth: present ? undefined : endMonth,
+      present,
+      summary: cleanText(data?.summary, RESUME_MAX.projectSummary, "Summary"),
+      bullets: cleanList(data?.bullets, bulletLineMax, "Highlight", "\n"),
+      tags: cleanList(data?.tags, RESUME_MAX.tagsLine, "Tag", ","),
+    };
+  }
+
+  if (sectionKey === "skills") {
+    return {
+      name: cleanText(data?.name, RESUME_MAX.skill, "Skill", true),
+      level: cleanText(data?.level, 30, "Skill level"),
+    };
+  }
+
+  if (sectionKey === "certifications") {
+    return {
+      name: cleanText(data?.name, RESUME_MAX.certificationName, "Certification", true),
+      issuer: cleanText(data?.issuer, RESUME_MAX.issuer, "Issuer"),
+      year: parseYear(data?.year, "Year"),
+      link: cleanText(data?.link, RESUME_MAX.projectLink, "Link"),
+    };
+  }
+
+  if (sectionKey === "awards") {
+    return {
+      title: cleanText(data?.title, RESUME_MAX.awardTitle, "Title", true),
+      year: parseYear(data?.year, "Year"),
+      by: cleanText(data?.by, RESUME_MAX.awardBy, "By"),
+      summary: cleanText(data?.summary, RESUME_MAX.awardSummary, "Summary"),
+    };
+  }
+
+  if (sectionKey === "languages") {
+    return {
+      name: cleanText(data?.name, RESUME_MAX.language, "Language", true),
+      proficiency: cleanText(data?.proficiency, 40, "Proficiency"),
+    };
+  }
+
+  if (sectionKey === "highlights") {
+    return {
+      text: cleanText(data?.text, RESUME_MAX.highlight, "Highlight", true),
+    };
+  }
+
+  return data ?? {};
+};
 
 const getOwnedProject = async (projectId: string, userId: string) => {
   const [project] = await db
@@ -155,10 +459,7 @@ export const createResumeProject = defineAction({
   async handler(input, context: ActionAPIContext) {
     const user = requireUser(context);
     ensureTemplateAccess(input.templateKey, user.isPaid);
-    const title = normalizeText(input.title);
-    if (!title) {
-      throw new ActionError({ code: "BAD_REQUEST", message: "Title is required." });
-    }
+    const title = cleanText(input.title, RESUME_MAX.projectTitle, "Title", true);
 
     const existing = await db
       .select({ id: ResumeProject.id })
@@ -260,11 +561,7 @@ export const updateResumeProject = defineAction({
 
     const updates: Record<string, any> = { updatedAt: new Date() };
     if (title !== undefined) {
-      const normalized = normalizeText(title);
-      if (!normalized) {
-        throw new ActionError({ code: "BAD_REQUEST", message: "Title is required." });
-      }
-      updates.title = normalized;
+      updates.title = cleanText(title, RESUME_MAX.projectTitle, "Title", true);
     }
     if (templateKey !== undefined) {
       ensureTemplateAccess(templateKey, user.isPaid);
@@ -428,7 +725,11 @@ export const addOrUpdateItem = defineAction({
   input: itemSchema,
   async handler({ projectId, sectionKey, itemId, order, data }, context: ActionAPIContext) {
     const user = requireUser(context);
-    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
+    const project = await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
+    const typedSectionKey = sectionKey as ResumeSectionKey;
+    if (!SECTION_KEYS.has(typedSectionKey)) {
+      throw new ActionError({ code: "BAD_REQUEST", message: "Invalid section key." });
+    }
 
     const [section] = await db
       .select()
@@ -440,7 +741,8 @@ export const addOrUpdateItem = defineAction({
     }
 
     const now = new Date();
-    const payload = JSON.stringify(data ?? {});
+    const validatedData = sanitizeSectionData(typedSectionKey, data, project.templateKey);
+    const payload = JSON.stringify(validatedData);
 
     if (itemId) {
       const [existing] = await db

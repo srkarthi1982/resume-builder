@@ -57,6 +57,8 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Final polish pass (Astra): enforced tighter form constraints and server validation (`src/modules/resume-builder/constraints.ts`, `src/actions/resumeBuilder.ts`) including year floor 1950, current-year max, stricter section limits (summary/declaration/experience/project/bullets), and template-aware Minimal caps (summary 220, bullet line 140) on save.
+- 2026-02-08 Output hygiene pass: published `@ansiversa/components@0.0.123`, upgraded dependency in resume-builder, and regenerated print artifacts with bad-input data to verify dedupe/truncation behavior.
 - 2026-02-08 Locked `DEV_BYPASS_IS_PAID` to DEV-only middleware branch with strict literal check (`process.env.DEV_BYPASS_IS_PAID === "true"` behind `import.meta.env.DEV`) and added one-time DEV warning when active.
 - 2026-02-08 Updated `@ansiversa/components` to `0.0.122` (white-background print contract across all templates) and regenerated PDFs/screenshots under `artifacts/print-fix-20260208-v2/`.
 - 2026-02-08 Added DEV-only paid bypass support in middleware via `DEV_BYPASS_IS_PAID=true` to allow local generation of Pro template print artifacts for verification.
@@ -149,6 +151,23 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm install @ansiversa/components@0.0.123` (pass).
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
+- 2026-02-08 Bad-input proof dataset injected in local dev DB for verification only:
+  - duplicate contact URLs/emails added to classic/modern basics links.
+  - overlong summary/bullets added to minimal/timeline experience/summary sections.
+- 2026-02-08 v3 artifacts generated with Playwright + PyMuPDF under `artifacts/print-fix-20260208-v3/`:
+  - `classic_v3.pdf`, `modern_v3.pdf`, `minimal_v3.pdf`, `timeline_v3.pdf`
+  - `*_v3_p1.png`, `*_v3_p2.png`, plus `*_v3_screen.png`.
+- 2026-02-08 Text extraction checks from v3 PDFs:
+  - Classic dedupe: `priyamenon.design` appears once in rendered PDF text.
+  - Modern dedupe: duplicate email/portfolio labels removed; contact+links only show normalized unique entries.
+  - Minimal guardrails: ellipsis present in extracted text for overlong summary/bullets.
+  - Timeline guardrails: ellipsis present in extracted text for overlong bullets.
+- 2026-02-08 Date guardrails verification:
+  - UI selectors now sourced from constraints with floor `1950` and max `currentYear`.
+  - Server validation enforces chronology and year range in `src/actions/resumeBuilder.ts` (`parseYear` + `validateChronology`).
 - 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
 - 2026-02-08 `npm run build` (pass).
 - 2026-02-08 `npm run preview -- --host 127.0.0.1 --port 4424` (not supported by `@astrojs/vercel` adapter; command exits with adapter error).
