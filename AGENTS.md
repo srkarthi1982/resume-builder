@@ -57,6 +57,7 @@ To add a 5th template later:
 
 ## 5. Task Log (Newest first)
 
+- 2026-02-08 Final visual polish sync: upgraded to `@ansiversa/components@0.0.124` to pick up template hierarchy refinements (Classic name/title/contact balance, Minimal header-contact cohesion + declaration placement treatment, Modern sidebar weight tuning, declaration closing hierarchy polish across templates).
 - 2026-02-08 Final polish pass (Astra): enforced tighter form constraints and server validation (`src/modules/resume-builder/constraints.ts`, `src/actions/resumeBuilder.ts`) including year floor 1950, current-year max, stricter section limits (summary/declaration/experience/project/bullets), and template-aware Minimal caps (summary 220, bullet line 140) on save.
 - 2026-02-08 Output hygiene pass: published `@ansiversa/components@0.0.123`, upgraded dependency in resume-builder, and regenerated print artifacts with bad-input data to verify dedupe/truncation behavior.
 - 2026-02-08 Locked `DEV_BYPASS_IS_PAID` to DEV-only middleware branch with strict literal check (`process.env.DEV_BYPASS_IS_PAID === "true"` behind `import.meta.env.DEV`) and added one-time DEV warning when active.
@@ -151,6 +152,14 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-08 `npm install @ansiversa/components@0.0.124` (pass).
+- 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+- 2026-02-08 `npm run build` (pass).
+- 2026-02-08 v4 visual-polish artifacts generated under `artifacts/print-fix-20260208-v4/`:
+  - `classic_v4.pdf`, `modern_v4.pdf`, `minimal_v4.pdf`, `timeline_v4.pdf`
+  - `*_v4_p1.png`, `*_v4_p2.png`, and `*_v4_screen.png`.
+- 2026-02-08 copied v4 review pack to workspace mirror `mnt/data/`:
+  - `classic_v4*`, `modern_v4*`, `minimal_v4*`, `timeline_v4*`.
 - 2026-02-08 `npm install @ansiversa/components@0.0.123` (pass).
 - 2026-02-08 `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
 - 2026-02-08 `npm run build` (pass).
