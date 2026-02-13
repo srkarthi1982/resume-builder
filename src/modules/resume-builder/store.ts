@@ -1007,7 +1007,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.ai.suggestions = [];
 
     try {
-      const response = await postAiSuggest(AI_FEATURE_KEY, currentText, this.rootAppUrl);
+      const response = await postAiSuggest(AI_FEATURE_KEY, currentText);
       this.ai.suggestions = response.suggestions.slice(0, 5);
       if (this.ai.suggestions.length === 0) {
         this.ai.error = "No suggestions returned.";

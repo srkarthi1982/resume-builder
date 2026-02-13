@@ -29,17 +29,13 @@ const toJsonSafe = async (response: Response): Promise<any> => {
   }
 };
 
-const resolveSuggestUrl = (parentOrigin?: string | null) => {
-  if (!parentOrigin) return "/api/ai/suggest.json";
-  return `${parentOrigin.replace(/\/+$/, "")}/api/ai/suggest.json`;
-};
+const resolveSuggestUrl = () => "/api/ai/suggest";
 
 export const postAiSuggest = async (
   featureKey: string,
   userText: string,
-  parentOrigin?: string | null,
 ): Promise<AiSuggestResponse> => {
-  const response = await fetch(resolveSuggestUrl(parentOrigin), {
+  const response = await fetch(resolveSuggestUrl(), {
     method: "POST",
     credentials: "include",
     headers: jsonHeaders,
