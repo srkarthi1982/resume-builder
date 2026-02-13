@@ -16,7 +16,19 @@ const getRootAppUrl = (locals?: App.Locals) => {
     import.meta.env.PUBLIC_ROOT_APP_URL ||
     import.meta.env.PARENT_APP_URL ||
     (import.meta.env.DEV ? "http://localhost:2000" : "https://ansiversa.com");
-  return raw.replace(/\/+$/, "");
+  const normalized = raw.replace(/\/+$/, "");
+
+  try {
+    const parsed = new URL(normalized);
+    if (!import.meta.env.DEV && parsed.hostname === "ansiversa.com") {
+      parsed.hostname = "www.ansiversa.com";
+      return parsed.toString().replace(/\/+$/, "");
+    }
+  } catch {
+    // Keep original normalized URL if parsing fails.
+  }
+
+  return normalized;
 };
 
 export const POST: APIRoute = async ({ cookies, locals, request }) => {
