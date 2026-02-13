@@ -108,7 +108,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     maxlength={RESUME_MAX.projectTitle}
                     required
                   />
-                  <p class="av-form-hint" x-text="`${(projectMeta.title || '').length} / ${RESUME_MAX.projectTitle}`"></p>
+                  <p class="av-form-hint" x-text={`(projectMeta.title || '').length + ' / ${RESUME_MAX.projectTitle}'`}></p>
 
                   <div class="av-resume-template-grid">
                     <template x-for="template in templateOptions" :key="template.key">
@@ -213,10 +213,10 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                 <template x-if="activeSectionKey === 'basics'">
                   <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                     <AvInput label="Full name" name="full-name" x-model="formData.fullName" maxlength={RESUME_MAX.fullName} @input={`enforceLimit('fullName', ${RESUME_MAX.fullName})`} required />
-                    <p class="av-form-hint" x-text="`${(formData.fullName || '').length} / ${RESUME_MAX.fullName}`"></p>
+                    <p class="av-form-hint" x-text={`(formData.fullName || '').length + ' / ${RESUME_MAX.fullName}'`}></p>
 
                     <AvInput label="Job title" name="headline" x-model="formData.headline" maxlength={RESUME_MAX.headline} @input={`enforceLimit('headline', ${RESUME_MAX.headline})`} />
-                    <p class="av-form-hint" x-text="`${(formData.headline || '').length} / ${RESUME_MAX.headline}`"></p>
+                    <p class="av-form-hint" x-text={`(formData.headline || '').length + ' / ${RESUME_MAX.headline}'`}></p>
 
                     <div class="av-resume-field-grid-2">
                       <AvInput label="Email" type="email" name="email" x-model="formData.contact.email" maxlength={RESUME_MAX.email} @input={`enforceLimit('contact.email', ${RESUME_MAX.email})`} />
@@ -224,7 +224,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                     </div>
 
                     <AvInput label="Location" name="location-text" x-model="formData.locationText" maxlength={RESUME_MAX.locationLabel} @input={`enforceLimit('locationText', ${RESUME_MAX.locationLabel})`} />
-                    <p class="av-form-hint" x-text="`${(formData.locationText || '').length} / ${RESUME_MAX.locationLabel}`"></p>
+                    <p class="av-form-hint" x-text={`(formData.locationText || '').length + ' / ${RESUME_MAX.locationLabel}'`}></p>
 
                     <div class="av-auth-stack-xs">
                       <div class="av-row-between">
@@ -290,7 +290,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                       @input={`enforceLimit('text', ${RESUME_MAX.summary})`}
                       placeholder="Write a short professional summary."
                     />
-                    <p class="av-form-hint" x-text="`${(formData.text || '').length} / ${RESUME_MAX.summary}`"></p>
+                    <p class="av-form-hint" x-text={`(formData.text || '').length + ' / ${RESUME_MAX.summary}'`}></p>
                   </form>
                 </template>
 
@@ -305,7 +305,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                       @input={`enforceLimit('text', ${RESUME_MAX.declaration})`}
                       placeholder="I hereby declare that the information furnished above is true to the best of my knowledge."
                     />
-                    <p class="av-form-hint" x-text="`${(formData.text || '').length} / ${RESUME_MAX.declaration}`"></p>
+                    <p class="av-form-hint" x-text={`(formData.text || '').length + ' / ${RESUME_MAX.declaration}'`}></p>
                     <div class="av-resume-field-grid-2">
                       <AvInput label="Place" name="declaration-place" x-model="formData.place" maxlength={RESUME_MAX.declarationPlace} @input={`enforceLimit('place', ${RESUME_MAX.declarationPlace})`} />
                       <AvInput label="Name" name="declaration-name" x-model="formData.name" maxlength={RESUME_MAX.declarationName} @input={`enforceLimit('name', ${RESUME_MAX.declarationName})`} />
@@ -332,10 +332,10 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Role" name="role" x-model="formData.role" maxlength={RESUME_MAX.role} @input={`enforceLimit('role', ${RESUME_MAX.role})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.role || '').length} / ${RESUME_MAX.role}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.role || '').length + ' / ${RESUME_MAX.role}'`}></p>
 
                       <AvInput label="Company" name="company" x-model="formData.company" maxlength={RESUME_MAX.company} @input={`enforceLimit('company', ${RESUME_MAX.company})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.company || '').length} / ${RESUME_MAX.company}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.company || '').length + ' / ${RESUME_MAX.company}'`}></p>
 
                       <AvInput label="Location" name="location" x-model="formData.location" maxlength={RESUME_MAX.location} @input={`enforceLimit('location', ${RESUME_MAX.location})`} />
 
@@ -364,7 +364,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                       </label>
 
                       <AvTextarea label="Summary" name="summary" rows={3} x-model="formData.summary" maxlength={RESUME_MAX.experienceSummary} @input={`enforceLimit('summary', ${RESUME_MAX.experienceSummary})`} />
-                      <p class="av-form-hint" x-text="`${(formData.summary || '').length} / ${RESUME_MAX.experienceSummary}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.summary || '').length + ' / ${RESUME_MAX.experienceSummary}'`}></p>
 
                       <AvTextarea label="Highlights (one per line)" name="bullets" rows={4} x-model="formData.bullets" maxlength={RESUME_MAX.bulletBlock} @input={`enforceLineLimit('bullets', ${RESUME_MAX.bulletLine})`} />
                       <p class="av-form-hint">Each bullet max {RESUME_MAX.bulletLine} characters.</p>
@@ -393,10 +393,10 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Degree" name="degree" x-model="formData.degree" maxlength={RESUME_MAX.degree} @input={`enforceLimit('degree', ${RESUME_MAX.degree})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.degree || '').length} / ${RESUME_MAX.degree}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.degree || '').length + ' / ${RESUME_MAX.degree}'`}></p>
 
                       <AvInput label="School" name="school" x-model="formData.school" maxlength={RESUME_MAX.school} @input={`enforceLimit('school', ${RESUME_MAX.school})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.school || '').length} / ${RESUME_MAX.school}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.school || '').length + ' / ${RESUME_MAX.school}'`}></p>
 
                       <AvInput label="Location" name="location" x-model="formData.location" maxlength={RESUME_MAX.location} @input={`enforceLimit('location', ${RESUME_MAX.location})`} />
 
@@ -445,7 +445,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Skill" name="skill-name" x-model="formData.name" maxlength={RESUME_MAX.skill} @input={`enforceLimit('name', ${RESUME_MAX.skill})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.name || '').length} / ${RESUME_MAX.skill}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.name || '').length + ' / ${RESUME_MAX.skill}'`}></p>
 
                       <AvSelect label="Level" name="skill-level" x-model="formData.level">
                         <option value="">Select level</option>
@@ -477,7 +477,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Project name" name="project-name" x-model="formData.name" maxlength={RESUME_MAX.projectName} @input={`enforceLimit('name', ${RESUME_MAX.projectName})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.name || '').length} / ${RESUME_MAX.projectName}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.name || '').length + ' / ${RESUME_MAX.projectName}'`}></p>
 
                       <AvInput label="Project link" type="url" name="project-link" x-model="formData.link" maxlength={RESUME_MAX.projectLink} @input={`enforceLimit('link', ${RESUME_MAX.projectLink})`} />
 
@@ -506,7 +506,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                       </label>
 
                       <AvTextarea label="Summary" name="summary" rows={3} x-model="formData.summary" maxlength={RESUME_MAX.projectSummary} @input={`enforceLimit('summary', ${RESUME_MAX.projectSummary})`} />
-                      <p class="av-form-hint" x-text="`${(formData.summary || '').length} / ${RESUME_MAX.projectSummary}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.summary || '').length + ' / ${RESUME_MAX.projectSummary}'`}></p>
 
                       <AvTextarea label="Highlights (one per line)" name="bullets" rows={4} x-model="formData.bullets" maxlength={RESUME_MAX.bulletBlock} @input={`enforceLineLimit('bullets', ${RESUME_MAX.bulletLine})`} />
                       <p class="av-form-hint">Each bullet max {RESUME_MAX.bulletLine} characters.</p>
@@ -535,7 +535,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Certification" name="cert-name" x-model="formData.name" maxlength={RESUME_MAX.certificationName} @input={`enforceLimit('name', ${RESUME_MAX.certificationName})`} required />
-                      <p class="av-form-hint" x-text="`${(formData.name || '').length} / ${RESUME_MAX.certificationName}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.name || '').length + ' / ${RESUME_MAX.certificationName}'`}></p>
 
                       <AvInput label="Issuer" name="cert-issuer" x-model="formData.issuer" maxlength={RESUME_MAX.issuer} @input={`enforceLimit('issuer', ${RESUME_MAX.issuer})`} />
                       <AvSelect label="Year" name="cert-year" x-model="formData.year">
@@ -566,7 +566,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Title" name="award-title" x-model="formData.title" maxlength={RESUME_MAX.awardTitle} required />
-                      <p class="av-form-hint" x-text="`${(formData.title || '').length} / ${RESUME_MAX.awardTitle}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.title || '').length + ' / ${RESUME_MAX.awardTitle}'`}></p>
 
                       <AvSelect label="Year" name="award-year" x-model="formData.year">
                         <option value="">Select year</option>
@@ -574,7 +574,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                       </AvSelect>
                       <AvInput label="By" name="award-by" x-model="formData.by" maxlength={RESUME_MAX.awardBy} />
                       <AvTextarea label="Summary" name="award-summary" rows={3} x-model="formData.summary" maxlength={RESUME_MAX.awardSummary} />
-                      <p class="av-form-hint" x-text="`${(formData.summary || '').length} / ${RESUME_MAX.awardSummary}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.summary || '').length + ' / ${RESUME_MAX.awardSummary}'`}></p>
                     </form>
                   </div>
                 </template>
@@ -598,7 +598,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Language" name="language-name" x-model="formData.name" maxlength={RESUME_MAX.language} required />
-                      <p class="av-form-hint" x-text="`${(formData.name || '').length} / ${RESUME_MAX.language}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.name || '').length + ' / ${RESUME_MAX.language}'`}></p>
 
                       <AvSelect label="Proficiency" name="language-level" x-model="formData.proficiency">
                         <option value="">Select proficiency</option>
@@ -631,7 +631,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvTextarea label="Highlight" name="highlight" rows={3} x-model="formData.text" maxlength={RESUME_MAX.highlight} />
-                      <p class="av-form-hint" x-text="`${(formData.text || '').length} / ${RESUME_MAX.highlight}`"></p>
+                      <p class="av-form-hint" x-text={`(formData.text || '').length + ' / ${RESUME_MAX.highlight}'`}></p>
                     </form>
                   </div>
                 </template>
