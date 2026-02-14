@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { SESSION_COOKIE_NAME } from "../../../lib/auth";
+import { resolveParentOrigin } from "../../../server/resolveParentOrigin";
 
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), {
@@ -10,32 +11,11 @@ const json = (status: number, body: Record<string, unknown>) =>
     },
   });
 
-const getRootAppUrl = (locals?: App.Locals) => {
-  const raw =
-    locals?.rootAppUrl ||
-    import.meta.env.PUBLIC_ROOT_APP_URL ||
-    import.meta.env.PARENT_APP_URL ||
-    (import.meta.env.DEV ? "http://localhost:2000" : "https://ansiversa.com");
-  const normalized = raw.replace(/\/+$/, "");
-
-  try {
-    const parsed = new URL(normalized);
-    if (!import.meta.env.DEV && parsed.hostname === "ansiversa.com") {
-      parsed.hostname = "www.ansiversa.com";
-      return parsed.toString().replace(/\/+$/, "");
-    }
-  } catch {
-    // Keep original normalized URL if parsing fails.
-  }
-
-  return normalized;
-};
-
 export const GET: APIRoute = async ({ cookies, locals, request }) => {
   const cookieToken = cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!cookieToken) return json(200, { count: 0 });
 
-  const rootAppUrl = getRootAppUrl(locals);
+  const rootAppUrl = resolveParentOrigin(locals);
   const cookieHeader = request.headers.get("cookie") ?? "";
   if (!rootAppUrl || !cookieHeader) return json(200, { count: 0 });
 

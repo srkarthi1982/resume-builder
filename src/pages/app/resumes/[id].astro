@@ -1,5 +1,6 @@
 ---
 import {
+  AvAiAssist,
   AvButton,
   AvCard,
   AvContainer,
@@ -268,18 +269,16 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                   <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                     <div class="av-row-between av-resume-ai-header">
                       <label class="av-label" for="summary-text">Summary</label>
-                      <AvButton
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        @click.prevent="aiFetchSuggestions()"
-                        :disabled="!aiSummaryCanFetch"
-                        x-bind:title="aiSummaryCanFetch ? 'Get AI suggestions' : aiSummaryDisabledReason"
-                        aria-label="Get AI suggestions"
-                      >
-                        <span aria-hidden="true">✨</span>
-                        <span>AI</span>
-                      </AvButton>
+                      <AvAiAssist
+                        featureKey="resume.remark_suggestions"
+                        value=""
+                        minChars={30}
+                        maxChars={1500}
+                        label="AI"
+                        onAppendEvent="av:ai-append"
+                        onReplaceEvent="av:ai-replace"
+                        x-bind:data-value="formData.text"
+                      />
                     </div>
                     <AvTextarea
                       id="summary-text"
@@ -644,44 +643,6 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                   <span x-show="loading">Saving…</span>
                 </AvButton>
               </div>
-
-              <template x-if="ai.open && activeSectionKey === 'summary'">
-                <div class="av-resume-ai-modal-overlay" @click.self="aiClose()" @keydown.escape.window="aiClose()">
-                  <div class="av-resume-ai-modal">
-                    <div class="av-auth-stack-sm">
-                      <div class="av-row-between">
-                        <h3 class="av-card-heading av-m-0">AI Suggestions</h3>
-                        <AvButton type="button" variant="ghost" size="sm" @click.prevent="aiClose()">Close</AvButton>
-                      </div>
-
-                      <template x-if="ai.loading">
-                        <p class="av-text-soft av-m-0">Generating suggestions…</p>
-                      </template>
-
-                      <template x-if="ai.error && !ai.loading">
-                        <div class="av-alert av-alert-danger" role="status" x-text="ai.error"></div>
-                      </template>
-
-                      <template x-if="!ai.loading && ai.suggestions.length">
-                        <div class="av-auth-stack-xs">
-                          <template x-for="(suggestion, idx) in ai.suggestions" :key="`ai-${idx}`">
-                            <div class="av-resume-ai-suggestion-card">
-                              <p class="av-m-0" x-text="suggestion"></p>
-                              <div class="av-row-wrap">
-                                <AvButton type="button" variant="ghost" size="sm" @click.prevent="aiApplySuggestion('append', suggestion)">Append</AvButton>
-                                <AvButton type="button" size="sm" @click.prevent="aiApplySuggestion('replace', suggestion)">Replace</AvButton>
-                                <AvButton type="button" variant="ghost" size="sm" @click.prevent="aiCopySuggestion(suggestion)">Copy</AvButton>
-                              </div>
-                            </div>
-                          </template>
-                        </div>
-                      </template>
-
-                      <p class="av-form-hint av-m-0">AI suggestions are optional. Please review before saving.</p>
-                    </div>
-                  </div>
-                </div>
-              </template>
             </AvDrawer>
           </div>
         </template>

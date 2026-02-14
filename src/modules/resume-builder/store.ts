@@ -4,12 +4,8 @@ import { actions } from "astro:actions";
 import type { ResumeItemDTO, ResumeProjectDTO, ResumeProjectDetail, ResumeSectionKey } from "./types";
 import { TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from "./helpers";
 import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "./constraints";
-import { AiSuggestError, postAiSuggest } from "../../lib/aiGateway";
 
 const PAYWALL_MESSAGE = "Template 3 & 4 are Pro templates. Upgrade to unlock.";
-const AI_FEATURE_KEY = "resume.remark_suggestions";
-const AI_MIN_CHARS = 30;
-const AI_MAX_INPUT = 1500;
 
 const defaultState = () => ({
   projects: [] as ResumeProjectDTO[],
@@ -37,12 +33,6 @@ const defaultState = () => ({
   },
   pendingDeleteId: null as string | null,
   rootAppUrl: null as string | null,
-  ai: {
-    open: false,
-    loading: false,
-    error: null as string | null,
-    suggestions: [] as string[],
-  },
 });
 
 const normalizeText = (value?: string | null) => {
@@ -463,12 +453,8 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   };
   pendingDeleteId: string | null = null;
   rootAppUrl: string | null = null;
-  ai = {
-    open: false,
-    loading: false,
-    error: null as string | null,
-    suggestions: [] as string[],
-  };
+  private aiAppendListener: ((event: Event) => void) | null = null;
+  private aiReplaceListener: ((event: Event) => void) | null = null;
 
   init(initial?: Partial<ReturnType<typeof defaultState>>) {
     if (!initial) return;
@@ -488,6 +474,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     }
     this.isPaid = Boolean(initial.isPaid);
     this.rootAppUrl = typeof initial.rootAppUrl === "string" ? initial.rootAppUrl : null;
+    this.bindAiAssistEvents();
   }
 
   get sectionKeys() {
@@ -936,115 +923,48 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.editingItemId = null;
     this.formData = {};
     this.warning = null;
-    this.aiClose();
   }
 
-  get aiSummaryText() {
-    return normalizeText(this.formData?.text);
-  }
+  private bindAiAssistEvents() {
+    if (typeof window === "undefined") return;
 
-  get aiSummaryMinReady() {
-    return this.aiSummaryText.length >= AI_MIN_CHARS;
-  }
-
-  get aiSummaryTooLong() {
-    return this.aiSummaryText.length > AI_MAX_INPUT;
-  }
-
-  get aiSummaryDisabledReason() {
-    if (this.ai.loading) return "Generating suggestions...";
-    if (this.activeSectionKey !== "summary") return "AI suggestions are only available for summary.";
-    if (this.aiSummaryTooLong) return `Text exceeds ${AI_MAX_INPUT} characters.`;
-    if (!this.aiSummaryMinReady) return "Add a few details to get meaningful suggestions.";
-    return "";
-  }
-
-  get aiSummaryCanFetch() {
-    return this.activeSectionKey === "summary" && !this.ai.loading && !this.aiSummaryTooLong && this.aiSummaryMinReady;
-  }
-
-  aiClose() {
-    this.ai.open = false;
-    this.ai.loading = false;
-    this.ai.error = null;
-    this.ai.suggestions = [];
-  }
-
-  private mapAiError(error: unknown) {
-    if (error instanceof AiSuggestError) {
-      if (error.status === 401) return "Please sign in again.";
-      if (error.status === 429) return "Too many requests. Try again in a few minutes.";
-      if (error.status === 400) return error.message || "Invalid request.";
-      return error.message || "Something went wrong. Try again.";
+    if (this.aiAppendListener) {
+      window.removeEventListener("av:ai-append", this.aiAppendListener as EventListener);
+    }
+    if (this.aiReplaceListener) {
+      window.removeEventListener("av:ai-replace", this.aiReplaceListener as EventListener);
     }
 
-    if (error instanceof Error) {
-      return error.message || "Something went wrong. Try again.";
-    }
+    this.aiAppendListener = (event: Event) => {
+      const suggestion = this.readAiSuggestion(event);
+      if (!suggestion) return;
+      this.applySummarySuggestion("append", suggestion);
+    };
 
-    return "Something went wrong. Try again.";
+    this.aiReplaceListener = (event: Event) => {
+      const suggestion = this.readAiSuggestion(event);
+      if (!suggestion) return;
+      this.applySummarySuggestion("replace", suggestion);
+    };
+
+    window.addEventListener("av:ai-append", this.aiAppendListener as EventListener);
+    window.addEventListener("av:ai-replace", this.aiReplaceListener as EventListener);
   }
 
-  async aiFetchSuggestions() {
+  private readAiSuggestion(event: Event) {
+    const detailText = (event as CustomEvent<{ text?: unknown }>).detail?.text;
+    return normalizeText(typeof detailText === "string" ? detailText : "");
+  }
+
+  private applySummarySuggestion(mode: "append" | "replace", suggestion: string) {
     if (this.activeSectionKey !== "summary") return;
-
-    const currentText = this.aiSummaryText;
-    if (currentText.length > AI_MAX_INPUT) {
-      this.ai.error = `Text exceeds ${AI_MAX_INPUT} characters.`;
-      this.ai.open = true;
-      return;
-    }
-
-    if (currentText.length < AI_MIN_CHARS) {
-      this.ai.error = "Add a few details to get meaningful suggestions.";
-      this.ai.open = true;
-      return;
-    }
-
-    this.ai.open = true;
-    this.ai.loading = true;
-    this.ai.error = null;
-    this.ai.suggestions = [];
-
-    try {
-      const response = await postAiSuggest(AI_FEATURE_KEY, currentText);
-      this.ai.suggestions = response.suggestions.slice(0, 5);
-      if (this.ai.suggestions.length === 0) {
-        this.ai.error = "No suggestions returned.";
-      }
-    } catch (error) {
-      this.ai.error = this.mapAiError(error);
-    } finally {
-      this.ai.loading = false;
-    }
-  }
-
-  aiApplySuggestion(mode: "append" | "replace", text: string) {
-    if (this.activeSectionKey !== "summary") return;
-    const candidate = normalizeText(text);
-    if (!candidate) return;
-
     const current = normalizeText(this.formData?.text);
-    const nextValue = mode === "replace" || !current ? candidate : `${current}\n${candidate}`;
+    const needsNewline = mode === "append" && current.length > 0;
+    const nextValue =
+      mode === "replace"
+        ? suggestion
+        : `${current}${needsNewline ? "\n" : ""}${suggestion}`;
     this.formData.text = nextValue.slice(0, RESUME_MAX.summary);
-    this.ai.open = false;
-    this.ai.error = null;
-  }
-
-  async aiCopySuggestion(text: string) {
-    const value = normalizeText(text);
-    if (!value) return;
-
-    try {
-      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(value);
-        this.success = "Suggestion copied.";
-        return;
-      }
-      throw new Error("Clipboard unavailable.");
-    } catch {
-      this.ai.error = "Copy failed. Please copy manually.";
-    }
   }
 
   editItem(item: ResumeItemDTO) {

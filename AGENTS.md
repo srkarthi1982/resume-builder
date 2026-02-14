@@ -21,6 +21,20 @@ This file records what was built/changed so far for the resume-builder repo. Rea
 - One global Alpine store per app pattern.
  - Includes Example Items CRUD (user + admin) and a minimal baseline landing.
 
+## 🔒 Milestones (Newest first)
+
+### 🔒 Milestone: AI Suggestions V1 (Shipped)
+- Parent AI Gateway production verified (ping + suggest + negative cases)
+- Resume Builder Summary field AI suggestions integrated
+- Gating: min 30 chars, max 1500
+- No DB schema/data model changes
+- Local proxy route used to avoid CORS
+- Canonical www.ansiversa.com enforced in production for cookie stability
+- Rate limiting active (429)
+- Status: LOCKED
+- Next: Extract reusable component AvAiAssist
+- No secrets, no cookies.
+
 ---
 
 ## 2. Example Module (Deletable)
@@ -248,5 +262,6 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-14 AvAiAssist extraction refactor + proxy origin standardization: replaced inline summary AI modal/button in `src/pages/app/resumes/[id].astro` with shared `<AvAiAssist />` from `@ansiversa/components`, simplified store AI logic to event-driven append/replace handlers in `src/modules/resume-builder/store.ts`, removed obsolete AI modal CSS from `src/styles/global.css`, added `src/server/resolveParentOrigin.ts` and switched both local proxy routes (`src/pages/api/ai/suggest.ts`, `src/pages/api/notifications/unread-count.ts`) to canonical production `https://www.ansiversa.com` with non-prod env fallback chain (`WEB_ORIGIN` / `PUBLIC_WEB_ORIGIN` / existing root envs), and upgraded dependency to `@ansiversa/components@0.0.128`. Verification: `npm run typecheck` (0 errors, 1 existing hint), `npm run build` (pass).
 - 2026-02-09 Enforced repo-level AGENTS mandatory task-log update rule for Codex/AI execution.
 - 2026-02-09 Verified repo AGENTS contract linkage to workspace source-of-truth.
