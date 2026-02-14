@@ -275,9 +275,9 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                         minChars={30}
                         maxChars={1500}
                         label="AI"
+                        valueSourceSelector="#summary-text"
                         onAppendEvent="av:ai-append"
                         onReplaceEvent="av:ai-replace"
-                        x-bind:data-value="formData.text"
                       />
                     </div>
                     <AvTextarea

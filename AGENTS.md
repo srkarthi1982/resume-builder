@@ -262,6 +262,7 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-14 Fixed summary AI button becoming incorrectly disabled after typing by switching `AvAiAssist` usage to direct textarea source binding (`valueSourceSelector=\"#summary-text\"`) in `src/pages/app/resumes/[id].astro`; upgraded dependency to `@ansiversa/components@0.0.129` (lock `0.0.129`). Verification: `npm run typecheck` (0 errors, 1 existing hint) and `npm run build` (pass).
 - 2026-02-14 AvAiAssist extraction refactor + proxy origin standardization: replaced inline summary AI modal/button in `src/pages/app/resumes/[id].astro` with shared `<AvAiAssist />` from `@ansiversa/components`, simplified store AI logic to event-driven append/replace handlers in `src/modules/resume-builder/store.ts`, removed obsolete AI modal CSS from `src/styles/global.css`, added `src/server/resolveParentOrigin.ts` and switched both local proxy routes (`src/pages/api/ai/suggest.ts`, `src/pages/api/notifications/unread-count.ts`) to canonical production `https://www.ansiversa.com` with non-prod env fallback chain (`WEB_ORIGIN` / `PUBLIC_WEB_ORIGIN` / existing root envs), and upgraded dependency to `@ansiversa/components@0.0.128`. Verification: `npm run typecheck` (0 errors, 1 existing hint), `npm run build` (pass).
 - 2026-02-09 Enforced repo-level AGENTS mandatory task-log update rule for Codex/AI execution.
 - 2026-02-09 Verified repo AGENTS contract linkage to workspace source-of-truth.
