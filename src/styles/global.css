@@ -96,7 +96,20 @@
 }
 
 .av-resume-ai-header {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.av-resume-ai-header .av-label {
+  min-width: 0;
+}
+
+.av-resume-ai-header .av-ai-assist {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .av-resume-print-body {
