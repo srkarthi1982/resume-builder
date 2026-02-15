@@ -235,6 +235,11 @@
   text-decoration-color: currentColor;
 }
 
+.av-resume-print,
+.av-resume-print * {
+  hyphens: none;
+}
+
 .av-resume-template-underlay .resume-template > main > section > header {
   display: none;
 }

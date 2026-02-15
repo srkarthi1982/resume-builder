@@ -281,6 +281,7 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 PDF micro-polish pass: normalized print contact list formatting to `Label: value` style with de-duplication and removed standalone `Website` line artifact, added location display normalization (`Abudhabi` -> `Abu Dhabi`) in print header, and disabled hyphenation in print scope (`.av-resume-print`) for ATS-safe text extraction.
 - 2026-02-15 Print header URL label cleanup: normalized website display label to strip protocol and trailing slash (e.g., `www.ansiversa.com/` -> `www.ansiversa.com`) so manual slash removal in editor is reflected consistently.
 - 2026-02-15 Print/PDF parity fix: forced classic template content grid to keep left/right two-column layout in `@media print` (overrode `print:grid-cols-1` and `print:col-span-1`) so exported PDF matches preview structure.
 - 2026-02-15 Print identity spacing polish: reduced vertical spacing between job title, location, and phone by tightening top margins and splitting phone into its own compact style class (`av-resume-standard-phone`).

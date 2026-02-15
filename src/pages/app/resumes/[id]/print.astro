@@ -51,31 +51,42 @@ const formatDisplayUrl = (value: string) =>
   value
     .replace(/^https?:\/\//i, "")
     .replace(/\/+$/, "");
+const normalizeLocationLabel = (value: string) =>
+  value
+    .replace(/\bAbudhabi\b/gi, "Abu Dhabi")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+const seenContactHrefs = new Set<string>();
+const pushContactEntry = (label: string, href?: string) => {
+  const nextLabel = label.trim();
+  if (!nextLabel) return;
+  const key = (href ?? nextLabel).toLowerCase();
+  if (seenContactHrefs.has(key)) return;
+  seenContactHrefs.add(key);
+  contactEntries.push({ label: nextLabel, href });
+};
 
 const locationLabel =
-  basics?.location?.label ||
-  [basics?.location?.city, basics?.location?.country].filter(Boolean).join(", ");
+  normalizeLocationLabel(
+    basics?.location?.label ||
+      [basics?.location?.city, basics?.location?.country].filter(Boolean).join(", "),
+  );
 if (basics?.contact?.email) {
-  contactEntries.push({
-    label: basics.contact.email,
-    href: `mailto:${basics.contact.email}`,
-  });
+  pushContactEntry(basics.contact.email, `mailto:${basics.contact.email}`);
 }
 if (basics?.contact?.website) {
   const href = /^https?:\/\//i.test(basics.contact.website)
     ? basics.contact.website
     : `https://${basics.contact.website}`;
-  contactEntries.push({
-    label: formatDisplayUrl(basics.contact.website),
-    href,
-  });
+  pushContactEntry(`Website: ${formatDisplayUrl(basics.contact.website)}`, href);
 }
 for (const link of basics?.links ?? []) {
   const label = (link?.label ?? "").trim();
   const url = (link?.url ?? "").trim();
   if (!label || !url) continue;
+  if (label.toLowerCase() === "website") continue;
   const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
-  contactEntries.push({ label, href });
+  pushContactEntry(`${label}: ${formatDisplayUrl(url)}`, href);
 }
 ---
 
