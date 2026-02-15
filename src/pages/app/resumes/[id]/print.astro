@@ -93,7 +93,7 @@ for (const link of basics?.links ?? []) {
   </head>
   <body class={`av-resume-print-body ${isPreview ? "av-resume-preview" : "av-resume-print"}`}>
     <div class="av-resume-print-header print:hidden">
-      <AvContainer size="full">
+      <AvContainer>
         <div class="av-resume-print-header-inner">
           <div class="av-auth-stack-xxs">
             <p class="av-kicker">Resume Builder</p>
@@ -101,7 +101,6 @@ for (const link of basics?.links ?? []) {
             <p class="av-text-soft">Use browser print to download as PDF.</p>
           </div>
           <div class="av-row-wrap">
-            <AvButton href={`/app/resumes/${projectId}`} variant="ghost">Back to editor</AvButton>
             <AvButton type="button" onclick="window.print()">Print / Download PDF</AvButton>
           </div>
         </div>
@@ -121,7 +120,7 @@ for (const link of basics?.links ?? []) {
           ) : null}
         </AvContainer>
       ) : resumeData ? (
-        <AvContainer size="full">
+        <AvContainer>
           <article class="av-resume-standard">
             <header class="av-resume-standard-header">
               {projectPhotoUrl ? (
