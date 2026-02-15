@@ -19,6 +19,9 @@ export type ResumeProjectDTO = {
   title: string;
   templateKey: ResumeTemplateType;
   isDefault: boolean;
+  photoKey: string;
+  photoUrl: string;
+  photoUpdatedAt: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 };

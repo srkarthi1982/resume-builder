@@ -178,6 +178,16 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-15 Remote data setup for user `01e5cef7-b18d-4616-999c-454175356c24`:
+  - Executed remote insert script with `node --env-file=.env.local --input-type=module` + `@libsql/client` to create a complete ResumeProject dataset (all sections populated).
+  - Verified project creation: title `Administrator - Senior Software Developer Resume` (new project id `f53dc2b5-86f0-4157-a4eb-9711fb1556b2`).
+  - Verified totals: 11 sections, 28 items.
+  - Verified required counts: `experience=4`, `projects=4`, `awards(achievements)=3`; all other sections present with at least 1 item.
+- 2026-02-15 Resume photo metadata + upload pipeline verification:
+  - `npm run db:push` (pass; remote schema pushed with `photoKey`, `photoUrl`, `photoUpdatedAt` on `ResumeProject`).
+  - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+  - `npm run build` (pass).
+  - UI/manual checks pending in local browser: jpg/png/webp upload instant preview, refresh persistence, re-upload timestamp change, mobile alignment, and print/PDF visual verification.
 - 2026-02-08 UI polish verification:
   - `rg -n "<style" src/pages` (no matches).
   - `rg -n 'style="' src/pages` (no matches).
@@ -262,6 +272,8 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Created a complete remote resume dataset for user `ansiversa@gmail.com` via libSQL script using `.env.local` remote credentials: inserted one `ResumeProject` (`Administrator - Senior Software Developer Resume`) with all 11 sections, 4 experiences, 4 projects, 3 achievements (awards), plus basics/summary/education/skills/certifications/languages/highlights/declaration, and linked profile photo fields.
+- 2026-02-15 Resume Builder photo integration V1: added `ResumeProject` photo metadata columns (`photoKey`, `photoUrl`, `photoUpdatedAt`), added parent-upload proxy route `src/pages/api/media/upload.json.ts`, added action `resumeUpdateProjectPhoto` with ownership guard + timestamp updates, wired editor uploader (`AvImageUploader`) and optimistic store save flow, and rendered uploaded photo in print/preview output with fixed circular 96x96 style.
 - 2026-02-14 Upgraded `@ansiversa/components` to `0.0.130` (lock `0.0.130`) to consume AvAiAssist modal header UX update (single-line title row with right-aligned `X` close control). Verification: install succeeded.
 - 2026-02-14 UI alignment fix: pinned Summary AI assist button to the right of the Summary label by overriding header layout in `src/styles/global.css` (`.av-resume-ai-header` nowrap + right-pinned assist control), preventing wrap-to-next-line behavior in drawer header. Verification: `npm run typecheck` (0 errors, 1 existing hint).
 - 2026-02-14 Fixed summary AI button becoming incorrectly disabled after typing by switching `AvAiAssist` usage to direct textarea source binding (`valueSourceSelector=\"#summary-text\"`) in `src/pages/app/resumes/[id].astro`; upgraded dependency to `@ansiversa/components@0.0.129` (lock `0.0.129`). Verification: `npm run typecheck` (0 errors, 1 existing hint) and `npm run build` (pass).

@@ -1,6 +1,7 @@
 import type { Alpine } from "alpinejs";
 import { AvBaseStore } from "@ansiversa/components/alpine";
 import { actions } from "astro:actions";
+import type { AvMediaUploadResult } from "@ansiversa/components";
 import type { ResumeItemDTO, ResumeProjectDTO, ResumeProjectDetail, ResumeSectionKey } from "./types";
 import { TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from "./helpers";
 import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "./constraints";
@@ -852,6 +853,61 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       this.success = "Resume details updated.";
     } catch (err: any) {
       this.error = err?.message || "Unable to update resume.";
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async saveProjectPhoto(media: AvMediaUploadResult) {
+    if (!this.activeProject?.project?.id) return;
+
+    const nextPhotoUrl = normalizeText(media?.url);
+    const nextPhotoKey = normalizeText(media?.key);
+    if (!nextPhotoUrl || !nextPhotoKey) {
+      this.error = "Uploaded image is invalid.";
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    this.success = null;
+
+    const previous = {
+      photoKey: this.activeProject.project.photoKey,
+      photoUrl: this.activeProject.project.photoUrl,
+      photoUpdatedAt: this.activeProject.project.photoUpdatedAt,
+    };
+
+    const nowIso = new Date().toISOString();
+    this.activeProject.project.photoKey = nextPhotoKey;
+    this.activeProject.project.photoUrl = nextPhotoUrl;
+    this.activeProject.project.photoUpdatedAt = nowIso;
+
+    try {
+      const res = await actions.resumeBuilder.resumeUpdateProjectPhoto({
+        projectId: this.activeProject.project.id,
+        photoKey: nextPhotoKey,
+        photoUrl: nextPhotoUrl,
+      });
+      this.unwrapResult<{ ok: true }>(res);
+
+      this.projects = this.projects.map((item) =>
+        item.id === this.activeProject?.project.id
+          ? {
+              ...item,
+              photoKey: nextPhotoKey,
+              photoUrl: nextPhotoUrl,
+              photoUpdatedAt: nowIso,
+            }
+          : item,
+      );
+      this.refreshPreview();
+      this.success = "Profile photo updated.";
+    } catch (err: any) {
+      this.activeProject.project.photoKey = previous.photoKey;
+      this.activeProject.project.photoUrl = previous.photoUrl;
+      this.activeProject.project.photoUpdatedAt = previous.photoUpdatedAt;
+      this.error = err?.message || "Unable to save profile photo.";
     } finally {
       this.loading = false;
     }

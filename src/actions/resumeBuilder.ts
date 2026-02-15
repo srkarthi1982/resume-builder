@@ -45,6 +45,12 @@ const updateProjectSchema = z
     message: "Provide a title or template to update.",
   });
 
+const updateProjectPhotoSchema = z.object({
+  projectId: z.string().min(1),
+  photoKey: z.string().min(1),
+  photoUrl: z.string().min(1),
+});
+
 const sectionSchema = z.object({
   projectId: z.string().min(1),
   key: z.string().min(1),
@@ -672,6 +678,32 @@ export const updateResumeProject = defineAction({
     }
 
     return { project: normalizeResumeProject(project) };
+  },
+});
+
+export const resumeUpdateProjectPhoto = defineAction({
+  input: updateProjectPhotoSchema,
+  async handler({ projectId, photoKey, photoUrl }, context: ActionAPIContext) {
+    const user = requireUser(context);
+    await getOwnedProjectWithTemplateAccess(projectId, user.id, user.isPaid);
+
+    const now = new Date();
+    await db
+      .update(ResumeProject)
+      .set({
+        photoKey,
+        photoUrl,
+        photoUpdatedAt: now,
+        updatedAt: now,
+      })
+      .where(eq(ResumeProject.id, projectId));
+
+    await pushDashboardActivity(user.id, {
+      event: "resume.photo.updated",
+      entityId: projectId,
+    });
+
+    return { ok: true };
   },
 });
 

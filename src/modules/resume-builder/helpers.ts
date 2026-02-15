@@ -26,6 +26,9 @@ export type ResumeProjectRow = {
   title: string;
   templateKey: string;
   isDefault?: boolean | null;
+  photoKey?: string | null;
+  photoUrl?: string | null;
+  photoUpdatedAt?: Date | null;
   createdAt?: Date | null;
   updatedAt?: Date | null;
 };
@@ -69,6 +72,9 @@ export const normalizeResumeProject = (row: ResumeProjectRow): ResumeProjectDTO 
   title: row.title,
   templateKey: row.templateKey as ResumeProjectDTO["templateKey"],
   isDefault: Boolean(row.isDefault),
+  photoKey: normalizeText(row.photoKey),
+  photoUrl: normalizeText(row.photoUrl),
+  photoUpdatedAt: row.photoUpdatedAt ? row.photoUpdatedAt.toISOString() : null,
   createdAt: row.createdAt ? row.createdAt.toISOString() : null,
   updatedAt: row.updatedAt ? row.updatedAt.toISOString() : null,
 });

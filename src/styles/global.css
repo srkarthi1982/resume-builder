@@ -145,6 +145,50 @@
   margin-top: 1rem;
 }
 
+.av-resume-photo-preview-wrap {
+  width: 96px;
+  height: 96px;
+  position: relative;
+}
+
+.av-resume-photo-preview,
+.av-resume-photo-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
+}
+
+.av-resume-photo-preview {
+  display: block;
+  object-fit: cover;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.av-resume-photo-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(148, 163, 184, 0.45);
+  color: var(--av-text-soft);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.av-resume-template-photo-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1rem;
+}
+
+.av-resume-template-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
 @media (min-width: 640px) {
   .av-resume-field-grid-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));

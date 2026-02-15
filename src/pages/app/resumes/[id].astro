@@ -7,6 +7,7 @@ import {
   AvDrawer,
   AvEmptyState,
   AvIcon,
+  AvImageUploader,
   AvInput,
   AvLoading,
   AvSelect,
@@ -67,6 +68,7 @@ const sectionOrder = [
 
 const yearOptions = getResumeYearOptions();
 const monthOptions = RESUME_MONTH_OPTIONS;
+const mediaUploadUrl = "/api/media/upload.json";
 ---
 
 <AppShell title={title} description={description}>
@@ -76,6 +78,7 @@ const monthOptions = RESUME_MONTH_OPTIONS;
         class="av-resume-editor-layout"
         x-data="$store.resumeBuilder"
         x-init="init && init(JSON.parse($el.dataset.initial))"
+        @av:resume-project-photo-uploaded.window="saveProjectPhoto($event.detail)"
         data-initial={JSON.stringify(initialState)}
       >
         {loadError ? (
@@ -127,6 +130,30 @@ const monthOptions = RESUME_MONTH_OPTIONS;
                         <p class="av-text-soft" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
                       </button>
                     </template>
+                  </div>
+
+                  <div class="av-auth-stack-xs">
+                    <AvImageUploader
+                      uploadUrl={mediaUploadUrl}
+                      scope="account"
+                      purpose="avatar"
+                      label="Profile photo"
+                      helpText="JPG, PNG, or WebP up to 2 MB."
+                      initialUrl={projectData?.project?.photoUrl ?? null}
+                      onUploadedEventName="av:resume-project-photo-uploaded"
+                    />
+                    <div class="av-resume-photo-preview-wrap">
+                      <img
+                        class="av-resume-photo-preview"
+                        x-bind:src="activeProject?.project?.photoUrl || ''"
+                        x-show="activeProject?.project?.photoUrl"
+                        x-cloak
+                        alt="Resume profile photo"
+                      />
+                      <div class="av-resume-photo-placeholder" x-show="!activeProject?.project?.photoUrl">
+                        No photo
+                      </div>
+                    </div>
                   </div>
 
                   <div class="av-row-wrap" x-show="paywallMessage" x-cloak>

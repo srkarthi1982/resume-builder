@@ -25,6 +25,7 @@ try {
 
 const resumeData = projectData ? buildResumeDataFromSections(projectData.sections ?? []) : null;
 const templateKey = projectData?.project?.templateKey ?? "classic";
+const projectPhotoUrl = (projectData?.project?.photoUrl ?? "").trim();
 const pageTitle = projectData?.project?.title
   ? `${projectData.project.title} – Print`
   : "Resume Print";
@@ -67,6 +68,16 @@ const pageTitle = projectData?.project?.title
         </AvContainer>
       ) : resumeData ? (
         <AvContainer size="full">
+          {projectPhotoUrl ? (
+            <div class="av-resume-template-photo-wrap">
+              <img
+                class="av-resume-template-photo"
+                src={projectPhotoUrl}
+                alt="Resume profile photo"
+                loading="lazy"
+              />
+            </div>
+          ) : null}
           <ResumeBuilderShell type={templateKey} data={resumeData} />
         </AvContainer>
       ) : null}
