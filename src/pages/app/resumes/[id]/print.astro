@@ -46,7 +46,7 @@ const resumeShellData = resumeData
       },
     }
   : null;
-const contactEntries: Array<{ label: string; href?: string }> = [];
+const contactEntries: Array<{ key: string; value: string; href?: string }> = [];
 const formatDisplayUrl = (value: string) =>
   value
     .replace(/^https?:\/\//i, "")
@@ -57,13 +57,14 @@ const normalizeLocationLabel = (value: string) =>
     .replace(/\s{2,}/g, " ")
     .trim();
 const seenContactHrefs = new Set<string>();
-const pushContactEntry = (label: string, href?: string) => {
-  const nextLabel = label.trim();
-  if (!nextLabel) return;
-  const key = (href ?? nextLabel).toLowerCase();
-  if (seenContactHrefs.has(key)) return;
-  seenContactHrefs.add(key);
-  contactEntries.push({ label: nextLabel, href });
+const pushContactEntry = (entryKey: string, value: string, href?: string) => {
+  const normalizedKey = entryKey.trim();
+  const normalizedValue = value.trim();
+  if (!normalizedKey || !normalizedValue) return;
+  const dedupeKey = `${normalizedKey.toLowerCase()}|${(href ?? normalizedValue).toLowerCase()}`;
+  if (seenContactHrefs.has(dedupeKey)) return;
+  seenContactHrefs.add(dedupeKey);
+  contactEntries.push({ key: normalizedKey, value: normalizedValue, href });
 };
 
 const locationLabel =
@@ -72,13 +73,13 @@ const locationLabel =
       [basics?.location?.city, basics?.location?.country].filter(Boolean).join(", "),
   );
 if (basics?.contact?.email) {
-  pushContactEntry(`Email: ${basics.contact.email}`, `mailto:${basics.contact.email}`);
+  pushContactEntry("Email", basics.contact.email, `mailto:${basics.contact.email}`);
 }
 if (basics?.contact?.website) {
   const href = /^https?:\/\//i.test(basics.contact.website)
     ? basics.contact.website
     : `https://${basics.contact.website}`;
-  pushContactEntry(`Website: ${formatDisplayUrl(basics.contact.website)}`, href);
+  pushContactEntry("Website", formatDisplayUrl(basics.contact.website), href);
 }
 for (const link of basics?.links ?? []) {
   const label = (link?.label ?? "").trim();
@@ -86,7 +87,7 @@ for (const link of basics?.links ?? []) {
   if (!label || !url) continue;
   if (label.toLowerCase() === "website") continue;
   const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
-  pushContactEntry(`${label}: ${formatDisplayUrl(url)}`, href);
+  pushContactEntry(label, formatDisplayUrl(url), href);
 }
 ---
 
@@ -148,11 +149,15 @@ for (const link of basics?.links ?? []) {
 
               <div class="av-resume-standard-contacts">
                 {contactEntries.map((entry) =>
-                  entry.href ? (
-                    <a href={entry.href}>{entry.label}</a>
-                  ) : (
-                    <span>{entry.label}</span>
-                  ),
+                  <div class="av-resume-contact-row">
+                    <span class="av-resume-contact-key">{entry.key}</span>
+                    <span class="av-resume-contact-colon">:</span>
+                    {entry.href ? (
+                      <a class="av-resume-contact-value" href={entry.href}>{entry.value}</a>
+                    ) : (
+                      <span class="av-resume-contact-value">{entry.value}</span>
+                    )}
+                  </div>,
                 )}
               </div>
             </header>

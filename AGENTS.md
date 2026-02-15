@@ -286,6 +286,7 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Print header contact typography refinement: switched right-column contacts to structured 3-column rows (`key`, `:`, `value`) so colons align vertically and labels (Email/Website/GitHub/LinkedIn) are right-aligned against the colon while values/URLs flow consistently after it.
 - 2026-02-15 Print header contact alignment tweak: changed email entry format to `Email: <address>` and switched right-column contact block to left-aligned text/flow while preserving right-column placement in the header grid.
 - 2026-02-15 Milestone closeout prep: completed final build/typecheck lock checks for approved print/preview/header/photo behaviors and recorded auth-gated smoke constraint; marked Resume Builder Photo V2 ready to lock.
 - 2026-02-15 PDF micro-polish pass: normalized print contact list formatting to `Label: value` style with de-duplication and removed standalone `Website` line artifact, added location display normalization (`Abudhabi` -> `Abu Dhabi`) in print header, and disabled hyphenation in print scope (`.av-resume-print`) for ATS-safe text extraction.

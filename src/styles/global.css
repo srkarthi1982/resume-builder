@@ -209,6 +209,27 @@
   color: #1f2937;
 }
 
+.av-resume-contact-row {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr;
+  column-gap: 0.35rem;
+  align-items: baseline;
+}
+
+.av-resume-contact-key {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.av-resume-contact-colon {
+  text-align: center;
+}
+
+.av-resume-contact-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .av-resume-standard-summary {
   margin-top: 1rem;
   border-top: 1px solid #dbe1ea;
