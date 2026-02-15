@@ -956,14 +956,17 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     }
   }
 
-  openSection(key: ResumeEditorSectionKey) {
+  async openSection(key: ResumeEditorSectionKey) {
     this.activeSectionKey = key;
-    this.drawerOpen = true;
     this.editingItemId = null;
     this.warning = null;
 
     if (key === "photo") {
+      if (this.activeProject?.project?.id) {
+        await this.loadProject(this.activeProject.project.id);
+      }
       this.formData = {};
+      this.drawerOpen = true;
       return;
     }
 
@@ -974,6 +977,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     } else {
       this.formData = defaultFormForSection(key);
     }
+    this.drawerOpen = true;
   }
 
   closeDrawer() {

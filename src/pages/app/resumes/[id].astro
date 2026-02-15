@@ -212,7 +212,7 @@ const mediaUploadUrl = "/api/media/upload.json";
               <div class="av-auth-stack-md">
                 <div class="av-auth-stack-xs">
                   <p class="av-kicker" x-text="getSectionLabel(activeSectionKey)"></p>
-                  <p class="av-text-soft">Save to refresh the preview.</p>
+                  <p class="av-text-soft" x-text="activeSectionKey === 'photo' ? 'Uploading updates instantly.' : 'Save to refresh the preview.'"></p>
                 </div>
 
                 <template x-if="activeSectionKey === 'basics'">
@@ -269,22 +269,20 @@ const mediaUploadUrl = "/api/media/upload.json";
                   </form>
                 </template>
 
-                <template x-if="activeSectionKey === 'photo'">
-                  <div class="av-auth-stack-sm">
-                    <AvImageUploader
-                      uploadUrl={mediaUploadUrl}
-                      scope="account"
-                      purpose="avatar"
-                      label="Profile photo"
-                      helpText="JPG, PNG, or WebP up to 2 MB."
-                      initialUrl={projectData?.project?.photoUrl ?? null}
-                      onUploadedEventName="av:resume-project-photo-uploaded"
-                    />
-                    <p class="av-text-soft">
-                      Uploading updates your resume photo instantly in preview and print.
-                    </p>
-                  </div>
-                </template>
+                <div class="av-auth-stack-sm" x-show="activeSectionKey === 'photo'" x-cloak>
+                  <AvImageUploader
+                    uploadUrl={mediaUploadUrl}
+                    scope="account"
+                    purpose="avatar"
+                    label="Profile photo"
+                    helpText="JPG, PNG, or WebP up to 2 MB."
+                    initialUrl={projectData?.project?.photoUrl ?? null}
+                    onUploadedEventName="av:resume-project-photo-uploaded"
+                  />
+                  <p class="av-text-soft">
+                    Uploading updates your resume photo instantly in preview and print.
+                  </p>
+                </div>
 
                 <template x-if="activeSectionKey === 'summary'">
                   <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
@@ -658,8 +656,8 @@ const mediaUploadUrl = "/api/media/upload.json";
               </div>
 
               <div slot="footer" class="av-row-wrap">
-                <AvButton variant="ghost" type="button" @click="closeDrawer()">Close</AvButton>
-                <AvButton type="button" @click="saveActiveItem()" :disabled="loading">
+                <AvButton variant="ghost" type="button" @click="closeDrawer()" x-text="activeSectionKey === 'photo' ? 'Done' : 'Close'"></AvButton>
+                <AvButton type="button" @click="saveActiveItem()" :disabled="loading" x-show="activeSectionKey !== 'photo'">
                   <span x-show="!loading">Save</span>
                   <span x-show="loading">Saving…</span>
                 </AvButton>

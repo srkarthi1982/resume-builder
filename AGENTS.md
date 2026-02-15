@@ -178,6 +178,10 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-15 Photo drawer stale-state + CTA behavior fix verification:
+  - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+  - `npm run build` (pass).
+  - Verified in code: Photo drawer now uses instant-upload guidance text, hides Save button (`Done/Close` only), and `openSection('photo')` re-syncs project via `loadProject()` before showing drawer to avoid stale reopen state.
 - 2026-02-15 Photo section + print header/layout polish verification:
   - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
   - `npm run build` (pass).
@@ -277,6 +281,7 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Fixed Photo drawer UX/state regression: removed Save CTA for virtual `photo` section (drawer footer now `Done` only for photo), updated drawer helper copy to instant-upload semantics, prevented photo uploader remount by switching to `x-show` block, and made `openSection('photo')` await `loadProject()` before opening so reopen reflects latest persisted photo metadata.
 - 2026-02-15 Resume Builder photo UX/layout hardening (Astra task): added virtual `Photo` entry to sections drawer (uploader moved into drawer), removed duplicate editor-side photo preview, reworked `/app/resumes/[id]/print` wrapper to standard header row (photo left, identity center, contacts right) plus separate SUMMARY block below header, and added print/preview anchor color inheritance rules to remove default light-blue link rendering.
 - 2026-02-15 Created a complete remote resume dataset for user `ansiversa@gmail.com` via libSQL script using `.env.local` remote credentials: inserted one `ResumeProject` (`Administrator - Senior Software Developer Resume`) with all 11 sections, 4 experiences, 4 projects, 3 achievements (awards), plus basics/summary/education/skills/certifications/languages/highlights/declaration, and linked profile photo fields.
 - 2026-02-15 Resume Builder photo integration V1: added `ResumeProject` photo metadata columns (`photoKey`, `photoUrl`, `photoUpdatedAt`), added parent-upload proxy route `src/pages/api/media/upload.json.ts`, added action `resumeUpdateProjectPhoto` with ownership guard + timestamp updates, wired editor uploader (`AvImageUploader`) and optimistic store save flow, and rendered uploaded photo in print/preview output with fixed circular 96x96 style.
