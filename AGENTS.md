@@ -281,6 +281,7 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Print header URL label cleanup: normalized website display label to strip protocol and trailing slash (e.g., `www.ansiversa.com/` -> `www.ansiversa.com`) so manual slash removal in editor is reflected consistently.
 - 2026-02-15 Print/PDF parity fix: forced classic template content grid to keep left/right two-column layout in `@media print` (overrode `print:grid-cols-1` and `print:col-span-1`) so exported PDF matches preview structure.
 - 2026-02-15 Print identity spacing polish: reduced vertical spacing between job title, location, and phone by tightening top margins and splitting phone into its own compact style class (`av-resume-standard-phone`).
 - 2026-02-15 Print header contact placement tweak: moved mobile number from right contact stack to left identity block (now shown below location), as requested.

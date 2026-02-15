@@ -47,6 +47,10 @@ const resumeShellData = resumeData
     }
   : null;
 const contactEntries: Array<{ label: string; href?: string }> = [];
+const formatDisplayUrl = (value: string) =>
+  value
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/+$/, "");
 
 const locationLabel =
   basics?.location?.label ||
@@ -62,7 +66,7 @@ if (basics?.contact?.website) {
     ? basics.contact.website
     : `https://${basics.contact.website}`;
   contactEntries.push({
-    label: basics.contact.website.replace(/^https?:\/\//i, ""),
+    label: formatDisplayUrl(basics.contact.website),
     href,
   });
 }
@@ -128,7 +132,7 @@ for (const link of basics?.links ?? []) {
                 <h1 class="av-resume-standard-name">{basics?.fullName || "Your Name"}</h1>
                 <p class="av-resume-standard-headline">{basics?.headline || "Professional Title"}</p>
                 {locationLabel ? <p class="av-resume-standard-location">{locationLabel}</p> : null}
-                {basics?.contact?.phone ? <p class="av-resume-standard-location">{basics.contact.phone}</p> : null}
+                {basics?.contact?.phone ? <p class="av-resume-standard-phone">{basics.contact.phone}</p> : null}
               </div>
 
               <div class="av-resume-standard-contacts">
