@@ -53,7 +53,11 @@ export type ResumeItemRow = {
 };
 
 export const normalizeText = (value?: string | null) => {
-  const trimmed = (value ?? "").trim();
+  const trimmed = (value ?? "")
+    .toString()
+    .replace(/[\u00ad\u200b\u200c\u200d\ufeff\ufffe\uffff]/gu, "")
+    .replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/gu, "-")
+    .trim();
   return trimmed ? trimmed : "";
 };
 

@@ -146,7 +146,7 @@
 }
 
 .av-resume-standard {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   border-radius: 1rem;
   border: 1px solid #e2e8f0;
   background: #f3f4f6;
@@ -212,7 +212,7 @@
 
 .av-resume-contact-row {
   display: grid;
-  grid-template-columns: max-content max-content minmax(0, 1fr);
+  grid-template-columns: 8ch 1ch minmax(0, 1fr);
   column-gap: 0.35rem;
   align-items: baseline;
 }
@@ -260,8 +260,8 @@
 
 .av-resume-print,
 .av-resume-preview {
-  hyphens: none;
-  word-break: normal;
+  hyphens: none !important;
+  word-break: normal !important;
 }
 
 .av-resume-print h2,
@@ -277,7 +277,9 @@
 }
 .av-resume-print,
 .av-resume-print * {
-  hyphens: none;
+  hyphens: none !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
 }
 
 .av-resume-template-underlay .resume-template > main > section > header {
@@ -286,6 +288,20 @@
 
 .av-resume-template-underlay .resume-template > main > section > header + div {
   display: none;
+}
+
+.av-resume-template-underlay .resume-template > main {
+  max-width: 72rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.av-resume-template-underlay .resume-template > main > section {
+  padding-top: 1rem !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
 
 @media (min-width: 640px) {
@@ -309,9 +325,53 @@
     text-align: left;
     justify-items: start;
   }
+
+  .av-resume-template-underlay .resume-template > main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .av-resume-template-underlay .resume-template > main > section {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
 }
 
 @media print {
+  .av-resume-template-underlay,
+  .av-resume-template-underlay * {
+    hyphens: none !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  .av-resume-template-underlay .resume-template > main {
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .av-resume-template-underlay .resume-template > main > section {
+    padding-top: 0.35rem !important;
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .av-resume-template-underlay .resume-template aside > section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .av-resume-template-underlay .resume-template h2 {
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
   .av-resume-template-underlay .resume-template .grid.gap-10.lg\:grid-cols-3.print\:grid-cols-1 {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }

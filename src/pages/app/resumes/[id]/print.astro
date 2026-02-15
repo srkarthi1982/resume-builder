@@ -30,13 +30,31 @@ const pageTitle = projectData?.project?.title
   ? `${projectData.project.title} – Print`
   : "Resume Print";
 
-const basics = resumeData?.basics;
+const sanitizeText = (value: string) =>
+  value
+    .replace(/[\u00ad\u200b\u200c\u200d\ufeff\ufffe\uffff]/gu, "")
+    .replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/gu, "-")
+    .replace(/[\p{Cc}\p{Cs}\p{Co}\p{Cn}]/gu, "");
+const sanitizeForPrint = <T,>(value: T): T => {
+  if (typeof value === "string") return sanitizeText(value) as T;
+  if (Array.isArray(value)) return value.map((item) => sanitizeForPrint(item)) as T;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      sanitizeForPrint(item),
+    ]);
+    return Object.fromEntries(entries) as T;
+  }
+  return value;
+};
+const sanitizedResumeData = resumeData ? sanitizeForPrint(resumeData) : null;
+const basics = sanitizedResumeData?.basics;
 const summaryText = (basics?.summary ?? "").trim();
-const resumeShellData = resumeData
+const resumeShellData = sanitizedResumeData
   ? {
-      ...resumeData,
+      ...sanitizedResumeData,
       basics: {
-        ...resumeData.basics,
+        ...sanitizedResumeData.basics,
         fullName: "",
         headline: "",
         summary: "",
