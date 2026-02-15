@@ -57,13 +57,6 @@ if (basics?.contact?.email) {
     href: `mailto:${basics.contact.email}`,
   });
 }
-if (basics?.contact?.phone) {
-  const phoneHref = basics.contact.phone.replace(/[^\d+]/g, "");
-  contactEntries.push({
-    label: basics.contact.phone,
-    href: phoneHref ? `tel:${phoneHref}` : undefined,
-  });
-}
 if (basics?.contact?.website) {
   const href = /^https?:\/\//i.test(basics.contact.website)
     ? basics.contact.website
@@ -135,6 +128,7 @@ for (const link of basics?.links ?? []) {
                 <h1 class="av-resume-standard-name">{basics?.fullName || "Your Name"}</h1>
                 <p class="av-resume-standard-headline">{basics?.headline || "Professional Title"}</p>
                 {locationLabel ? <p class="av-resume-standard-location">{locationLabel}</p> : null}
+                {basics?.contact?.phone ? <p class="av-resume-standard-location">{basics.contact.phone}</p> : null}
               </div>
 
               <div class="av-resume-standard-contacts">

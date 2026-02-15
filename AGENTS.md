@@ -281,6 +281,8 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Print header contact placement tweak: moved mobile number from right contact stack to left identity block (now shown below location), as requested.
+- 2026-02-15 Photo crop focus fix: adjusted print header square photo to use `object-position: center 18%` so tall portrait uploads keep head/face visible instead of center-cropping too low.
 - 2026-02-15 Print header photo size increase: enlarged profile photo from `96x96` to `112x112` while keeping square shape with subtle rounded corners.
 - 2026-02-15 Print header identity polish: moved location from right contact stack to appear under job title in the left identity block, and changed header photo shape from circular to square with subtle rounded corners.
 - 2026-02-15 Print width alignment fix: constrained `/app/resumes/[id]/print` banner/content containers from `AvContainer size=\"full\"` to default `AvContainer` so the top header and custom photo-summary block follow resume width instead of stretching full viewport.
