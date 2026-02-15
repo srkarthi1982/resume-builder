@@ -178,6 +178,11 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-15 Photo section + print header/layout polish verification:
+  - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+  - `npm run build` (pass).
+  - Verified in code: sections list includes virtual `Photo` entry opening drawer uploader (no `ResumeSection/ResumeItem` persistence changes), duplicate editor photo preview removed, print wrapper now renders photo-left/name-job/contacts-right with separate SUMMARY block below, and print/preview link colors forced to inherit (no light-blue default anchors).
+  - Manual browser verification pending: drawer upload interaction, preview/print visual alignment across templates, and dark-link confirmation in rendered output.
 - 2026-02-15 Remote data setup for user `01e5cef7-b18d-4616-999c-454175356c24`:
   - Executed remote insert script with `node --env-file=.env.local --input-type=module` + `@libsql/client` to create a complete ResumeProject dataset (all sections populated).
   - Verified project creation: title `Administrator - Senior Software Developer Resume` (new project id `f53dc2b5-86f0-4157-a4eb-9711fb1556b2`).
@@ -272,6 +277,7 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Resume Builder photo UX/layout hardening (Astra task): added virtual `Photo` entry to sections drawer (uploader moved into drawer), removed duplicate editor-side photo preview, reworked `/app/resumes/[id]/print` wrapper to standard header row (photo left, identity center, contacts right) plus separate SUMMARY block below header, and added print/preview anchor color inheritance rules to remove default light-blue link rendering.
 - 2026-02-15 Created a complete remote resume dataset for user `ansiversa@gmail.com` via libSQL script using `.env.local` remote credentials: inserted one `ResumeProject` (`Administrator - Senior Software Developer Resume`) with all 11 sections, 4 experiences, 4 projects, 3 achievements (awards), plus basics/summary/education/skills/certifications/languages/highlights/declaration, and linked profile photo fields.
 - 2026-02-15 Resume Builder photo integration V1: added `ResumeProject` photo metadata columns (`photoKey`, `photoUrl`, `photoUpdatedAt`), added parent-upload proxy route `src/pages/api/media/upload.json.ts`, added action `resumeUpdateProjectPhoto` with ownership guard + timestamp updates, wired editor uploader (`AvImageUploader`) and optimistic store save flow, and rendered uploaded photo in print/preview output with fixed circular 96x96 style.
 - 2026-02-14 Upgraded `@ansiversa/components` to `0.0.130` (lock `0.0.130`) to consume AvAiAssist modal header UX update (single-line title row with right-aligned `X` close control). Verification: install succeeded.

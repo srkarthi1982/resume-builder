@@ -7,6 +7,7 @@ import { buildResumeDataFromSections } from "../../../../modules/resume-builder/
 import type { ResumeProjectDetail } from "../../../../modules/resume-builder/types";
 
 const projectId = Astro.params.id ?? "";
+const isPreview = Astro.url.searchParams.get("preview") === "1";
 
 let projectData: ResumeProjectDetail | null = null;
 let loadError: string | null = null;
@@ -24,11 +25,64 @@ try {
 }
 
 const resumeData = projectData ? buildResumeDataFromSections(projectData.sections ?? []) : null;
-const templateKey = projectData?.project?.templateKey ?? "classic";
 const projectPhotoUrl = (projectData?.project?.photoUrl ?? "").trim();
 const pageTitle = projectData?.project?.title
   ? `${projectData.project.title} – Print`
   : "Resume Print";
+
+const basics = resumeData?.basics;
+const summaryText = (basics?.summary ?? "").trim();
+const resumeShellData = resumeData
+  ? {
+      ...resumeData,
+      basics: {
+        ...resumeData.basics,
+        fullName: "",
+        headline: "",
+        summary: "",
+        location: { label: "", city: "", country: "" },
+        contact: { email: "", phone: "", website: "" },
+        links: [],
+      },
+    }
+  : null;
+const contactEntries: Array<{ label: string; href?: string }> = [];
+
+const locationLabel =
+  basics?.location?.label ||
+  [basics?.location?.city, basics?.location?.country].filter(Boolean).join(", ");
+if (locationLabel) {
+  contactEntries.push({ label: locationLabel });
+}
+if (basics?.contact?.email) {
+  contactEntries.push({
+    label: basics.contact.email,
+    href: `mailto:${basics.contact.email}`,
+  });
+}
+if (basics?.contact?.phone) {
+  const phoneHref = basics.contact.phone.replace(/[^\d+]/g, "");
+  contactEntries.push({
+    label: basics.contact.phone,
+    href: phoneHref ? `tel:${phoneHref}` : undefined,
+  });
+}
+if (basics?.contact?.website) {
+  const href = /^https?:\/\//i.test(basics.contact.website)
+    ? basics.contact.website
+    : `https://${basics.contact.website}`;
+  contactEntries.push({
+    label: basics.contact.website.replace(/^https?:\/\//i, ""),
+    href,
+  });
+}
+for (const link of basics?.links ?? []) {
+  const label = (link?.label ?? "").trim();
+  const url = (link?.url ?? "").trim();
+  if (!label || !url) continue;
+  const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  contactEntries.push({ label, href });
+}
 ---
 
 <html lang="en">
@@ -37,7 +91,7 @@ const pageTitle = projectData?.project?.title
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
   </head>
-  <body class="av-resume-print-body">
+  <body class={`av-resume-print-body ${isPreview ? "av-resume-preview" : "av-resume-print"}`}>
     <div class="av-resume-print-header print:hidden">
       <AvContainer size="full">
         <div class="av-resume-print-header-inner">
@@ -68,17 +122,48 @@ const pageTitle = projectData?.project?.title
         </AvContainer>
       ) : resumeData ? (
         <AvContainer size="full">
-          {projectPhotoUrl ? (
-            <div class="av-resume-template-photo-wrap">
-              <img
-                class="av-resume-template-photo"
-                src={projectPhotoUrl}
-                alt="Resume profile photo"
-                loading="lazy"
-              />
+          <article class="av-resume-standard">
+            <header class="av-resume-standard-header">
+              {projectPhotoUrl ? (
+                <div class="av-resume-standard-photo-wrap">
+                  <img
+                    class="av-resume-standard-photo"
+                    src={projectPhotoUrl}
+                    alt="Resume profile photo"
+                    loading="lazy"
+                  />
+                </div>
+              ) : null}
+
+              <div class="av-resume-standard-identity">
+                <h1 class="av-resume-standard-name">{basics?.fullName || "Your Name"}</h1>
+                <p class="av-resume-standard-headline">{basics?.headline || "Professional Title"}</p>
+              </div>
+
+              <div class="av-resume-standard-contacts">
+                {contactEntries.map((entry) =>
+                  entry.href ? (
+                    <a href={entry.href}>{entry.label}</a>
+                  ) : (
+                    <span>{entry.label}</span>
+                  ),
+                )}
+              </div>
+            </header>
+
+            {summaryText ? (
+              <section class="av-resume-standard-summary">
+                <h2>SUMMARY</h2>
+                <p>{summaryText}</p>
+              </section>
+            ) : null}
+          </article>
+
+          {resumeShellData ? (
+            <div class="av-resume-template-underlay">
+              <ResumeBuilderShell type={projectData?.project?.templateKey ?? "classic"} data={resumeShellData} />
             </div>
           ) : null}
-          <ResumeBuilderShell type={templateKey} data={resumeData} />
         </AvContainer>
       ) : null}
     </main>

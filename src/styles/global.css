@@ -145,48 +145,89 @@
   margin-top: 1rem;
 }
 
-.av-resume-photo-preview-wrap {
-  width: 96px;
-  height: 96px;
-  position: relative;
+.av-resume-standard {
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background: #f3f4f6;
+  padding: 1rem;
 }
 
-.av-resume-photo-preview,
-.av-resume-photo-placeholder {
-  width: 96px;
-  height: 96px;
-  border-radius: 9999px;
-}
-
-.av-resume-photo-preview {
-  display: block;
-  object-fit: cover;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-}
-
-.av-resume-photo-placeholder {
-  display: inline-flex;
+.av-resume-standard-header {
+  display: grid;
   align-items: center;
-  justify-content: center;
-  border: 1px dashed rgba(148, 163, 184, 0.45);
-  color: var(--av-text-soft);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  gap: 1rem;
 }
 
-.av-resume-template-photo-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 0 0 1rem;
+.av-resume-standard-photo-wrap {
+  width: 96px;
+  height: 96px;
 }
 
-.av-resume-template-photo {
+.av-resume-standard-photo {
   width: 96px;
   height: 96px;
   border-radius: 9999px;
   object-fit: cover;
   border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.av-resume-standard-identity {
+  min-width: 0;
+}
+
+.av-resume-standard-name {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.av-resume-standard-headline {
+  margin: 0.35rem 0 0;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.av-resume-standard-contacts {
+  display: grid;
+  gap: 0.2rem;
+  color: #1f2937;
+}
+
+.av-resume-standard-summary {
+  margin-top: 1rem;
+  border-top: 1px solid #dbe1ea;
+  padding-top: 0.9rem;
+}
+
+.av-resume-standard-summary h2 {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #334155;
+}
+
+.av-resume-standard-summary p {
+  margin: 0.55rem 0 0;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.av-resume-print a,
+.av-resume-preview a {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+.av-resume-template-underlay .resume-template > main > section > header {
+  display: none;
+}
+
+.av-resume-template-underlay .resume-template > main > section > header + div {
+  display: none;
 }
 
 @media (min-width: 640px) {
@@ -200,6 +241,15 @@
 
   .av-resume-field-grid-date {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .av-resume-standard-header {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 18rem);
+  }
+
+  .av-resume-standard-contacts {
+    text-align: right;
+    justify-items: end;
   }
 }
 

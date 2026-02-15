@@ -7,6 +7,7 @@ import { TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from ".
 import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "./constraints";
 
 const PAYWALL_MESSAGE = "Template 3 & 4 are Pro templates. Upgrade to unlock.";
+type ResumeEditorSectionKey = ResumeSectionKey | "photo";
 
 const defaultState = () => ({
   projects: [] as ResumeProjectDTO[],
@@ -17,7 +18,7 @@ const defaultState = () => ({
   warning: null as string | null,
   success: null as string | null,
   drawerOpen: false,
-  activeSectionKey: null as ResumeSectionKey | null,
+  activeSectionKey: null as ResumeEditorSectionKey | null,
   editingItemId: null as string | null,
   formData: {} as Record<string, any>,
   previewBuster: Date.now(),
@@ -435,7 +436,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   warning: string | null = null;
   success: string | null = null;
   drawerOpen = false;
-  activeSectionKey: ResumeSectionKey | null = null;
+  activeSectionKey: ResumeEditorSectionKey | null = null;
   editingItemId: string | null = null;
   formData: Record<string, any> = {};
   previewBuster = Date.now();
@@ -478,12 +479,8 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.bindAiAssistEvents();
   }
 
-  get sectionKeys() {
-    return Object.keys(sectionLabels) as ResumeSectionKey[];
-  }
-
   get activeSection() {
-    if (!this.activeProject || !this.activeSectionKey) return null;
+    if (!this.activeProject || !this.activeSectionKey || this.activeSectionKey === "photo") return null;
     return this.activeProject.sections.find((section) => section.key === this.activeSectionKey) ?? null;
   }
 
@@ -513,8 +510,9 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.projectMeta.templateKey = templateKey;
   }
 
-  getSectionLabel(key: ResumeSectionKey | null) {
+  getSectionLabel(key: ResumeEditorSectionKey | null) {
     if (!key) return "Section";
+    if (key === "photo") return "Photo";
     return sectionLabels[key] ?? "Section";
   }
 
@@ -958,11 +956,16 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     }
   }
 
-  openSection(key: ResumeSectionKey) {
+  openSection(key: ResumeEditorSectionKey) {
     this.activeSectionKey = key;
     this.drawerOpen = true;
     this.editingItemId = null;
     this.warning = null;
+
+    if (key === "photo") {
+      this.formData = {};
+      return;
+    }
 
     if (key === "basics" || key === "summary" || key === "declaration") {
       this.ensureSectionExists(key);
@@ -1025,12 +1028,14 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
   editItem(item: ResumeItemDTO) {
     if (!this.activeSectionKey) return;
+    if (this.activeSectionKey === "photo") return;
     this.editingItemId = item.id;
     this.formData = toFormData(this.activeSectionKey, item.data ?? {});
   }
 
   startNewItem() {
     if (!this.activeSectionKey) return;
+    if (this.activeSectionKey === "photo") return;
     this.editingItemId = null;
     this.formData = defaultFormForSection(this.activeSectionKey);
   }
@@ -1132,6 +1137,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
 
   async saveActiveItem() {
     if (!this.activeSectionKey) return;
+    if (this.activeSectionKey === "photo") return;
 
     if (this.activeSectionKey === "basics" || this.activeSectionKey === "summary" || this.activeSectionKey === "declaration") {
       await this.ensureSectionExists(this.activeSectionKey);

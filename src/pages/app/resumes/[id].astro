@@ -53,6 +53,7 @@ const initialState = {
 };
 
 const sectionOrder = [
+  "photo",
   "basics",
   "summary",
   "experience",
@@ -132,30 +133,6 @@ const mediaUploadUrl = "/api/media/upload.json";
                     </template>
                   </div>
 
-                  <div class="av-auth-stack-xs">
-                    <AvImageUploader
-                      uploadUrl={mediaUploadUrl}
-                      scope="account"
-                      purpose="avatar"
-                      label="Profile photo"
-                      helpText="JPG, PNG, or WebP up to 2 MB."
-                      initialUrl={projectData?.project?.photoUrl ?? null}
-                      onUploadedEventName="av:resume-project-photo-uploaded"
-                    />
-                    <div class="av-resume-photo-preview-wrap">
-                      <img
-                        class="av-resume-photo-preview"
-                        x-bind:src="activeProject?.project?.photoUrl || ''"
-                        x-show="activeProject?.project?.photoUrl"
-                        x-cloak
-                        alt="Resume profile photo"
-                      />
-                      <div class="av-resume-photo-placeholder" x-show="!activeProject?.project?.photoUrl">
-                        No photo
-                      </div>
-                    </div>
-                  </div>
-
                   <div class="av-row-wrap" x-show="paywallMessage" x-cloak>
                     <p class="av-text-soft av-m-0" x-text="paywallMessage"></p>
                     <AvButton href="https://ansiversa.com/pricing" variant="ghost" size="sm">
@@ -195,7 +172,7 @@ const mediaUploadUrl = "/api/media/upload.json";
                       type="button"
                       @click.prevent={`openSection('${key}')`}
                     >
-                      <span>{sectionLabels[key]}</span>
+                      <span>{key === "photo" ? "Photo" : sectionLabels[key]}</span>
                       <span class="av-resume-section-chip-icon">
                         <AvIcon name="chevron-right" size="sm" />
                       </span>
@@ -290,6 +267,23 @@ const mediaUploadUrl = "/api/media/upload.json";
                       </template>
                     </div>
                   </form>
+                </template>
+
+                <template x-if="activeSectionKey === 'photo'">
+                  <div class="av-auth-stack-sm">
+                    <AvImageUploader
+                      uploadUrl={mediaUploadUrl}
+                      scope="account"
+                      purpose="avatar"
+                      label="Profile photo"
+                      helpText="JPG, PNG, or WebP up to 2 MB."
+                      initialUrl={projectData?.project?.photoUrl ?? null}
+                      onUploadedEventName="av:resume-project-photo-uploaded"
+                    />
+                    <p class="av-text-soft">
+                      Uploading updates your resume photo instantly in preview and print.
+                    </p>
+                  </div>
                 </template>
 
                 <template x-if="activeSectionKey === 'summary'">
