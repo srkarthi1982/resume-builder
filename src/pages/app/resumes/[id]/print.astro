@@ -51,6 +51,20 @@ const formatDisplayUrl = (value: string) =>
   value
     .replace(/^https?:\/\//i, "")
     .replace(/\/+$/, "");
+const normalizeGithubUrl = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  const withoutProtocol = trimmed.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  if (/^github\.com\//i.test(withoutProtocol)) return `https://${withoutProtocol}`;
+  if (/^github\.com[^/]/i.test(withoutProtocol)) {
+    const username = withoutProtocol.replace(/^github\.com/i, "").replace(/^\/+/, "");
+    return username ? `https://github.com/${username}` : "";
+  }
+  if (/^[a-zA-Z0-9-]+$/.test(withoutProtocol)) {
+    return `https://github.com/${withoutProtocol}`;
+  }
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
 const normalizeLocationLabel = (value: string) =>
   value
     .replace(/\bAbudhabi\b/gi, "Abu Dhabi")
@@ -86,8 +100,13 @@ for (const link of basics?.links ?? []) {
   const url = (link?.url ?? "").trim();
   if (!label || !url) continue;
   if (label.toLowerCase() === "website") continue;
-  const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
-  pushContactEntry(label, formatDisplayUrl(url), href);
+  const href = label.toLowerCase() === "github"
+    ? normalizeGithubUrl(url)
+    : /^https?:\/\//i.test(url)
+      ? url
+      : `https://${url}`;
+  const displayValue = label.toLowerCase() === "github" ? formatDisplayUrl(href || url) : formatDisplayUrl(url);
+  pushContactEntry(label, displayValue, href);
 }
 ---
 

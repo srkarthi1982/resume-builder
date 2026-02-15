@@ -178,6 +178,10 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-15 Print/preview polishing V2.1 verification:
+  - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+  - `npm run build` (pass).
+  - Playwright screenshot artifact captured: `artifacts/print-preview-polish.png` (preview route render proof).
 - 2026-02-15 Final lock verification (Resume Builder Photo V2 closeout):
   - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
   - `npm run build` (pass; server + client build complete).
@@ -285,6 +289,7 @@ To add a 5th template later:
 - 2026-01-29 Smoke test: not run (manual create/update resume).
 
 ## Task Log (Recent)
+- 2026-02-15 Resume Builder — Print/Preview Polishing (V2.1): fixed SUMMARY heading break safeguards by normalizing heading word/letter spacing + break rules in print/preview scopes; corrected GitHub URL normalization to enforce `github.com/<username>` when malformed input omits slash; reinforced print/preview link color inheritance and no-hyphenation text behavior; tightened print header contact block alignment to reduce awkward wrapping.
 - Keep newest first; include date and short summary.
 - 2026-02-15 Print header contact typography refinement: switched right-column contacts to structured 3-column rows (`key`, `:`, `value`) so colons align vertically and labels (Email/Website/GitHub/LinkedIn) are right-aligned against the colon while values/URLs flow consistently after it.
 - 2026-02-15 Print header contact alignment tweak: changed email entry format to `Email: <address>` and switched right-column contact block to left-aligned text/flow while preserving right-column placement in the header grid.
