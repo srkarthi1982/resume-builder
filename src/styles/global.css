@@ -192,7 +192,13 @@
 }
 
 .av-resume-standard-location {
-  margin: 0.25rem 0 0;
+  margin: 0.12rem 0 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.av-resume-standard-phone {
+  margin: 0.08rem 0 0;
   font-size: 0.9rem;
   color: #475569;
 }
@@ -257,6 +263,16 @@
   .av-resume-standard-contacts {
     text-align: right;
     justify-items: end;
+  }
+}
+
+@media print {
+  .av-resume-template-underlay .resume-template .grid.gap-10.lg\:grid-cols-3.print\:grid-cols-1 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .av-resume-template-underlay .resume-template .lg\:col-span-2.print\:col-span-1 {
+    grid-column: span 2 / span 2 !important;
   }
 }
 
