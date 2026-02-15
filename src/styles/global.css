@@ -207,11 +207,12 @@
   display: grid;
   gap: 0.2rem;
   color: #1f2937;
+  align-content: start;
 }
 
 .av-resume-contact-row {
   display: grid;
-  grid-template-columns: max-content max-content 1fr;
+  grid-template-columns: max-content max-content minmax(0, 1fr);
   column-gap: 0.35rem;
   align-items: baseline;
 }
@@ -256,6 +257,24 @@
   text-decoration-color: currentColor;
 }
 
+
+.av-resume-print,
+.av-resume-preview {
+  hyphens: none;
+  word-break: normal;
+}
+
+.av-resume-print h2,
+.av-resume-print .section-title,
+.av-resume-preview h2,
+.av-resume-preview .section-title,
+.av-resume-template-underlay h2,
+.av-resume-template-underlay .section-title {
+  word-break: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+  hyphens: none;
+}
 .av-resume-print,
 .av-resume-print * {
   hyphens: none;
