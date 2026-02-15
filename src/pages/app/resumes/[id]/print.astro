@@ -51,9 +51,6 @@ const contactEntries: Array<{ label: string; href?: string }> = [];
 const locationLabel =
   basics?.location?.label ||
   [basics?.location?.city, basics?.location?.country].filter(Boolean).join(", ");
-if (locationLabel) {
-  contactEntries.push({ label: locationLabel });
-}
 if (basics?.contact?.email) {
   contactEntries.push({
     label: basics.contact.email,
@@ -137,6 +134,7 @@ for (const link of basics?.links ?? []) {
               <div class="av-resume-standard-identity">
                 <h1 class="av-resume-standard-name">{basics?.fullName || "Your Name"}</h1>
                 <p class="av-resume-standard-headline">{basics?.headline || "Professional Title"}</p>
+                {locationLabel ? <p class="av-resume-standard-location">{locationLabel}</p> : null}
               </div>
 
               <div class="av-resume-standard-contacts">

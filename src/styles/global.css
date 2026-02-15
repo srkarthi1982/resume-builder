@@ -160,14 +160,14 @@
 }
 
 .av-resume-standard-photo-wrap {
-  width: 96px;
-  height: 96px;
+  width: 112px;
+  height: 112px;
 }
 
 .av-resume-standard-photo {
-  width: 96px;
-  height: 96px;
-  border-radius: 9999px;
+  width: 112px;
+  height: 112px;
+  border-radius: 12px;
   object-fit: cover;
   border: 1px solid rgba(148, 163, 184, 0.35);
 }
@@ -188,6 +188,12 @@
   margin: 0.35rem 0 0;
   font-size: 1rem;
   color: #334155;
+}
+
+.av-resume-standard-location {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #475569;
 }
 
 .av-resume-standard-contacts {

@@ -281,6 +281,8 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Print header photo size increase: enlarged profile photo from `96x96` to `112x112` while keeping square shape with subtle rounded corners.
+- 2026-02-15 Print header identity polish: moved location from right contact stack to appear under job title in the left identity block, and changed header photo shape from circular to square with subtle rounded corners.
 - 2026-02-15 Print width alignment fix: constrained `/app/resumes/[id]/print` banner/content containers from `AvContainer size=\"full\"` to default `AvContainer` so the top header and custom photo-summary block follow resume width instead of stretching full viewport.
 - 2026-02-15 Print/preview top-banner CTA simplification: removed `Back to editor` button from `/app/resumes/[id]/print` header, keeping only `Print / Download PDF` as requested.
 - 2026-02-15 Fixed Photo drawer UX/state regression: removed Save CTA for virtual `photo` section (drawer footer now `Done` only for photo), updated drawer helper copy to instant-upload semantics, prevented photo uploader remount by switching to `x-show` block, and made `openSection('photo')` await `loadProject()` before opening so reopen reflects latest persisted photo metadata.
