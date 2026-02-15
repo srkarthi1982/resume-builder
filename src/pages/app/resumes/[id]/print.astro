@@ -3,7 +3,8 @@ import "@ansiversa/components/styles/global.css";
 import "../../../../styles/global.css";
 import { AvButton, AvContainer, ResumeBuilderShell } from "@ansiversa/components";
 import { actions } from "astro:actions";
-import { buildResumeDataFromSections } from "../../../../modules/resume-builder/helpers";
+import { buildResumeDataFromSections, sanitizePrintText } from "../../../../modules/resume-builder/helpers";
+import ResumeTemplateModernTwoToneLocal from "../../../../modules/resume-builder/ResumeTemplateModernTwoToneLocal.astro";
 import type { ResumeProjectDetail } from "../../../../modules/resume-builder/types";
 
 const projectId = Astro.params.id ?? "";
@@ -30,13 +31,8 @@ const pageTitle = projectData?.project?.title
   ? `${projectData.project.title} – Print`
   : "Resume Print";
 
-const sanitizeText = (value: string) =>
-  value
-    .replace(/[\u00ad\u200b\u200c\u200d\ufeff\ufffe\uffff]/gu, "")
-    .replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/gu, "-")
-    .replace(/[\p{Cc}\p{Cs}\p{Co}\p{Cn}]/gu, "");
 const sanitizeForPrint = <T,>(value: T): T => {
-  if (typeof value === "string") return sanitizeText(value) as T;
+  if (typeof value === "string") return sanitizePrintText(value) as T;
   if (Array.isArray(value)) return value.map((item) => sanitizeForPrint(item)) as T;
   if (value && typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>).map(([key, item]) => [
@@ -134,7 +130,7 @@ for (const link of basics?.links ?? []) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
   </head>
-  <body class={`av-resume-print-body ${isPreview ? "av-resume-preview" : "av-resume-print"}`}>
+  <body class={`av-resume-print-body ${isPreview ? "av-resume-preview resume-preview" : "av-resume-print resume-print"}`}>
     <div class="av-resume-print-header print:hidden">
       <AvContainer>
         <div class="av-resume-print-header-inner">
@@ -209,7 +205,11 @@ for (const link of basics?.links ?? []) {
 
           {resumeShellData ? (
             <div class="av-resume-template-underlay">
-              <ResumeBuilderShell type={projectData?.project?.templateKey ?? "classic"} data={resumeShellData} />
+              {(projectData?.project?.templateKey ?? "classic") === "modern" ? (
+                <ResumeTemplateModernTwoToneLocal data={resumeShellData} />
+              ) : (
+                <ResumeBuilderShell type={projectData?.project?.templateKey ?? "classic"} data={resumeShellData} />
+              )}
             </div>
           ) : null}
         </AvContainer>

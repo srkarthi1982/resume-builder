@@ -1,0 +1,297 @@
+---
+import type { ResumeData } from "@ansiversa/components";
+import { formatDateRange } from "@ansiversa/components";
+import { sanitizePrintText } from "./helpers";
+
+interface Props {
+  data: ResumeData;
+}
+
+type ContactItem = {
+  kind: "email" | "phone" | "website" | "link" | "location";
+  label: string;
+  href?: string;
+};
+
+const { data } = Astro.props as Props;
+const sanitizeDeep = <T,>(value: T): T => {
+  if (typeof value === "string") return sanitizePrintText(value) as T;
+  if (Array.isArray(value)) return value.map((item) => sanitizeDeep(item)) as T;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      sanitizeDeep(item),
+    ]);
+    return Object.fromEntries(entries) as T;
+  }
+  return value;
+};
+
+const safeData = sanitizeDeep(data);
+const { basics } = safeData;
+
+const locationLabel =
+  basics.location?.label ||
+  [basics.location?.city, basics.location?.country].filter(Boolean).join(", ");
+
+const clean = (value?: string | null) => sanitizePrintText(value).replace(/\s+/g, " ").trim();
+const atsSafeInline = (value?: string | null) =>
+  clean(value).replace(/([A-Za-z0-9])-(?=[A-Za-z0-9])/g, "$1 ");
+const toHref = (value?: string | null) => {
+  const normalized = clean(value);
+  if (!normalized) return "";
+  if (/^https?:\/\//i.test(normalized) || /^mailto:/i.test(normalized) || /^tel:/i.test(normalized)) {
+    return normalized;
+  }
+  return `https://${normalized}`;
+};
+const urlLabel = (value?: string | null) => clean(value).replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+
+const contactItems: ContactItem[] = [];
+if (locationLabel) contactItems.push({ kind: "location", label: locationLabel });
+if (basics.contact?.email) {
+  const email = clean(basics.contact.email).toLowerCase();
+  contactItems.push({ kind: "email", label: email, href: `mailto:${email}` });
+}
+if (basics.contact?.phone) {
+  const phone = clean(basics.contact.phone);
+  const tel = phone.replace(/[^\d+]/g, "");
+  contactItems.push({ kind: "phone", label: phone, href: tel ? `tel:${tel}` : undefined });
+}
+if (basics.contact?.website) {
+  const href = toHref(basics.contact.website);
+  contactItems.push({ kind: "website", label: urlLabel(href), href });
+}
+for (const link of basics.links ?? []) {
+  const href = toHref(link.url);
+  if (!href) continue;
+  contactItems.push({ kind: "link", label: clean(link.label) || urlLabel(href), href });
+}
+
+const directContactLine = contactItems
+  .filter((item) => item.kind === "email" || item.kind === "phone")
+  .map((item) => item.label)
+  .join(" • ");
+
+const skills = safeData.skills ?? [];
+const links = contactItems.filter((item) => item.kind === "website" || item.kind === "link");
+const languages = safeData.languages ?? [];
+const education = safeData.education ?? [];
+const highlights = safeData.highlights ?? [];
+const experienceItems = safeData.experience ?? [];
+const projects = safeData.projects ?? [];
+const declaration = safeData.declaration ?? {};
+const hasDeclaration = Boolean(declaration.text || declaration.place || declaration.name);
+---
+
+<div class="resume-template av-print-white bg-slate-100 text-slate-900 print:bg-white">
+  <main class="mx-auto max-w-4xl p-4 sm:p-6">
+    <section class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 print:shadow-none print:ring-0">
+      <div class="grid lg:grid-cols-12 print:grid-cols-1">
+        <aside class="bg-slate-800 p-7 text-slate-100 sm:p-10 lg:col-span-4 print:order-2 print:bg-white print:text-slate-900">
+          <div class="space-y-6">
+            <div>
+              <h1 class="text-3xl font-bold tracking-tight">{clean(basics.fullName)}</h1>
+              <p class="mt-2 text-sm text-slate-100/90 print:text-slate-700">{basics.headline}</p>
+            </div>
+
+            <div class="h-px bg-slate-700 print:bg-slate-200"></div>
+
+            {contactItems.length > 0 && (
+              <div class="av-print-avoid-break space-y-2 text-sm">
+                <div class="font-semibold text-slate-100 print:text-slate-900">CONTACT</div>
+                <div class="space-y-1 text-slate-200 print:text-slate-700">
+                  {directContactLine && <div class="font-medium">{directContactLine}</div>}
+                  {contactItems
+                    .filter((item) => item.kind !== "email" && item.kind !== "phone")
+                    .map((item) =>
+                      item.href ? (
+                        <a class="underline underline-offset-2 print:no-underline" href={item.href}>
+                          {item.label}
+                        </a>
+                      ) : (
+                        <div>{item.label}</div>
+                      )
+                    )}
+                </div>
+              </div>
+            )}
+
+            {skills.length > 0 && (
+              <div class="av-print-avoid-break space-y-3">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">SKILLS</div>
+                <div class="flex flex-wrap gap-2">
+                  {skills.map((skill) => (
+                    <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-100 print:border print:border-slate-200 print:bg-slate-50 print:text-slate-800">{skill.name}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {links.length > 0 && (
+              <div class="av-print-avoid-break space-y-2">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">LINKS</div>
+                <div class="space-y-1 text-sm text-slate-200 print:text-slate-700">
+                  {links.map((link) =>
+                    link.href ? (
+                      <a class="underline underline-offset-2 print:no-underline" href={link.href}>
+                        {link.label}
+                      </a>
+                    ) : (
+                      <div>{link.label}</div>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
+            {languages.length > 0 && (
+              <div class="av-print-avoid-break space-y-2">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">LANGUAGES</div>
+                <ul class="list-disc space-y-1 pl-5 text-sm text-slate-200 print:text-slate-700">
+                  {languages.map((language) => (
+                    <li>
+                      {language.name}
+                      {language.proficiency ? ` (${language.proficiency})` : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {education.length > 0 && (
+              <div class="av-print-avoid-break space-y-2">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">EDUCATION</div>
+                <div class="space-y-3 text-sm text-slate-200 print:text-slate-700">
+                  {education.map((edu) => (
+                    <div>
+                      <div class="font-semibold text-slate-100 print:text-slate-900">{edu.degree}</div>
+                      <div>{edu.school}</div>
+                      {edu.location ? <div class="text-xs opacity-90">{edu.location}</div> : null}
+                      {edu.start ? (
+                        <div class="text-xs opacity-90">
+                          {formatDateRange({ start: edu.start, end: edu.end }).replace(/\s—\s/g, "—")}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {highlights.length > 0 && (
+              <div class="av-print-avoid-break space-y-2">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">HIGHLIGHTS</div>
+                <ul class="list-disc space-y-1 pl-5 text-sm text-slate-200 print:text-slate-700">
+                  {highlights.map((highlight) => (
+                    <li>{atsSafeInline(highlight)}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
+
+        <div class="p-7 sm:p-10 lg:col-span-8 print:order-1">
+          {basics.summary && (
+            <section class="av-print-avoid-break">
+              <h2 class="text-xs font-bold tracking-widest text-slate-500">PROFILE</h2>
+              <p class="mt-3 text-sm leading-6 text-slate-700">{basics.summary}</p>
+            </section>
+          )}
+
+          <div class="my-8 h-px bg-slate-200"></div>
+
+          {experienceItems.length > 0 && (
+            <section>
+              <h2 class="text-xs font-bold tracking-widest text-slate-500">EXPERIENCE</h2>
+              <div class="mt-5 space-y-6">
+                {experienceItems.map((item) => (
+                  <article class="av-print-avoid-break">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 class="text-base font-semibold">{clean(item.role)}</h3>
+                        <p class="text-sm text-slate-600">{clean(item.company)}</p>
+                      </div>
+                      <span class="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">
+                        {formatDateRange(item).replace(/\s—\s/g, "—")}
+                      </span>
+                    </div>
+                    {clean(item.summary) && (
+                      <p class="mt-2 text-sm leading-6 text-slate-700">{clean(item.summary)}</p>
+                    )}
+                    {item.bullets && item.bullets.length > 0 && (
+                      <ul class="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                        {item.bullets.map((bullet) => (
+                          <li>{atsSafeInline(bullet)}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <div class="my-8 h-px bg-slate-200"></div>
+
+          {projects.length > 0 && (
+            <section>
+              <h2 class="text-xs font-bold tracking-widest text-slate-500">PROJECTS</h2>
+              <div class="mt-4 grid gap-4">
+                {projects.map((project) => (
+                  <div class="av-print-avoid-break rounded-xl border border-slate-200 p-4">
+                    <div class="grid grid-cols-[1fr_auto] items-baseline gap-3">
+                      {project.link ? (
+                        <a class="font-semibold underline underline-offset-4" href={project.link}>
+                          {clean(project.name)}
+                        </a>
+                      ) : (
+                        <h3 class="font-semibold">{clean(project.name)}</h3>
+                      )}
+                      {project.start ? (
+                        <span class="text-xs text-slate-500 whitespace-nowrap">
+                          {formatDateRange({
+                            start: project.start,
+                            end: project.end,
+                            present: project.present,
+                          }).replace(/\s—\s/g, "—")}
+                        </span>
+                      ) : null}
+                    </div>
+                    {clean(project.summary) && (
+                      <p class="mt-2 text-sm leading-6 text-slate-700">{clean(project.summary)}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {hasDeclaration && (
+            <section class="av-print-avoid-break">
+              <div class="my-8 h-px bg-slate-200"></div>
+              <h2 class="text-xs font-bold tracking-widest text-slate-500">DECLARATION</h2>
+              {declaration.text && (
+                <p class="mt-3 text-sm leading-6 text-slate-700">{declaration.text}</p>
+              )}
+              {(declaration.place || declaration.name) && (
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-3 text-sm text-slate-700">
+                  {declaration.place && (
+                    <div class="text-xs uppercase tracking-[0.12em] text-slate-600">
+                      <span class="font-semibold text-slate-900">Place:</span>{" "}
+                      {declaration.place}
+                    </div>
+                  )}
+                  {declaration.name && (
+                    <div class="text-base font-bold tracking-wide text-slate-950">{declaration.name}</div>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

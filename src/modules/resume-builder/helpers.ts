@@ -52,11 +52,21 @@ export type ResumeItemRow = {
   updatedAt?: Date | null;
 };
 
-export const normalizeText = (value?: string | null) => {
-  const trimmed = (value ?? "")
+export const sanitizePrintText = (value?: string | null) =>
+  (value ?? "")
     .toString()
-    .replace(/[\u00ad\u200b\u200c\u200d\ufeff\ufffe\uffff]/gu, "")
+    .replace(/\u00ad/gu, "")
+    .replace(/\u200b/gu, "")
+    .replace(/\u2060/gu, "")
+    .replace(/\ufeff/gu, "")
+    .replace(/[\u200c\u200d\ufffe\uffff]/gu, "")
+    .replace(/\ufffd/gu, "")
+    .replace(/\p{Cf}/gu, "")
     .replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/gu, "-")
+    .replace(/[\p{Cc}\p{Cs}\p{Co}\p{Cn}]/gu, "");
+
+export const normalizeText = (value?: string | null) => {
+  const trimmed = sanitizePrintText(value)
     .trim();
   return trimmed ? trimmed : "";
 };
@@ -145,22 +155,26 @@ const coerceNumber = (value: any) => {
 };
 
 const coerceStringArray = (value: any) => {
-  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (Array.isArray(value)) {
+    return value.map((entry) => normalizeText(String(entry))).filter(Boolean);
+  }
   if (typeof value === "string") {
     return value
       .split("\n")
-      .map((entry) => entry.trim())
+      .map((entry) => normalizeText(entry))
       .filter(Boolean);
   }
   return [];
 };
 
 const coerceTagArray = (value: any) => {
-  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (Array.isArray(value)) {
+    return value.map((entry) => normalizeText(String(entry))).filter(Boolean);
+  }
   if (typeof value === "string") {
     return value
       .split(",")
-      .map((entry) => entry.trim())
+      .map((entry) => normalizeText(entry))
       .filter(Boolean);
   }
   return [];
