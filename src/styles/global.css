@@ -266,8 +266,8 @@
   }
 
   .av-resume-standard-contacts {
-    text-align: right;
-    justify-items: end;
+    text-align: left;
+    justify-items: start;
   }
 }
 

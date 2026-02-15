@@ -72,7 +72,7 @@ const locationLabel =
       [basics?.location?.city, basics?.location?.country].filter(Boolean).join(", "),
   );
 if (basics?.contact?.email) {
-  pushContactEntry(basics.contact.email, `mailto:${basics.contact.email}`);
+  pushContactEntry(`Email: ${basics.contact.email}`, `mailto:${basics.contact.email}`);
 }
 if (basics?.contact?.website) {
   const href = /^https?:\/\//i.test(basics.contact.website)

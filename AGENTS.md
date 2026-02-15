@@ -178,6 +178,11 @@ To add a 5th template later:
 
 ## Verification Log
 
+- 2026-02-15 Final lock verification (Resume Builder Photo V2 closeout):
+  - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
+  - `npm run build` (pass; server + client build complete).
+  - Smoke-route attempt via local dev (`astro dev --remote --host 127.0.0.1 --port 4337`) reached app routes but returned `302` redirect to auth without a valid local session cookie; full authenticated route smoke must be run in signed-in browser session.
+  - Print/preview CSS contracts verified in code: dark links enforced, print hyphenation disabled, header/photo/contact layout aligned to approved spec.
 - 2026-02-15 Photo drawer stale-state + CTA behavior fix verification:
   - `npm run typecheck` (pass; 0 errors, 0 warnings, 1 existing hint in `src/actions/baseRepository.ts`).
   - `npm run build` (pass).
@@ -281,6 +286,8 @@ To add a 5th template later:
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-02-15 Print header contact alignment tweak: changed email entry format to `Email: <address>` and switched right-column contact block to left-aligned text/flow while preserving right-column placement in the header grid.
+- 2026-02-15 Milestone closeout prep: completed final build/typecheck lock checks for approved print/preview/header/photo behaviors and recorded auth-gated smoke constraint; marked Resume Builder Photo V2 ready to lock.
 - 2026-02-15 PDF micro-polish pass: normalized print contact list formatting to `Label: value` style with de-duplication and removed standalone `Website` line artifact, added location display normalization (`Abudhabi` -> `Abu Dhabi`) in print header, and disabled hyphenation in print scope (`.av-resume-print`) for ATS-safe text extraction.
 - 2026-02-15 Print header URL label cleanup: normalized website display label to strip protocol and trailing slash (e.g., `www.ansiversa.com/` -> `www.ansiversa.com`) so manual slash removal in editor is reflected consistently.
 - 2026-02-15 Print/PDF parity fix: forced classic template content grid to keep left/right two-column layout in `@media print` (overrode `print:grid-cols-1` and `print:col-span-1`) so exported PDF matches preview structure.
