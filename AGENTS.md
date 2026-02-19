@@ -313,6 +313,7 @@ To add a 5th template later:
 - 2026-02-15 Print/preview contact colon alignment fix: updated `.av-resume-contact-row` grid columns in `src/styles/global.css` to fixed label/colon tracks (`8ch 1ch`) so `Email/Website/GitHub/LinkedIn` separators align vertically across rows in both preview and print outputs.
 - 2026-02-15 Resume Builder — Print/Preview Polishing (V2.1): fixed SUMMARY heading break safeguards by normalizing heading word/letter spacing + break rules in print/preview scopes; corrected GitHub URL normalization to enforce `github.com/<username>` when malformed input omits slash; reinforced print/preview link color inheritance and no-hyphenation text behavior; tightened print header contact block alignment to reduce awkward wrapping.
 - Keep newest first; include date and short summary.
+- 2026-02-19 Bumped `/components` to `0.0.141` and refreshed lockfile for latest shared FAQ order-arrow release; verification: `npm run build` ✅.
 - 2026-02-19 Bumped `/components` to `0.0.140` and refreshed lockfile to consume the latest shared release; verification: `npm run build` ✅.
 - 2026-02-19 Bumped `@ansiversa/components` to `0.0.139` (AvMiniAppBar AppLogo support) and verified with `npm run build` (pass).
 - 2026-02-15 Print header contact typography refinement: switched right-column contacts to structured 3-column rows (`key`, `:`, `value`) so colons align vertically and labels (Email/Website/GitHub/LinkedIn) are right-aligned against the colon while values/URLs flow consistently after it.
