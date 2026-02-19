@@ -1,10 +1,11 @@
 import { defineDb } from "astro:db";
-import { ResumeItem, ResumeProject, ResumeSection } from "./tables";
+import { Faq, ResumeItem, ResumeProject, ResumeSection } from "./tables";
 
 export default defineDb({
   tables: {
     ResumeProject,
     ResumeSection,
     ResumeItem,
+    Faq,
   },
 });
