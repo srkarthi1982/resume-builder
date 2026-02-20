@@ -34,6 +34,7 @@ const defaultState = () => ({
     templateKey: "classic",
   },
   pendingDeleteId: null as string | null,
+  bookmarkedResumeIds: [] as string[],
   rootAppUrl: null as string | null,
 });
 
@@ -460,6 +461,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     templateKey: "classic",
   };
   pendingDeleteId: string | null = null;
+  bookmarkedResumeIds: string[] = [];
   rootAppUrl: string | null = null;
   private aiAppendListener: ((event: Event) => void) | null = null;
   private aiReplaceListener: ((event: Event) => void) | null = null;
@@ -470,6 +472,9 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.projects = (initial.projects ?? []) as ResumeProjectDTO[];
     this.activeProject = (initial.activeProject ?? null) as ResumeProjectDetail | null;
     this.activeProjectId = initial.activeProjectId ?? this.activeProject?.project?.id ?? null;
+    this.bookmarkedResumeIds = Array.isArray(initial.bookmarkedResumeIds)
+      ? initial.bookmarkedResumeIds.map((id) => String(id))
+      : [];
     this.newProject = {
       title: initial.newProject?.title ?? "",
       templateKey: (initial.newProject?.templateKey ?? "classic") as string,
@@ -686,6 +691,43 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   private refreshPreview() {
     const now = Date.now();
     this.previewBuster = now === this.previewBuster ? now + 1 : now;
+  }
+
+  isResumeBookmarked(id: string) {
+    const key = String(id);
+    return this.bookmarkedResumeIds.includes(key);
+  }
+
+  private setBookmarkState(id: string, isActive: boolean) {
+    const key = String(id);
+    if (isActive) {
+      if (!this.bookmarkedResumeIds.includes(key)) {
+        this.bookmarkedResumeIds = [...this.bookmarkedResumeIds, key];
+      }
+      return;
+    }
+    this.bookmarkedResumeIds = this.bookmarkedResumeIds.filter((item) => item !== key);
+  }
+
+  async toggleResumeBookmark(projectId: string, label?: string) {
+    const key = String(projectId);
+    if (!key) return;
+
+    const wasActive = this.isResumeBookmarked(key);
+    this.setBookmarkState(key, !wasActive);
+
+    try {
+      const res = await actions.resumeBuilder.toggleBookmark({
+        entityType: "resume",
+        entityId: key,
+        label: normalizeText(label || "") || undefined,
+      });
+      const data = this.unwrapResult(res) as { active?: boolean };
+      this.setBookmarkState(key, Boolean(data?.active));
+    } catch (err: any) {
+      this.setBookmarkState(key, wasActive);
+      this.error = err?.message || "Failed to update bookmark.";
+    }
   }
 
   private async ensureSectionExists(key: ResumeSectionKey) {

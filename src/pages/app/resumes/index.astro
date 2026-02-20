@@ -1,5 +1,6 @@
 ---
 import {
+  AvBookmarkButton,
   AvButton,
   AvCard,
   AvConfirmDialog,
@@ -20,6 +21,11 @@ const isPaid = Astro.locals.user?.isPaid === true;
 const listResult = await Astro.callAction(actions.resumeBuilder.listResumeProjects, {});
 const data = (listResult as any)?.data ?? (listResult as any) ?? {};
 const projects = (data?.items ?? []) as ResumeProjectDTO[];
+const bookmarkResult = await Astro.callAction(actions.resumeBuilder.listResumeBookmarks, {});
+const bookmarkData = (bookmarkResult as any)?.data ?? (bookmarkResult as any) ?? {};
+const bookmarkedResumeIds = Array.isArray(bookmarkData?.items)
+  ? bookmarkData.items.map((item: any) => String(item.resumeId))
+  : [];
 
 const initialState = {
   projects,
@@ -31,6 +37,7 @@ const initialState = {
     templateKey: "classic",
   },
   pendingDeleteId: null,
+  bookmarkedResumeIds,
 };
 ---
 
@@ -122,9 +129,19 @@ const initialState = {
                     <div class="av-auth-stack-xxs">
                       <div class="av-row-between">
                         <h3 class="av-card-heading" x-text="project.title"></h3>
-                        <template x-if="project.isDefault">
-                          <span class="av-badge av-badge-soft">Default</span>
-                        </template>
+                        <div class="av-row-wrap">
+                          <template x-if="project.isDefault">
+                            <span class="av-badge av-badge-soft">Default</span>
+                          </template>
+                          <AvBookmarkButton
+                            active={false}
+                            activeExpr="isResumeBookmarked(project.id)"
+                            title="Save bookmark"
+                            activeTitle="Remove bookmark"
+                            onClick="toggleResumeBookmark(project.id, project.title)"
+                            size="sm"
+                          />
+                        </div>
                       </div>
                       <p class="av-text-soft" x-text="`Template: ${project.templateKey}`"></p>
                     </div>

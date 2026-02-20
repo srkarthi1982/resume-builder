@@ -10,6 +10,7 @@ import {
   updateResumeProject,
   upsertSection,
 } from "./resumeBuilder";
+import { listResumeBookmarks, toggleBookmark } from "./bookmarks";
 
 export const resumeBuilder = {
   listResumeProjects,
@@ -22,6 +23,8 @@ export const resumeBuilder = {
   upsertSection,
   addOrUpdateItem,
   deleteItem,
+  listResumeBookmarks,
+  toggleBookmark,
 };
 
 export const server = {
