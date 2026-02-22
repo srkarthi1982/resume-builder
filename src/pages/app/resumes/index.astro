@@ -178,7 +178,7 @@ const initialState = {
                         variant="ghost"
                         size="sm"
                         type="button"
-                        @click.prevent="pendingDeleteId = project.id; pendingDeleteName = project.title || null; window.AvDialog?.open('resume-delete-dialog')"
+                        @click.prevent="pendingDeleteId = project.id; pendingDeleteName = project.title || null; const dialogTitle = document.getElementById('resume-delete-dialog-title'); if (dialogTitle) dialogTitle.textContent = pendingDeleteName ? `Delete resume '${pendingDeleteName}'?` : 'Delete this item?'; window.AvDialog?.open('resume-delete-dialog')"
                         :disabled="loading"
                       >
                         Delete
@@ -193,7 +193,7 @@ const initialState = {
 
         <AvConfirmDialog
           id="resume-delete-dialog"
-          :headline="pendingDeleteName ? `Delete resume '${pendingDeleteName}'?` : 'Delete this item?'"
+          headline="Delete this item?"
           description="This action cannot be undone."
           confirmLabel="Delete"
           cancelLabel="Cancel"

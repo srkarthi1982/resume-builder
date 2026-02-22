@@ -289,6 +289,7 @@ To add a 5th template later:
 - 2026-01-29 Smoke test: not run (manual create/update resume).
 
 ## Task Log (Recent)
+- 2026-02-22 Fix: resume delete confirmation now renders selected title reliably by setting `AvConfirmDialog` title text at click-time before `AvDialog.open(...)`, resolving static `headline` prop limitation for dynamic Alpine bindings.
 - 2026-02-22 UX polish: resume list delete confirmation dialog now includes the selected resume title using `AvConfirmDialog` dynamic headline with fallback `Delete this item?`; delete behavior unchanged.
 - 2026-02-22 Bookmarks V1 hardening: added `scripts/apply-bookmark-triggers.ts` using `@libsql/client` (`TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN`) and wired `db:triggers` + `postdb:push`; applied trigger `bookmark_cleanup_resume_project_delete` (`ResumeProject` -> `Bookmark` cleanup for `entityType='resume'`). Verification (using `.env.production`): `npm run db:push` ✅, `npm run db:triggers` ✅, trigger query (`sqlite_master`) ✅, `npm run typecheck` ✅, `npm run build` ✅. Production checklist: pending manual smoke (delete bookmarked resume -> bookmark row auto-removed -> `/bookmarks` no orphan card).
 - 2026-02-19 FAQ V1 added: faqs table + public endpoint + admin CRUD + /admin/faq using shared FaqManager.
