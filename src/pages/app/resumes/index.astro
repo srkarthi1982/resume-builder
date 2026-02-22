@@ -37,6 +37,7 @@ const initialState = {
     templateKey: "classic",
   },
   pendingDeleteId: null,
+  pendingDeleteName: null,
   bookmarkedResumeIds,
 };
 ---
@@ -177,7 +178,7 @@ const initialState = {
                         variant="ghost"
                         size="sm"
                         type="button"
-                        @click.prevent="pendingDeleteId = project.id; window.AvDialog?.open('resume-delete-dialog')"
+                        @click.prevent="pendingDeleteId = project.id; pendingDeleteName = project.title || null; window.AvDialog?.open('resume-delete-dialog')"
                         :disabled="loading"
                       >
                         Delete
@@ -192,13 +193,13 @@ const initialState = {
 
         <AvConfirmDialog
           id="resume-delete-dialog"
-          headline="Delete resume?"
+          :headline="pendingDeleteName ? `Delete resume '${pendingDeleteName}'?` : 'Delete this item?'"
           description="This action cannot be undone."
           confirmLabel="Delete"
           cancelLabel="Cancel"
           variant="danger"
           @av-confirm="pendingDeleteId && deleteProject(pendingDeleteId)"
-          @av-cancel="pendingDeleteId = null"
+          @av-cancel="pendingDeleteId = null; pendingDeleteName = null"
         />
       </div>
     </AvContainer>
