@@ -289,6 +289,7 @@ To add a 5th template later:
 - 2026-01-29 Smoke test: not run (manual create/update resume).
 
 ## Task Log (Recent)
+- 2026-02-22 Mini-app navbar home-link rollout: upgraded `@ansiversa/components` to `0.0.145` so `AvMiniAppBar` app title/icon area is clickable and navigates to mini-app home (`links[0].href`, fallback `/`) with accessible aria-label + focus-visible state; verified no behavior changes to 3-dot menu. Verification: `npm run build` ✅.
 - 2026-02-22 FAQ shared rollout: upgraded `@ansiversa/components` to `0.0.144` (shared `FaqManager` now includes debounced search + icon actions + no numeric order UI + no sort-order input), and updated `src/pages/api/admin/faqs.json.ts` GET to support `q` filtering across question/category/audience while preserving audience filter and existing CRUD/reorder behavior. Verification: `npm run build` ✅.
 - 2026-02-22 Fix: resume delete confirmation now renders selected title reliably by setting `AvConfirmDialog` title text at click-time before `AvDialog.open(...)`, resolving static `headline` prop limitation for dynamic Alpine bindings.
 - 2026-02-22 UX polish: resume list delete confirmation dialog now includes the selected resume title using `AvConfirmDialog` dynamic headline with fallback `Delete this item?`; delete behavior unchanged.
