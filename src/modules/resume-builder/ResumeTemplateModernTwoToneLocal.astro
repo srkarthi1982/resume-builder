@@ -77,6 +77,7 @@ const skills = safeData.skills ?? [];
 const links = contactItems.filter((item) => item.kind === "website" || item.kind === "link");
 const languages = safeData.languages ?? [];
 const education = safeData.education ?? [];
+const certifications = safeData.certifications ?? [];
 const highlights = safeData.highlights ?? [];
 const experienceItems = safeData.experience ?? [];
 const projects = safeData.projects ?? [];
@@ -175,6 +176,33 @@ const hasDeclaration = Boolean(declaration.text || declaration.place || declarat
                       ) : null}
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {certifications.length > 0 && (
+              <div class="av-print-avoid-break space-y-2">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">CERTIFICATIONS</div>
+                <div class="space-y-3 text-sm text-slate-200 print:text-slate-700">
+                  {certifications.map((certification) => {
+                    const certName = clean(certification.name);
+                    const certIssuer = clean(certification.issuer);
+                    const certYear = certification.year ? String(certification.year) : "";
+                    const certMeta = [certIssuer, certYear].filter(Boolean).join(" • ");
+                    const certHref = toHref(certification.link);
+                    return (
+                      <div>
+                        {certHref ? (
+                          <a class="font-semibold underline underline-offset-2 print:no-underline" href={certHref}>
+                            {certName}
+                          </a>
+                        ) : (
+                          <div class="font-semibold text-slate-100 print:text-slate-900">{certName}</div>
+                        )}
+                        {certMeta ? <div class="text-xs opacity-90">{certMeta}</div> : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
