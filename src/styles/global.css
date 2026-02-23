@@ -368,38 +368,8 @@
     print-color-adjust: exact !important;
   }
 
-  .av-resume-template-underlay .rb-modern-print-root {
-    --rb-modern-sidebar-w: 33.333333%;
-    position: relative;
-    z-index: 0;
-    isolation: isolate;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
   .av-resume-template-underlay .rb-modern-print-root::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: var(--rb-modern-sidebar-w);
-    background: #1e293b;
-    z-index: -1;
-    pointer-events: none;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    forced-color-adjust: none !important;
-  }
-
-  .av-resume-template-underlay .rb-modern-print-root > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .av-resume-print-main > .av-container > .av-resume-standard {
-    position: relative;
-    z-index: 2;
+    content: none !important;
   }
 
   .av-resume-template-underlay,
@@ -455,8 +425,8 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     forced-color-adjust: none !important;
-    align-self: start !important;
-    height: fit-content !important;
+    align-self: stretch !important;
+    height: auto !important;
   }
 
   .av-resume-template-underlay .resume-template .grid.lg\:grid-cols-12.print\:grid-cols-1 > aside * {
