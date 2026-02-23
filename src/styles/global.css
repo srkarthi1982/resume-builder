@@ -379,7 +379,7 @@
 
   .av-resume-template-underlay .rb-modern-print-root::before {
     content: "";
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
