@@ -371,6 +371,7 @@
   .av-resume-template-underlay .rb-modern-print-root {
     --rb-modern-sidebar-w: 33.333333%;
     position: relative;
+    z-index: 0;
     isolation: isolate;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -391,7 +392,7 @@
     forced-color-adjust: none !important;
   }
 
-  .av-resume-template-underlay .rb-modern-print-root > main {
+  .av-resume-template-underlay .rb-modern-print-root > * {
     position: relative;
     z-index: 1;
   }
