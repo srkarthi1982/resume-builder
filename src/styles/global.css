@@ -385,7 +385,7 @@
     bottom: 0;
     width: var(--rb-modern-sidebar-w);
     background: #1e293b;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -395,6 +395,11 @@
   .av-resume-template-underlay .rb-modern-print-root > * {
     position: relative;
     z-index: 1;
+  }
+
+  .av-resume-print-main > .av-container > .av-resume-standard {
+    position: relative;
+    z-index: 2;
   }
 
   .av-resume-template-underlay,

@@ -1,4 +1,4 @@
-# Bug 2 Regression Hotfix Proof — Modern Print Overlay Stacking
+# Bug 2 Regression Hotfix Proof — Modern Print Overlay Stacking (Final)
 
 Date: 2026-02-23
 Resume ID: `f53dc2b5-86f0-4157-a4eb-9711fb1556b2`
@@ -11,14 +11,18 @@ Route: `/app/resumes/f53dc2b5-86f0-4157-a4eb-9711fb1556b2/print?preview=1`
 - `after-print-preview.pdf`
 - `after-page2-check.png` (page 2 extraction from updated PDF)
 
-## Hotfix change
-- Replaced `> main` stacking lift with `> *` stacking lift under Modern print root so header/photo + main are above overlay paint layer.
-- Kept print-only overlay, width/color, and `pointer-events: none` unchanged.
+## Final hotfix change
+- Kept Modern-only, print-only overlay rule.
+- Adjusted overlay layering to avoid covering top profile/header while retaining page-2 continuity:
+  - `.rb-modern-print-root::before { z-index: -1; }`
+  - `.rb-modern-print-root > * { position: relative; z-index: 1; }`
+  - `.av-resume-print-main > .av-container > .av-resume-standard { position: relative; z-index: 2; }`
+- `pointer-events: none` retained on overlay.
 
 ## Checklist
-- [x] Photo/header visible after fix (page 1 screenshot).
-- [x] Sidebar continuity retained on page 2+ (PDF page 2 extraction).
-- [x] No layout seam/overlap observed in updated screenshot/PDF.
+- [x] Photo/header visible on page 1 after fix.
+- [x] Sidebar continuity retained on page 2+.
+- [x] No seam/misalignment observed in updated screenshot/PDF.
 - [x] Scope remains Modern-only + print-only.
 - [x] `npm run typecheck` pass.
 - [x] `npm run build` pass.
