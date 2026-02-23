@@ -368,6 +368,34 @@
     print-color-adjust: exact !important;
   }
 
+  .av-resume-template-underlay .rb-modern-print-root {
+    --rb-modern-sidebar-w: 33.333333%;
+    position: relative;
+    isolation: isolate;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .av-resume-template-underlay .rb-modern-print-root::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--rb-modern-sidebar-w);
+    background: #1e293b;
+    z-index: 0;
+    pointer-events: none;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    forced-color-adjust: none !important;
+  }
+
+  .av-resume-template-underlay .rb-modern-print-root > main {
+    position: relative;
+    z-index: 1;
+  }
+
   .av-resume-template-underlay,
   .av-resume-template-underlay * {
     hyphens: none !important;
