@@ -1,0 +1,3 @@
+drawerOpenAfterInputClicks=true
+drawerOpenAfterPanelClick=true
+drawerOpenAfterBackdropClick=false

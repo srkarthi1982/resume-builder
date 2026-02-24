@@ -203,22 +203,23 @@ const mediaUploadUrl = "/api/media/upload.json";
         <template x-if="drawerOpen">
           <div
             class="av-drawer-overlay"
-            @click.self="closeDrawer()"
+            @click="closeDrawer()"
             @keydown.escape.window="closeDrawer()"
             @close-drawer="closeDrawer()"
             x-cloak
           >
-            <AvDrawer title="Edit section" description="Update section content and save.">
-              <div class="av-auth-stack-md">
-                <div class="av-auth-stack-xs">
-                  <p class="av-kicker" x-text="getSectionLabel(activeSectionKey)"></p>
-                  <p class="av-text-soft" x-text="activeSectionKey === 'photo' ? 'Uploading updates instantly.' : 'Save to refresh the preview.'"></p>
-                </div>
+            <div class="rb-drawer-panel" @click.stop @mousedown.stop @pointerdown.stop>
+              <AvDrawer title="Edit section" description="Update section content and save.">
+                <div class="av-auth-stack-md">
+                  <div class="av-auth-stack-xs">
+                    <p class="av-kicker" x-text="getSectionLabel(activeSectionKey)"></p>
+                    <p class="av-text-soft" x-text="activeSectionKey === 'photo' ? 'Uploading updates instantly.' : 'Save to refresh the preview.'"></p>
+                  </div>
 
-                <template x-if="activeSectionKey === 'basics'">
-                  <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
-                    <AvInput label="Full name" name="full-name" x-model="formData.fullName" maxlength={RESUME_MAX.fullName} @input={`enforceLimit('fullName', ${RESUME_MAX.fullName})`} required />
-                    <p class="av-form-hint" x-text={`(formData.fullName || '').length + ' / ${RESUME_MAX.fullName}'`}></p>
+                  <template x-if="activeSectionKey === 'basics'">
+                    <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
+                      <AvInput label="Full name" name="full-name" x-model="formData.fullName" maxlength={RESUME_MAX.fullName} @input={`enforceLimit('fullName', ${RESUME_MAX.fullName})`} required />
+                      <p class="av-form-hint" x-text={`(formData.fullName || '').length + ' / ${RESUME_MAX.fullName}'`}></p>
 
                     <AvInput label="Job title" name="headline" x-model="formData.headline" maxlength={RESUME_MAX.headline} @input={`enforceLimit('headline', ${RESUME_MAX.headline})`} />
                     <p class="av-form-hint" x-text={`(formData.headline || '').length + ' / ${RESUME_MAX.headline}'`}></p>
@@ -337,7 +338,7 @@ const mediaUploadUrl = "/api/media/upload.json";
                       <div class="av-auth-stack-xs">
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
-                            <p class="av-text-strong" x-text="itemLabel(item)"></p>
+                            <div class="rb-experience-item-title" x-text="itemLabel(item)"></div>
                             <div class="av-row-wrap">
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
                               <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
@@ -653,16 +654,17 @@ const mediaUploadUrl = "/api/media/upload.json";
                     </form>
                   </div>
                 </template>
-              </div>
+                </div>
 
-              <div slot="footer" class="av-row-wrap">
-                <AvButton variant="ghost" type="button" @click="closeDrawer()" x-text="activeSectionKey === 'photo' ? 'Done' : 'Close'"></AvButton>
-                <AvButton type="button" @click="saveActiveItem()" :disabled="loading" x-show="activeSectionKey !== 'photo'">
-                  <span x-show="!loading">Save</span>
-                  <span x-show="loading">Saving…</span>
-                </AvButton>
-              </div>
-            </AvDrawer>
+                <div slot="footer" class="av-row-wrap">
+                  <AvButton variant="ghost" type="button" @click="closeDrawer()" x-text="activeSectionKey === 'photo' ? 'Done' : 'Close'"></AvButton>
+                  <AvButton type="button" @click="saveActiveItem()" :disabled="loading" x-show="activeSectionKey !== 'photo'">
+                    <span x-show="!loading">Save</span>
+                    <span x-show="loading">Saving…</span>
+                  </AvButton>
+                </div>
+              </AvDrawer>
+            </div>
           </div>
         </template>
       </div>
