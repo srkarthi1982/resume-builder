@@ -138,6 +138,15 @@ for (const link of basics?.links ?? []) {
             <p class="av-kicker">Resume Builder</p>
             <h1 class="av-section-title av-resume-print-heading">Print / Preview</h1>
             <p class="av-text-soft">Use browser print to download as PDF.</p>
+            <div class="rb-print-hint" role="note" aria-label="Print tip">
+              <p class="rb-print-hint-title">Print tip</p>
+              <p class="rb-print-hint-body">
+                For a clean PDF, open “More settings” and disable “Headers and footers”.
+              </p>
+              <p class="rb-print-hint-body">
+                This removes the extra date, URL, and page title added by the browser.
+              </p>
+            </div>
           </div>
           <div class="av-row-wrap">
             <AvButton type="button" onclick="window.print()">Print / Download PDF</AvButton>
