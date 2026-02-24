@@ -4,7 +4,6 @@ import {
   AvButton,
   AvCard,
   AvContainer,
-  AvDrawer,
   AvEmptyState,
   AvIcon,
   AvImageUploader,
@@ -15,6 +14,7 @@ import {
 } from "@ansiversa/components";
 import { actions } from "astro:actions";
 import AppShell from "../../../layouts/AppShell.astro";
+import ResumeEditorDrawer from "../../../components/ResumeEditorDrawer.astro";
 import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "../../../modules/resume-builder/constraints";
 import type { ResumeProjectDetail } from "../../../modules/resume-builder/types";
 import { TEMPLATE_OPTIONS, sectionLabels } from "../../../modules/resume-builder/helpers";
@@ -209,13 +209,11 @@ const mediaUploadUrl = "/api/media/upload.json";
             x-cloak
           >
             <div class="rb-drawer-panel" @click.stop @mousedown.stop @pointerdown.stop>
-              <AvDrawer title="Edit section" description="Update section content and save.">
+              <ResumeEditorDrawer
+                titleExpr="getSectionLabel(activeSectionKey)"
+                descriptionExpr="activeSectionKey === 'photo' ? 'Uploading updates instantly.' : 'Save to refresh the preview.'"
+              >
                 <div class="av-auth-stack-md">
-                  <div class="av-auth-stack-xs">
-                    <p class="av-kicker" x-text="getSectionLabel(activeSectionKey)"></p>
-                    <p class="av-text-soft" x-text="activeSectionKey === 'photo' ? 'Uploading updates instantly.' : 'Save to refresh the preview.'"></p>
-                  </div>
-
                   <template x-if="activeSectionKey === 'basics'">
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Full name" name="full-name" x-model="formData.fullName" maxlength={RESUME_MAX.fullName} @input={`enforceLimit('fullName', ${RESUME_MAX.fullName})`} required />
@@ -339,15 +337,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <div class="rb-experience-item-title" x-text="itemLabel(item)"></div>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit experience"
+                                title="Edit experience"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete experience"
+                                title="Delete experience"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add experience</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add experience</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Role" name="role" x-model="formData.role" maxlength={RESUME_MAX.role} @input={`enforceLimit('role', ${RESUME_MAX.role})`} required />
@@ -400,15 +421,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit education"
+                                title="Edit education"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete education"
+                                title="Delete education"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add education</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add education</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Degree" name="degree" x-model="formData.degree" maxlength={RESUME_MAX.degree} @input={`enforceLimit('degree', ${RESUME_MAX.degree})`} required />
@@ -452,15 +496,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit skill"
+                                title="Edit skill"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete skill"
+                                title="Delete skill"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add skill</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add skill</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Skill" name="skill-name" x-model="formData.name" maxlength={RESUME_MAX.skill} @input={`enforceLimit('name', ${RESUME_MAX.skill})`} required />
@@ -484,15 +551,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit project"
+                                title="Edit project"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete project"
+                                title="Delete project"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add project</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add project</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Project name" name="project-name" x-model="formData.name" maxlength={RESUME_MAX.projectName} @input={`enforceLimit('name', ${RESUME_MAX.projectName})`} required />
@@ -542,15 +632,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit certification"
+                                title="Edit certification"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete certification"
+                                title="Delete certification"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add certification</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add certification</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Certification" name="cert-name" x-model="formData.name" maxlength={RESUME_MAX.certificationName} @input={`enforceLimit('name', ${RESUME_MAX.certificationName})`} required />
@@ -573,15 +686,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit achievement"
+                                title="Edit achievement"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete achievement"
+                                title="Delete achievement"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add achievement</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add achievement</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Title" name="award-title" x-model="formData.title" maxlength={RESUME_MAX.awardTitle} required />
@@ -605,15 +741,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit language"
+                                title="Edit language"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete language"
+                                title="Delete language"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add language</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add language</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Language" name="language-name" x-model="formData.name" maxlength={RESUME_MAX.language} required />
@@ -638,15 +797,38 @@ const mediaUploadUrl = "/api/media/upload.json";
                         <template x-for="item in activeSectionItems" :key="item.id">
                           <div class="av-resume-item-row">
                             <p class="av-text-strong" x-text="itemLabel(item)"></p>
-                            <div class="av-row-wrap">
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="editItem(item)">Edit</AvButton>
-                              <AvButton variant="ghost" size="sm" type="button" @click.prevent="deleteItem(item.id)">Delete</AvButton>
+                            <div class="rb-experience-actions">
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Edit highlight"
+                                title="Edit highlight"
+                                @click.prevent="editItem(item)"
+                              >
+                                <AvIcon name="edit" size="sm" />
+                              </AvButton>
+                              <AvButton
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                className="rb-experience-action-btn"
+                                aria-label="Delete highlight"
+                                title="Delete highlight"
+                                @click.prevent="deleteItem(item.id)"
+                              >
+                                <AvIcon name="trash" size="sm" />
+                              </AvButton>
                             </div>
                           </div>
                         </template>
                       </div>
                     </template>
-                    <AvButton variant="ghost" type="button" @click.prevent="startNewItem()">Add highlight</AvButton>
+                    <AvButton variant="ghost" size="sm" type="button" className="rb-experience-add-btn" @click.prevent="startNewItem()">
+                      <AvIcon name="plus" size="sm" />
+                      <span>Add highlight</span>
+                    </AvButton>
 
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvTextarea label="Highlight" name="highlight" rows={3} x-model="formData.text" maxlength={RESUME_MAX.highlight} />
@@ -663,7 +845,7 @@ const mediaUploadUrl = "/api/media/upload.json";
                     <span x-show="loading">Saving…</span>
                   </AvButton>
                 </div>
-              </AvDrawer>
+              </ResumeEditorDrawer>
             </div>
           </div>
         </template>

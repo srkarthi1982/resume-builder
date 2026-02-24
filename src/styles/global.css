@@ -103,6 +103,28 @@
   color: #f1f5f9;
 }
 
+.rb-experience-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.rb-experience-action-btn {
+  width: 2.25rem;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.rb-experience-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .av-resume-ai-header {
   display: flex;
   align-items: center;
