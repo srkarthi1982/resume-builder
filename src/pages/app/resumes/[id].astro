@@ -148,10 +148,10 @@ const mediaUploadUrl = "/api/media/upload.json";
                   </div>
                 </form>
 
-                <template x-if="error">
+                <template x-if="error && !drawerOpen">
                   <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
                 </template>
-                <template x-if="warning">
+                <template x-if="warning && !drawerOpen">
                   <div class="av-alert av-alert-warning" role="status" x-text="warning"></div>
                 </template>
                 <template x-if="success">
@@ -838,12 +838,20 @@ const mediaUploadUrl = "/api/media/upload.json";
                 </template>
                 </div>
 
-                <div slot="footer" class="av-row-wrap">
-                  <AvButton variant="ghost" type="button" @click="closeDrawer()" x-text="activeSectionKey === 'photo' ? 'Done' : 'Close'"></AvButton>
-                  <AvButton type="button" @click="saveActiveItem()" :disabled="loading" x-show="activeSectionKey !== 'photo'">
-                    <span x-show="!loading">Save</span>
-                    <span x-show="loading">Saving…</span>
-                  </AvButton>
+                <div slot="footer" class="av-auth-stack-xs">
+                  <template x-if="drawerError">
+                    <div class="av-alert av-alert-danger" role="status" x-text="drawerError"></div>
+                  </template>
+                  <template x-if="drawerWarning">
+                    <div class="av-alert av-alert-warning" role="status" x-text="drawerWarning"></div>
+                  </template>
+                  <div class="av-row-wrap">
+                    <AvButton variant="ghost" type="button" @click="closeDrawer()" x-text="activeSectionKey === 'photo' ? 'Done' : 'Close'"></AvButton>
+                    <AvButton type="button" @click="saveActiveItem()" :disabled="loading" x-show="activeSectionKey !== 'photo'">
+                      <span x-show="!loading">Save</span>
+                      <span x-show="loading">Saving…</span>
+                    </AvButton>
+                  </div>
                 </div>
               </ResumeEditorDrawer>
             </div>

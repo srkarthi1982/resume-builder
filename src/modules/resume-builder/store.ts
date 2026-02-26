@@ -17,6 +17,8 @@ const defaultState = () => ({
   error: null as string | null,
   warning: null as string | null,
   success: null as string | null,
+  drawerError: null as string | null,
+  drawerWarning: null as string | null,
   drawerOpen: false,
   activeSectionKey: null as ResumeEditorSectionKey | null,
   editingItemId: null as string | null,
@@ -442,6 +444,8 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   error: string | null = null;
   warning: string | null = null;
   success: string | null = null;
+  drawerError: string | null = null;
+  drawerWarning: string | null = null;
   drawerOpen = false;
   activeSectionKey: ResumeEditorSectionKey | null = null;
   editingItemId: string | null = null;
@@ -452,6 +456,27 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   templateOptions = TEMPLATE_OPTIONS;
   yearOptions = getResumeYearOptions();
   monthOptions = RESUME_MONTH_OPTIONS;
+  private setScopedError(message: string) {
+    if (this.drawerOpen && this.activeSectionKey) {
+      this.drawerError = message;
+      return;
+    }
+    this.error = message;
+  }
+
+  private setScopedWarning(message: string) {
+    if (this.drawerOpen && this.activeSectionKey) {
+      this.drawerWarning = message;
+      return;
+    }
+    this.warning = message;
+  }
+
+  private clearDrawerNotices() {
+    this.drawerError = null;
+    this.drawerWarning = null;
+  }
+
   newProject = {
     title: "",
     templateKey: "classic",
@@ -669,7 +694,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       });
 
     if (hasOverlap) {
-      this.warning = "Education dates overlap with another entry. Please verify chronology.";
+      this.setScopedWarning("Education dates overlap with another entry. Please verify chronology.");
     }
   }
 
@@ -1008,6 +1033,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.activeSectionKey = key;
     this.editingItemId = null;
     this.warning = null;
+    this.clearDrawerNotices();
 
     if (key === "photo") {
       if (this.activeProject?.project?.id) {
@@ -1034,6 +1060,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.editingItemId = null;
     this.formData = {};
     this.warning = null;
+    this.clearDrawerNotices();
   }
 
   private bindAiAssistEvents() {
@@ -1115,6 +1142,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.error = null;
     this.warning = null;
     this.success = null;
+    this.clearDrawerNotices();
 
     try {
       const payload = toPayload(sectionKey, this.formData);
@@ -1136,7 +1164,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       }
       this.success = "Saved.";
     } catch (err: any) {
-      this.error = err?.message || "Unable to save item.";
+      this.setScopedError(err?.message || "Unable to save item.");
     } finally {
       this.loading = false;
     }
@@ -1148,6 +1176,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.error = null;
     this.warning = null;
     this.success = null;
+    this.clearDrawerNotices();
 
     try {
       const payload = toPayload(sectionKey, this.formData);
@@ -1170,7 +1199,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       }
       this.success = "Saved.";
     } catch (err: any) {
-      this.error = err?.message || "Unable to save item.";
+      this.setScopedError(err?.message || "Unable to save item.");
     } finally {
       this.loading = false;
     }
@@ -1212,6 +1241,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     if (!this.activeProject?.project?.id) return;
     this.loading = true;
     this.error = null;
+    this.clearDrawerNotices();
 
     try {
       const res = await actions.resumeBuilder.deleteItem({
@@ -1225,7 +1255,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       this.refreshPreview();
       this.success = "Item removed.";
     } catch (err: any) {
-      this.error = err?.message || "Unable to delete item.";
+      this.setScopedError(err?.message || "Unable to delete item.");
     } finally {
       this.loading = false;
     }
