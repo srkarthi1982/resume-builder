@@ -6,9 +6,11 @@ import {
   AvConfirmDialog,
   AvContainer,
   AvEmptyState,
+  AvIcon,
   AvInput,
 } from "@ansiversa/components";
 import { actions } from "astro:actions";
+import ResumeEditorDrawer from "../../../components/ResumeEditorDrawer.astro";
 import AppShell from "../../../layouts/AppShell.astro";
 import { RESUME_MAX } from "../../../modules/resume-builder/constraints";
 import { TEMPLATE_OPTIONS } from "../../../modules/resume-builder/helpers";
@@ -53,52 +55,16 @@ const initialState = {
       >
         <AvCard className="av-auth-card">
           <div class="av-auth-stack-md">
-            <div class="av-auth-stack-xs">
-              <p class="av-kicker">Resume Builder</p>
-              <h1 class="av-section-title">Your resumes</h1>
-              <p class="av-text-soft">Create a new resume or continue editing an existing one.</p>
-            </div>
-
-            <form class="av-auth-stack-sm" @submit.prevent="createProject()">
-              <AvInput
-                label="Resume title"
-                name="resume-title"
-                placeholder="e.g. Product Designer Resume"
-                x-model="newProject.title"
-                maxlength={RESUME_MAX.projectTitle}
-                required
-              />
-              <p class="av-form-hint" x-text="`${(newProject.title || '').length} / ${RESUME_MAX.projectTitle}`"></p>
-
-              <div class="av-resume-template-grid">
-                <template x-for="template in templateOptions" :key="template.key">
-                  <button
-                    class="av-resume-template-card"
-                    :class="newProject.templateKey === template.key ? 'is-selected' : ''"
-                    type="button"
-                    @click.prevent="selectNewTemplate(template.key)"
-                    :disabled="isTemplateLocked(template.key)"
-                  >
-                    <div class="av-row-between">
-                      <p class="av-card-heading" x-text="template.label"></p>
-                      <span class="av-badge av-badge-soft" x-show="template.tier === 'pro' && !isPaid" x-cloak>Pro</span>
-                    </div>
-                    <p class="av-text-soft" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
-                  </button>
-                </template>
+            <div class="av-row-between">
+              <div class="av-auth-stack-xs">
+                <p class="av-kicker">Resume Builder</p>
+                <h1 class="av-section-title">Your resumes</h1>
+                <p class="av-text-soft">Create a new resume or continue editing an existing one.</p>
               </div>
-
-              <div class="av-row-wrap" x-show="paywallMessage" x-cloak>
-                <p class="av-text-soft av-m-0" x-text="paywallMessage"></p>
-                <AvButton href="https://ansiversa.com/pricing" variant="ghost" size="sm">
-                  View pricing
-                </AvButton>
-              </div>
-
               <div class="av-row-wrap">
-                <AvButton type="submit" :disabled="loading">Create resume</AvButton>
+                <AvButton type="button" @click.prevent="openCreateDrawer()">Create resume</AvButton>
               </div>
-            </form>
+            </div>
 
             <template x-if="error">
               <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
@@ -108,6 +74,68 @@ const initialState = {
             </template>
           </div>
         </AvCard>
+
+        <template x-if="createDrawerOpen">
+          <div
+            class="av-drawer-overlay"
+            @click="closeCreateDrawer()"
+            @keydown.escape.window="closeCreateDrawer()"
+            @close-drawer="closeCreateDrawer()"
+            x-cloak
+          >
+            <div class="rb-drawer-panel" @click.stop @mousedown.stop @pointerdown.stop>
+              <ResumeEditorDrawer
+                titleExpr="'Create resume'"
+                descriptionExpr="'Enter details and save to start editing.'"
+              >
+                <form id="create-resume-form" class="av-auth-stack-sm" @submit.prevent="createProject()">
+                  <AvInput
+                    label="Resume title"
+                    name="resume-title"
+                    placeholder="e.g. Product Designer Resume"
+                    x-model="newProject.title"
+                    maxlength={RESUME_MAX.projectTitle}
+                    required
+                  />
+                  <p class="av-form-hint" x-text="`${(newProject.title || '').length} / ${RESUME_MAX.projectTitle}`"></p>
+
+                  <div class="av-resume-template-grid">
+                    <template x-for="template in templateOptions" :key="template.key">
+                      <button
+                        class="av-resume-template-card"
+                        :class="newProject.templateKey === template.key ? 'is-selected' : ''"
+                        type="button"
+                        @click.prevent="selectNewTemplate(template.key)"
+                        :disabled="isTemplateLocked(template.key)"
+                      >
+                        <div class="av-row-between">
+                          <p class="av-card-heading" x-text="template.label"></p>
+                          <span class="av-badge av-badge-soft" x-show="template.tier === 'pro' && !isPaid" x-cloak>Pro</span>
+                        </div>
+                        <p class="av-text-soft" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
+                      </button>
+                    </template>
+                  </div>
+                </form>
+
+                <Fragment slot="footer">
+                  <div class="av-auth-stack-xs av-w-full">
+                    <template x-if="createError">
+                      <div class="av-alert av-alert-danger" role="status" x-text="createError"></div>
+                    </template>
+                    <template x-if="paywallMessage">
+                      <div class="av-alert av-alert-warning" role="status" x-text="paywallMessage"></div>
+                    </template>
+                    <div class="av-row-wrap rb-drawer-footer-actions">
+                      <AvButton variant="ghost" type="button" @click="closeCreateDrawer()">Close</AvButton>
+                      <AvButton type="submit" form="create-resume-form" :disabled="loading">Save</AvButton>
+                    </div>
+                  </div>
+                </Fragment>
+              </ResumeEditorDrawer>
+            </div>
+          </div>
+        </template>
 
         <AvCard variant="soft" className="av-auth-stack-md">
           <div class="av-row-between">
@@ -123,38 +151,31 @@ const initialState = {
           </template>
 
           <template x-if="projects.length > 0">
-            <div class="av-grid-auto av-grid-auto--260">
+            <div class="av-resume-list-grid">
               <template x-for="project in projects" :key="project.id">
                 <AvCard variant="soft" className="av-card--fullheight">
                   <div class="av-auth-stack-sm">
                     <div class="av-auth-stack-xxs">
-                      <div class="av-row-between">
-                        <h3 class="av-card-heading" x-text="project.title"></h3>
-                        <div class="av-row-wrap">
-                          <template x-if="project.isDefault">
-                            <span class="av-badge av-badge-soft">Default</span>
-                          </template>
-                          <AvBookmarkButton
-                            active={false}
-                            activeExpr="isResumeBookmarked(project.id)"
-                            title="Save bookmark"
-                            activeTitle="Remove bookmark"
-                            onClick="toggleResumeBookmark(project.id, project.title)"
-                            size="sm"
-                          />
-                        </div>
+                      <div class="av-row-between rb-resume-card-title-row">
+                        <h3 class="av-card-heading rb-resume-card-title" x-text="project.title"></h3>
+                        <template x-if="project.isDefault">
+                          <span class="av-badge av-badge-soft rb-default-badge">Default</span>
+                        </template>
                       </div>
                       <p class="av-text-soft" x-text="`Template: ${project.templateKey}`"></p>
                     </div>
 
-                    <div class="av-row-wrap">
+                    <div class="rb-experience-actions">
                       <AvButton
                         variant="ghost"
                         size="sm"
                         href="#"
                         x-bind:href="`/app/resumes/${project.id}`"
+                        className="rb-experience-action-btn"
+                        title="Edit resume"
+                        aria-label="Edit resume"
                       >
-                        Edit
+                        <AvIcon name="edit" size="sm" />
                       </AvButton>
                       <AvButton
                         variant="ghost"
@@ -162,8 +183,12 @@ const initialState = {
                         href="#"
                         x-bind:href="`/app/resumes/${project.id}/print`"
                         target="_blank"
+                        rel="noopener noreferrer"
+                        className="rb-experience-action-btn"
+                        title="Preview or print resume"
+                        aria-label="Preview or print resume"
                       >
-                        Preview / Print
+                        <AvIcon name="eye" size="sm" />
                       </AvButton>
                       <AvButton
                         variant="ghost"
@@ -171,17 +196,36 @@ const initialState = {
                         type="button"
                         @click.prevent="setDefault(project.id)"
                         :disabled="project.isDefault || loading"
+                        className="rb-experience-action-btn"
+                        :title="project.isDefault ? 'Already default resume' : 'Set as default resume'"
+                        :aria-label="project.isDefault ? 'Already default resume' : 'Set as default resume'"
                       >
-                        Set default
+                        <span class="rb-default-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M8.5 12.5l2.2 2.2 4.8-4.8"></path>
+                          </svg>
+                        </span>
                       </AvButton>
+                      <AvBookmarkButton
+                        active={false}
+                        activeExpr="isResumeBookmarked(project.id)"
+                        title="Save bookmark"
+                        activeTitle="Remove bookmark"
+                        onClick="toggleResumeBookmark(project.id, project.title)"
+                        size="sm"
+                      />
                       <AvButton
                         variant="ghost"
                         size="sm"
                         type="button"
                         @click.prevent="pendingDeleteId = project.id; pendingDeleteName = project.title || null; const dialogTitle = document.getElementById('resume-delete-dialog-title'); if (dialogTitle) dialogTitle.textContent = pendingDeleteName ? `Delete resume '${pendingDeleteName}'?` : 'Delete this item?'; window.AvDialog?.open('resume-delete-dialog')"
                         :disabled="loading"
+                        className="rb-experience-action-btn"
+                        title="Delete resume"
+                        aria-label="Delete resume"
                       >
-                        Delete
+                        <AvIcon name="trash" size="sm" />
                       </AvButton>
                     </div>
                   </div>

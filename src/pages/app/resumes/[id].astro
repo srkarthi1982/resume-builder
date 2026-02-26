@@ -104,54 +104,26 @@ const mediaUploadUrl = "/api/media/upload.json";
                   </p>
                 </div>
 
-                <form class="av-auth-stack-sm" @submit.prevent="saveProjectMeta()">
-                  <AvInput
-                    label="Resume title"
-                    name="resume-title"
-                    placeholder="Resume name"
-                    x-model="projectMeta.title"
-                    maxlength={RESUME_MAX.projectTitle}
-                    required
-                  />
-                  <p class="av-form-hint" x-text={`(projectMeta.title || '').length + ' / ${RESUME_MAX.projectTitle}'`}></p>
-
-                  <div class="av-resume-template-grid">
-                    <template x-for="template in templateOptions" :key="template.key">
-                      <button
-                        class="av-resume-template-card"
-                        :class="projectMeta.templateKey === template.key ? 'is-selected' : ''"
-                        type="button"
-                        @click.prevent="selectProjectTemplate(template.key)"
-                        :disabled="isTemplateLocked(template.key)"
-                      >
-                        <div class="av-row-between">
-                          <p class="av-card-heading" x-text="template.label"></p>
-                          <span class="av-badge av-badge-soft" x-show="template.tier === 'pro' && !isPaid" x-cloak>Pro</span>
-                        </div>
-                        <p class="av-text-soft" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
-                      </button>
-                    </template>
+                <div class="av-auth-stack-sm">
+                  <div class="av-auth-stack-xs">
+                    <p class="av-card-heading" x-text="projectMeta.title || 'Untitled resume'"></p>
+                    <p class="av-text-soft" x-text="`Template: ${projectMeta.templateKey || 'classic'}`"></p>
                   </div>
-
-                  <div class="av-row-wrap" x-show="paywallMessage" x-cloak>
-                    <p class="av-text-soft av-m-0" x-text="paywallMessage"></p>
-                    <AvButton href="https://ansiversa.com/pricing" variant="ghost" size="sm">
-                      View pricing
-                    </AvButton>
-                  </div>
-
                   <div class="av-row-wrap">
-                    <AvButton type="submit" :disabled="loading">Save details</AvButton>
+                    <AvButton variant="ghost" type="button" @click.prevent="openSettingsDrawer()">
+                      <AvIcon name="edit" size="sm" />
+                      <span>Resume settings</span>
+                    </AvButton>
                     <AvButton href={`/app/resumes/${projectId}/print`} variant="ghost" target="_blank">
                       Preview / Print
                     </AvButton>
                   </div>
-                </form>
+                </div>
 
-                <template x-if="error && !drawerOpen">
+                <template x-if="error && !drawerOpen && !settingsDrawerOpen">
                   <div class="av-alert av-alert-danger" role="status" x-text="error"></div>
                 </template>
-                <template x-if="warning && !drawerOpen">
+                <template x-if="warning && !drawerOpen && !settingsDrawerOpen">
                   <div class="av-alert av-alert-warning" role="status" x-text="warning"></div>
                 </template>
                 <template x-if="success">
@@ -199,6 +171,68 @@ const mediaUploadUrl = "/api/media/upload.json";
         )}
 
         <AvLoading x-show="loading" x-cloak label="Saving…" />
+
+        <template x-if="settingsDrawerOpen">
+          <div
+            class="av-drawer-overlay"
+            @click="closeSettingsDrawer()"
+            @keydown.escape.window="closeSettingsDrawer()"
+            @close-drawer="closeSettingsDrawer()"
+            x-cloak
+          >
+            <div class="rb-drawer-panel" @click.stop @mousedown.stop @pointerdown.stop>
+              <ResumeEditorDrawer
+                titleExpr="'Resume settings'"
+                descriptionExpr="'Update title and template, then save.'"
+              >
+                <form id="resume-settings-form" class="av-auth-stack-sm" @submit.prevent="saveProjectMeta()">
+                  <AvInput
+                    label="Resume title"
+                    name="resume-title"
+                    placeholder="Resume name"
+                    x-model="projectMeta.title"
+                    maxlength={RESUME_MAX.projectTitle}
+                    required
+                  />
+                  <p class="av-form-hint" x-text={`(projectMeta.title || '').length + ' / ${RESUME_MAX.projectTitle}'`}></p>
+
+                  <div class="av-resume-template-grid">
+                    <template x-for="template in templateOptions" :key="template.key">
+                      <button
+                        class="av-resume-template-card"
+                        :class="projectMeta.templateKey === template.key ? 'is-selected' : ''"
+                        type="button"
+                        @click.prevent="selectProjectTemplate(template.key)"
+                        :disabled="isTemplateLocked(template.key)"
+                      >
+                        <div class="av-row-between">
+                          <p class="av-card-heading" x-text="template.label"></p>
+                          <span class="av-badge av-badge-soft" x-show="template.tier === 'pro' && !isPaid" x-cloak>Pro</span>
+                        </div>
+                        <p class="av-text-soft" x-text="template.tier === 'pro' ? 'Included in Pro' : 'Free access'"></p>
+                      </button>
+                    </template>
+                  </div>
+                </form>
+
+                <Fragment slot="footer">
+                  <div class="av-auth-stack-xs av-w-full">
+                    <template x-if="settingsError">
+                      <div class="av-alert av-alert-danger" role="status" x-text="settingsError"></div>
+                    </template>
+                    <template x-if="paywallMessage">
+                      <div class="av-alert av-alert-warning" role="status" x-text="paywallMessage"></div>
+                    </template>
+                    <div class="av-row-wrap rb-drawer-footer-actions">
+                      <AvButton variant="ghost" type="button" @click="closeSettingsDrawer()">Close</AvButton>
+                      <AvButton type="submit" form="resume-settings-form" :disabled="loading">Save</AvButton>
+                    </div>
+                  </div>
+                </Fragment>
+              </ResumeEditorDrawer>
+            </div>
+          </div>
+        </template>
 
         <template x-if="drawerOpen">
           <div

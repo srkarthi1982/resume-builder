@@ -26,6 +26,10 @@ const defaultState = () => ({
   previewBuster: Date.now(),
   isPaid: false,
   paywallMessage: null as string | null,
+  settingsDrawerOpen: false,
+  settingsError: null as string | null,
+  createDrawerOpen: false,
+  createError: null as string | null,
   templateOptions: TEMPLATE_OPTIONS,
   newProject: {
     title: "",
@@ -453,6 +457,10 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   previewBuster = Date.now();
   isPaid = false;
   paywallMessage: string | null = null;
+  settingsDrawerOpen = false;
+  settingsError: string | null = null;
+  createDrawerOpen = false;
+  createError: string | null = null;
   templateOptions = TEMPLATE_OPTIONS;
   yearOptions = getResumeYearOptions();
   monthOptions = RESUME_MONTH_OPTIONS;
@@ -537,6 +545,18 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.newProject.templateKey = templateKey;
   }
 
+  openCreateDrawer() {
+    this.createDrawerOpen = true;
+    this.createError = null;
+    this.paywallMessage = null;
+  }
+
+  closeCreateDrawer() {
+    this.createDrawerOpen = false;
+    this.createError = null;
+    this.paywallMessage = null;
+  }
+
   selectProjectTemplate(templateKey: string) {
     if (this.isTemplateLocked(templateKey)) {
       this.paywallMessage = PAYWALL_MESSAGE;
@@ -544,6 +564,22 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     }
     this.paywallMessage = null;
     this.projectMeta.templateKey = templateKey;
+  }
+
+  openSettingsDrawer() {
+    this.settingsDrawerOpen = true;
+    this.settingsError = null;
+    this.error = null;
+    this.paywallMessage = null;
+  }
+
+  closeSettingsDrawer() {
+    this.settingsDrawerOpen = false;
+    this.settingsError = null;
+    this.paywallMessage = null;
+    if (this.activeProject?.project) {
+      this.setProjectMeta(this.activeProject.project);
+    }
   }
 
   getSectionLabel(key: ResumeEditorSectionKey | null) {
@@ -815,25 +851,27 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   }
 
   async createProject() {
+    if (this.loading) return;
     const title = normalizeText(this.newProject.title);
     const templateKey = (this.newProject.templateKey || "classic") as string;
 
     if (!title) {
-      this.error = "Title is required.";
+      this.createError = "Title is required.";
       return;
     }
     if (title.length > RESUME_MAX.projectTitle) {
-      this.error = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
+      this.createError = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
       return;
     }
 
     if (!TEMPLATE_KEYS.includes(templateKey as any)) {
-      this.error = "Select a valid template.";
+      this.createError = "Select a valid template.";
       return;
     }
 
     this.loading = true;
     this.error = null;
+    this.createError = null;
     this.success = null;
     this.paywallMessage = null;
 
@@ -853,10 +891,15 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
         this.activeProject = data;
         this.activeProjectId = data.project.id;
         this.setProjectMeta(data.project);
+        this.closeCreateDrawer();
+        if (typeof window !== "undefined") {
+          window.location.href = `/app/resumes/${data.project.id}`;
+          return;
+        }
       }
       this.success = "Resume created.";
     } catch (err: any) {
-      this.error = err?.message || "Unable to create resume.";
+      this.createError = err?.message || "Unable to create resume.";
     } finally {
       this.loading = false;
     }
@@ -888,19 +931,29 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   }
 
   async saveProjectMeta() {
+    if (this.loading) return;
     if (!this.activeProject?.project) return;
     const title = normalizeText(this.projectMeta.title);
     if (!title) {
-      this.error = "Title is required.";
+      if (this.settingsDrawerOpen) {
+        this.settingsError = "Title is required.";
+      } else {
+        this.error = "Title is required.";
+      }
       return;
     }
     if (title.length > RESUME_MAX.projectTitle) {
-      this.error = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
+      if (this.settingsDrawerOpen) {
+        this.settingsError = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
+      } else {
+        this.error = `Title must be ${RESUME_MAX.projectTitle} characters or fewer.`;
+      }
       return;
     }
 
     this.loading = true;
     this.error = null;
+    this.settingsError = null;
     this.success = null;
     this.paywallMessage = null;
 
@@ -920,10 +973,15 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
         this.updateProjectInList(data.project);
         this.setProjectMeta(data.project);
         this.refreshPreview();
+        this.closeSettingsDrawer();
       }
       this.success = "Resume details updated.";
     } catch (err: any) {
-      this.error = err?.message || "Unable to update resume.";
+      if (this.settingsDrawerOpen) {
+        this.settingsError = err?.message || "Unable to update resume.";
+      } else {
+        this.error = err?.message || "Unable to update resume.";
+      }
     } finally {
       this.loading = false;
     }
