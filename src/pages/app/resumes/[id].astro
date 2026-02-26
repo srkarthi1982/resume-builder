@@ -246,22 +246,28 @@ const mediaUploadUrl = "/api/media/upload.json";
                             maxlength={RESUME_MAX.linkLabel}
                             @input={`enforceLimit('links.' + index + '.label', ${RESUME_MAX.linkLabel})`}
                           />
-                          <AvInput
-                            label="URL"
-                            type="url"
-                            name="link-url"
-                            x-model="link.url"
-                            maxlength={RESUME_MAX.linkUrl}
-                            @input={`enforceLimit('links.' + index + '.url', ${RESUME_MAX.linkUrl})`}
-                          />
-                          <AvButton
-                            variant="ghost"
-                            type="button"
-                            title="Remove link"
-                            @click.prevent="removeLink(index)"
-                          >
-                            <AvIcon name="trash" size="sm" />
-                          </AvButton>
+                          <div class="av-resume-link-url-row">
+                            <div class="av-resume-link-url-input">
+                              <AvInput
+                                label="URL"
+                                type="url"
+                                name="link-url"
+                                x-model="link.url"
+                                maxlength={RESUME_MAX.linkUrl}
+                                @input={`enforceLimit('links.' + index + '.url', ${RESUME_MAX.linkUrl})`}
+                              />
+                            </div>
+                            <AvButton
+                              variant="ghost"
+                              type="button"
+                              title="Remove link"
+                              aria-label="Remove link"
+                              className="rb-experience-action-btn"
+                              @click.prevent="removeLink(index)"
+                            >
+                              <AvIcon name="trash" size="sm" />
+                            </AvButton>
+                          </div>
                         </div>
                       </template>
                     </div>
