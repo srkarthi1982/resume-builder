@@ -3,7 +3,7 @@ import { AvBaseStore } from "@ansiversa/components/alpine";
 import { actions } from "astro:actions";
 import type { AvMediaUploadResult } from "@ansiversa/components";
 import type { ResumeItemDTO, ResumeProjectDTO, ResumeProjectDetail, ResumeSectionKey } from "./types";
-import { TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from "./helpers";
+import { RESUME_EDITOR_SECTION_ORDER, TEMPLATE_KEYS, TEMPLATE_OPTIONS, isProTemplate, sectionLabels } from "./helpers";
 import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "./constraints";
 
 const PAYWALL_MESSAGE = "Template 3 & 4 are Pro templates. Upgrade to unlock.";
@@ -1112,6 +1112,31 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     this.drawerOpen = true;
   }
 
+
+  getSectionFlowOrder() {
+    return [...RESUME_EDITOR_SECTION_ORDER];
+  }
+
+  getNextSectionKey(currentKey: ResumeEditorSectionKey | null) {
+    if (!currentKey) return null;
+
+    const enabledKeys = new Set(
+      (this.activeProject?.sections ?? [])
+        .filter((section) => section.isEnabled !== false)
+        .map((section) => section.key),
+    );
+
+    const availableOrder = this.getSectionFlowOrder().filter((key) => key === "photo" || enabledKeys.has(key));
+    const currentIndex = availableOrder.indexOf(currentKey);
+    if (currentIndex < 0) return null;
+
+    return availableOrder[currentIndex + 1] ?? null;
+  }
+
+  get hasNextSection() {
+    return Boolean(this.getNextSectionKey(this.activeSectionKey));
+  }
+
   closeDrawer() {
     this.drawerOpen = false;
     this.activeSectionKey = null;
@@ -1275,24 +1300,37 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
   }
 
   async saveActiveItem() {
+    return this.saveActiveItemWithMode("save");
+  }
+
+  async saveAndNextSection() {
+    await this.saveActiveItemWithMode("next");
+  }
+
+  private async saveActiveItemWithMode(mode: "save" | "next") {
     if (!this.activeSectionKey) return;
     if (this.activeSectionKey === "photo") return;
 
-    if (this.activeSectionKey === "basics" || this.activeSectionKey === "summary" || this.activeSectionKey === "declaration") {
-      await this.ensureSectionExists(this.activeSectionKey);
-      await this.saveSingleSection(this.activeSectionKey);
-      return;
-    }
+    const currentSectionKey = this.activeSectionKey;
+    const nextSectionKey = mode === "next" ? this.getNextSectionKey(currentSectionKey) : null;
 
-    if (this.editingItemId) {
+    if (currentSectionKey === "basics" || currentSectionKey === "summary" || currentSectionKey === "declaration") {
+      await this.ensureSectionExists(currentSectionKey);
+      await this.saveSingleSection(currentSectionKey);
+    } else if (this.editingItemId) {
       const item = this.activeSectionItems.find((entry) => entry.id === this.editingItemId);
       if (item) {
-        await this.updateItem(this.activeSectionKey, item);
+        await this.updateItem(currentSectionKey, item);
       }
+    } else {
+      await this.addItem(currentSectionKey);
+    }
+
+    if (mode !== "next" || !nextSectionKey || this.loading || this.drawerError || this.error || this.warning || this.drawerWarning) {
       return;
     }
 
-    await this.addItem(this.activeSectionKey);
+    await this.openSection(nextSectionKey);
   }
 
   async deleteItem(itemId: string) {

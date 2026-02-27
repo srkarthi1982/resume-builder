@@ -17,7 +17,7 @@ import AppShell from "../../../layouts/AppShell.astro";
 import ResumeEditorDrawer from "../../../components/ResumeEditorDrawer.astro";
 import { RESUME_MAX, RESUME_MONTH_OPTIONS, getResumeYearOptions } from "../../../modules/resume-builder/constraints";
 import type { ResumeProjectDetail } from "../../../modules/resume-builder/types";
-import { TEMPLATE_OPTIONS, sectionLabels } from "../../../modules/resume-builder/helpers";
+import { RESUME_EDITOR_SECTION_ORDER, TEMPLATE_OPTIONS, sectionLabels } from "../../../modules/resume-builder/helpers";
 
 const projectId = Astro.params.id ?? "";
 const isPaid = Astro.locals.user?.isPaid === true;
@@ -52,20 +52,7 @@ const initialState = {
   templateOptions: TEMPLATE_OPTIONS,
 };
 
-const sectionOrder = [
-  "photo",
-  "basics",
-  "summary",
-  "experience",
-  "education",
-  "skills",
-  "projects",
-  "certifications",
-  "awards",
-  "languages",
-  "highlights",
-  "declaration",
-] as const;
+
 
 const yearOptions = getResumeYearOptions();
 const monthOptions = RESUME_MONTH_OPTIONS;
@@ -138,7 +125,7 @@ const mediaUploadUrl = "/api/media/upload.json";
                 </div>
 
                 <div class="av-resume-sections-grid">
-                  {sectionOrder.map((key) => (
+                  {RESUME_EDITOR_SECTION_ORDER.map((key) => (
                     <button
                       class="av-resume-section-chip"
                       type="button"
@@ -885,8 +872,20 @@ const mediaUploadUrl = "/api/media/upload.json";
                   <template x-if="drawerWarning">
                     <div class="av-alert av-alert-warning" role="status" x-text="drawerWarning"></div>
                   </template>
-                  <div class="av-row-wrap">
+                  <div class="av-row-wrap rb-drawer-footer-actions">
                     <AvButton variant="ghost" type="button" @click="closeDrawer()" x-text="activeSectionKey === 'photo' ? 'Done' : 'Close'"></AvButton>
+                    <AvButton
+                      variant="outline"
+                      type="button"
+                      @click="saveAndNextSection()"
+                      :disabled="loading || !hasNextSection"
+                      x-show="activeSectionKey !== 'photo'"
+                      :title="hasNextSection ? 'Save and open next section' : 'No next section'"
+                      aria-label="Save and open next section"
+                    >
+                      <span x-show="!loading">Save &amp; Next</span>
+                      <span x-show="loading">Saving…</span>
+                    </AvButton>
                     <AvButton type="button" @click="saveActiveItem()" :disabled="loading" x-show="activeSectionKey !== 'photo'">
                       <span x-show="!loading">Save</span>
                       <span x-show="loading">Saving…</span>

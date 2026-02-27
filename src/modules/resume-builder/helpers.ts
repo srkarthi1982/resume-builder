@@ -10,6 +10,21 @@ export const TEMPLATE_OPTIONS = [
   { key: "timeline", label: "Timeline", tier: "pro" },
 ] as const;
 
+export const RESUME_EDITOR_SECTION_ORDER = [
+  "photo",
+  "basics",
+  "summary",
+  "experience",
+  "education",
+  "skills",
+  "projects",
+  "certifications",
+  "awards",
+  "languages",
+  "highlights",
+  "declaration",
+] as const;
+
 const TEMPLATE_TIER_MAP = {
   classic: "free",
   modern: "free",
