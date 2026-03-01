@@ -169,6 +169,41 @@ const coerceNumber = (value: any) => {
   return Number.isFinite(num) ? num : undefined;
 };
 
+const toYearMonthKey = (year?: number, month?: number) => {
+  const safeYear = Number.isFinite(year) ? Number(year) : 0;
+  const safeMonth = Number.isFinite(month) ? Number(month) : 0;
+  return safeYear * 100 + safeMonth;
+};
+
+type ExperienceSortEntry = {
+  present?: boolean;
+  start?: {
+    year?: number;
+    month?: number;
+  };
+  end?: {
+    year?: number;
+    month?: number;
+  };
+};
+
+const compareExperienceChronologyDesc = (a: ExperienceSortEntry, b: ExperienceSortEntry) => {
+  const aCurrent = Boolean(a.present);
+  const bCurrent = Boolean(b.present);
+  if (aCurrent && !bCurrent) return -1;
+  if (!aCurrent && bCurrent) return 1;
+
+  const aEndKey = aCurrent ? Number.MAX_SAFE_INTEGER : toYearMonthKey(a.end?.year, a.end?.month);
+  const bEndKey = bCurrent ? Number.MAX_SAFE_INTEGER : toYearMonthKey(b.end?.year, b.end?.month);
+  if (aEndKey !== bEndKey) return bEndKey - aEndKey;
+
+  const aStartKey = toYearMonthKey(a.start?.year, a.start?.month);
+  const bStartKey = toYearMonthKey(b.start?.year, b.start?.month);
+  if (aStartKey !== bStartKey) return bStartKey - aStartKey;
+
+  return 0;
+};
+
 const coerceStringArray = (value: any) => {
   if (Array.isArray(value)) {
     return value.map((entry) => normalizeText(String(entry))).filter(Boolean);
@@ -269,7 +304,8 @@ export const buildResumeDataFromSections = (
         tags: coerceTagArray(item.data?.tags),
       };
     })
-    .filter((entry) => entry.role || entry.company);
+    .filter((entry) => entry.role || entry.company)
+    .sort(compareExperienceChronologyDesc);
 
   base.projects = getSectionItems(enabledSections, "projects")
     .map((item) => {
