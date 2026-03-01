@@ -650,6 +650,24 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     }
   }
 
+  autoGrowTextarea(event: Event) {
+    if (!(event.target instanceof HTMLTextAreaElement)) return;
+    this.resizeTextarea(event.target);
+  }
+
+  private resizeTextarea(textarea: HTMLTextAreaElement) {
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }
+
+  private scheduleDrawerTextareaResize() {
+    if (typeof window === "undefined") return;
+    window.requestAnimationFrame(() => {
+      const textareas = document.querySelectorAll<HTMLTextAreaElement>(".rb-drawer-panel .av-drawer__body textarea.av-textarea");
+      textareas.forEach((textarea) => this.resizeTextarea(textarea));
+    });
+  }
+
   togglePresent(flagPath = "present") {
     const active = Boolean(getAtPath(this.formData, flagPath));
     setAtPath(this.formData, "present", active);
@@ -1099,6 +1117,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       }
       this.formData = {};
       this.drawerOpen = true;
+      this.scheduleDrawerTextareaResize();
       return;
     }
 
@@ -1110,6 +1129,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
       this.formData = defaultFormForSection(key);
     }
     this.drawerOpen = true;
+    this.scheduleDrawerTextareaResize();
   }
 
 
@@ -1186,6 +1206,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
         ? suggestion
         : `${current}${needsNewline ? "\n" : ""}${suggestion}`;
     this.formData.text = nextValue.slice(0, RESUME_MAX.summary);
+    this.scheduleDrawerTextareaResize();
   }
 
   editItem(item: ResumeItemDTO) {
@@ -1193,6 +1214,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     if (this.activeSectionKey === "photo") return;
     this.editingItemId = item.id;
     this.formData = toFormData(this.activeSectionKey, item.data ?? {});
+    this.scheduleDrawerTextareaResize();
   }
 
   startNewItem() {
@@ -1200,6 +1222,7 @@ export class ResumeBuilderStore extends AvBaseStore implements ReturnType<typeof
     if (this.activeSectionKey === "photo") return;
     this.editingItemId = null;
     this.formData = defaultFormForSection(this.activeSectionKey);
+    this.scheduleDrawerTextareaResize();
   }
 
   addLink() {

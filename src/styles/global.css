@@ -199,6 +199,11 @@
   pointer-events: auto;
 }
 
+.rb-drawer-panel .av-drawer__body .av-textarea {
+  overflow-y: hidden;
+  resize: none;
+}
+
 .av-resume-print-body {
   min-height: 100vh;
   background: #ffffff;

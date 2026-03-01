@@ -234,7 +234,7 @@ const mediaUploadUrl = "/api/media/upload.json";
                 titleExpr="getSectionLabel(activeSectionKey)"
                 descriptionExpr="activeSectionKey === 'photo' ? 'Uploading updates instantly.' : 'Save to refresh the preview.'"
               >
-                <div class="av-auth-stack-md">
+                <div class="av-auth-stack-md" @input="autoGrowTextarea($event)">
                   <template x-if="activeSectionKey === 'basics'">
                     <form class="av-auth-stack-sm" @submit.prevent="saveActiveItem()">
                       <AvInput label="Full name" name="full-name" x-model="formData.fullName" maxlength={RESUME_MAX.fullName} @input={`enforceLimit('fullName', ${RESUME_MAX.fullName})`} required />
