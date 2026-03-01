@@ -75,6 +75,7 @@ const resumeShellData = sanitizedResumeData
     }
   : null;
 const contactEntries: Array<{ key: string; value: string; href?: string }> = [];
+const MAX_CONTACT_URL_DISPLAY_LENGTH = 40;
 const normalizeHref = (value: string) => {
   const trimmed = value.trim();
   if (!trimmed) return "";
@@ -87,8 +88,12 @@ const formatDisplayUrl = (value: string) => {
     const parsed = new URL(href);
     const hostname = parsed.hostname.replace(/^www\./i, "");
     if (!hostname) return "";
-    const hasPath = parsed.pathname && parsed.pathname !== "/";
-    return hasPath ? `${hostname}/...` : hostname;
+    const path = parsed.pathname && parsed.pathname !== "/" ? parsed.pathname.replace(/\/+$/, "") : "";
+    const cleaned = `${hostname}${path}`;
+    if (cleaned.length <= MAX_CONTACT_URL_DISPLAY_LENGTH) {
+      return cleaned;
+    }
+    return `${hostname}/...`;
   } catch {
     return value
       .replace(/^https?:\/\//i, "")
