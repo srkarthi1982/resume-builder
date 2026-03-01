@@ -190,7 +190,7 @@ const hasDeclaration = Boolean(declaration.text || declaration.place || declarat
                 <div class="space-y-3 text-sm text-slate-200 print:text-slate-700">
                   {education.map((edu) => (
                     <div>
-                      <div class="font-semibold text-slate-100 print:text-slate-900">{edu.degree}</div>
+                      {edu.degree ? <div class="font-semibold text-slate-100 print:text-slate-900">{edu.degree}</div> : null}
                       <div>{edu.school}</div>
                       {edu.location ? <div class="text-xs opacity-90">{edu.location}</div> : null}
                       {edu.start ? (

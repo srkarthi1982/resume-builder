@@ -347,10 +347,17 @@ export const buildResumeDataFromSections = (
       const startMonth = coerceNumber(item.data?.startMonth);
       const endYear = coerceNumber(item.data?.endYear);
       const endMonth = coerceNumber(item.data?.endMonth);
+      const degree = normalizeText(
+        item.data?.degree ??
+        item.data?.title ??
+        item.data?.program ??
+        item.data?.name ??
+        "",
+      );
 
       return {
         id: item.data?.id ?? item.id,
-        degree: normalizeText(item.data?.degree ?? ""),
+        degree,
         school: normalizeText(item.data?.school ?? ""),
         location: normalizeText(item.data?.location ?? "") || undefined,
         start: startYear || startMonth
