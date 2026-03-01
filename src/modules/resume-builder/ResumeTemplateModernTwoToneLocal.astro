@@ -118,17 +118,6 @@ const hasDeclaration = Boolean(declaration.text || declaration.place || declarat
               </div>
             )}
 
-            {skills.length > 0 && (
-              <div class="av-print-avoid-break space-y-3">
-                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">SKILLS</div>
-                <div class="flex flex-wrap gap-2">
-                  {skills.map((skill) => (
-                    <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-100 print:border print:border-slate-200 print:bg-slate-50 print:text-slate-800">{skill.name}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {links.length > 0 && (
               <div class="av-print-avoid-break space-y-2">
                 <div class="text-sm font-semibold text-slate-100 print:text-slate-900">LINKS</div>
@@ -146,37 +135,25 @@ const hasDeclaration = Boolean(declaration.text || declaration.place || declarat
               </div>
             )}
 
-            {languages.length > 0 && (
-              <div class="av-print-avoid-break space-y-2">
-                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">LANGUAGES</div>
-                <ul class="list-disc space-y-1 pl-5 text-sm text-slate-200 print:text-slate-700">
-                  {languages.map((language) => (
-                    <li>
-                      {language.name}
-                      {language.proficiency ? ` (${language.proficiency})` : ""}
-                    </li>
+            {skills.length > 0 && (
+              <div class="av-print-avoid-break space-y-3">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">SKILLS</div>
+                <div class="flex flex-wrap gap-2">
+                  {skills.map((skill) => (
+                    <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-100 print:border print:border-slate-200 print:bg-slate-50 print:text-slate-800">{skill.name}</span>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
-            {education.length > 0 && (
+            {highlights.length > 0 && (
               <div class="av-print-avoid-break space-y-2">
-                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">EDUCATION</div>
-                <div class="space-y-3 text-sm text-slate-200 print:text-slate-700">
-                  {education.map((edu) => (
-                    <div>
-                      <div class="font-semibold text-slate-100 print:text-slate-900">{edu.degree}</div>
-                      <div>{edu.school}</div>
-                      {edu.location ? <div class="text-xs opacity-90">{edu.location}</div> : null}
-                      {edu.start ? (
-                        <div class="text-xs opacity-90">
-                          {formatDateRange({ start: edu.start, end: edu.end }).replace(/\s—\s/g, "—")}
-                        </div>
-                      ) : null}
-                    </div>
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">HIGHLIGHTS</div>
+                <ul class="list-disc space-y-1 pl-5 text-sm text-slate-200 print:text-slate-700">
+                  {highlights.map((highlight) => (
+                    <li>{atsSafeInline(highlight)}</li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
 
@@ -207,12 +184,35 @@ const hasDeclaration = Boolean(declaration.text || declaration.place || declarat
               </div>
             )}
 
-            {highlights.length > 0 && (
+            {education.length > 0 && (
               <div class="av-print-avoid-break space-y-2">
-                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">HIGHLIGHTS</div>
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">EDUCATION</div>
+                <div class="space-y-3 text-sm text-slate-200 print:text-slate-700">
+                  {education.map((edu) => (
+                    <div>
+                      <div class="font-semibold text-slate-100 print:text-slate-900">{edu.degree}</div>
+                      <div>{edu.school}</div>
+                      {edu.location ? <div class="text-xs opacity-90">{edu.location}</div> : null}
+                      {edu.start ? (
+                        <div class="text-xs opacity-90">
+                          {formatDateRange({ start: edu.start, end: edu.end }).replace(/\s—\s/g, "—")}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {languages.length > 0 && (
+              <div class="av-print-avoid-break space-y-2">
+                <div class="text-sm font-semibold text-slate-100 print:text-slate-900">LANGUAGES</div>
                 <ul class="list-disc space-y-1 pl-5 text-sm text-slate-200 print:text-slate-700">
-                  {highlights.map((highlight) => (
-                    <li>{atsSafeInline(highlight)}</li>
+                  {languages.map((language) => (
+                    <li>
+                      {language.name}
+                      {language.proficiency ? ` (${language.proficiency})` : ""}
+                    </li>
                   ))}
                 </ul>
               </div>
