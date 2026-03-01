@@ -27,9 +27,6 @@ try {
 
 const resumeData = projectData ? buildResumeDataFromSections(projectData.sections ?? []) : null;
 const projectPhotoUrl = (projectData?.project?.photoUrl ?? "").trim();
-const pageTitle = projectData?.project?.title
-  ? `${projectData.project.title} – Print`
-  : "Resume Print";
 
 const sanitizeForPrint = <T,>(value: T): T => {
   if (typeof value === "string") return sanitizePrintText(value) as T;
@@ -46,6 +43,23 @@ const sanitizeForPrint = <T,>(value: T): T => {
 const sanitizedResumeData = resumeData ? sanitizeForPrint(resumeData) : null;
 const basics = sanitizedResumeData?.basics;
 const summaryText = (basics?.summary ?? "").trim();
+const toFilenamePart = (value?: string | null) =>
+  sanitizePrintText(value)
+    .replace(/[^A-Za-z0-9\s-]/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+const nameParts = sanitizePrintText(basics?.fullName ?? "")
+  .replace(/\s+/g, " ")
+  .trim()
+  .split(" ")
+  .filter(Boolean);
+const firstName = toFilenamePart(nameParts[0] ?? "");
+const lastName = toFilenamePart(nameParts.length > 1 ? nameParts[nameParts.length - 1] : "");
+const jobTitle = toFilenamePart(basics?.headline ?? "");
+const fallbackTitle = toFilenamePart(projectData?.project?.title ?? "");
+const pageTitle = [firstName, lastName, jobTitle].filter(Boolean).join("-") || fallbackTitle || "Resume";
 const resumeShellData = sanitizedResumeData
   ? {
       ...sanitizedResumeData,
@@ -224,5 +238,8 @@ for (const link of basics?.links ?? []) {
         </AvContainer>
       ) : null}
     </main>
+    <script is:inline define:vars={{ pageTitle }}>
+      document.title = pageTitle;
+    </script>
   </body>
 </html>
