@@ -75,10 +75,27 @@ const resumeShellData = sanitizedResumeData
     }
   : null;
 const contactEntries: Array<{ key: string; value: string; href?: string }> = [];
-const formatDisplayUrl = (value: string) =>
-  value
-    .replace(/^https?:\/\//i, "")
-    .replace(/\/+$/, "");
+const normalizeHref = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
+const formatDisplayUrl = (value: string) => {
+  const href = normalizeHref(value);
+  if (!href) return "";
+  try {
+    const parsed = new URL(href);
+    const hostname = parsed.hostname.replace(/^www\./i, "");
+    if (!hostname) return "";
+    const hasPath = parsed.pathname && parsed.pathname !== "/";
+    return hasPath ? `${hostname}/...` : hostname;
+  } catch {
+    return value
+      .replace(/^https?:\/\//i, "")
+      .replace(/^www\./i, "")
+      .replace(/\/+$/, "");
+  }
+};
 const normalizeGithubUrl = (value: string) => {
   const trimmed = value.trim();
   if (!trimmed) return "";
@@ -118,10 +135,8 @@ if (basics?.contact?.email) {
   pushContactEntry("Email", basics.contact.email, `mailto:${basics.contact.email}`);
 }
 if (basics?.contact?.website) {
-  const href = /^https?:\/\//i.test(basics.contact.website)
-    ? basics.contact.website
-    : `https://${basics.contact.website}`;
-  pushContactEntry("Website", formatDisplayUrl(basics.contact.website), href);
+  const href = normalizeHref(basics.contact.website);
+  pushContactEntry("Website", formatDisplayUrl(href), href);
 }
 for (const link of basics?.links ?? []) {
   const label = (link?.label ?? "").trim();
@@ -130,10 +145,8 @@ for (const link of basics?.links ?? []) {
   if (label.toLowerCase() === "website") continue;
   const href = label.toLowerCase() === "github"
     ? normalizeGithubUrl(url)
-    : /^https?:\/\//i.test(url)
-      ? url
-      : `https://${url}`;
-  const displayValue = label.toLowerCase() === "github" ? formatDisplayUrl(href || url) : formatDisplayUrl(url);
+    : normalizeHref(url);
+  const displayValue = formatDisplayUrl(href || url);
   pushContactEntry(label, displayValue, href);
 }
 ---
