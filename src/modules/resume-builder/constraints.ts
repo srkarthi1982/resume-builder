@@ -34,7 +34,7 @@ export const RESUME_MAX = {
   website: 200,
   linkLabel: 60,
   linkUrl: 2048,
-  summary: 300,
+  summary: 800,
   declaration: 180,
   declarationPlace: 80,
   declarationName: 80,
