@@ -88,7 +88,25 @@ const formatDisplayUrl = (value: string) => {
     const parsed = new URL(href);
     const hostname = parsed.hostname.replace(/^www\./i, "");
     if (!hostname) return "";
-    const path = parsed.pathname && parsed.pathname !== "/" ? parsed.pathname.replace(/\/+$/, "") : "";
+    const pathSegments = parsed.pathname
+      .split("/")
+      .map((segment) => segment.trim())
+      .filter(Boolean);
+
+    if (hostname.endsWith("linkedin.com") && pathSegments.length >= 2) {
+      const first = pathSegments[0].toLowerCase();
+      if (first === "in" || first === "company" || first === "school") {
+        const canonical = `${hostname}/${first}/${pathSegments[1]}`;
+        return pathSegments.length > 2 ? `${canonical}/...` : canonical;
+      }
+    }
+
+    if (hostname.endsWith("github.com") && pathSegments.length >= 1) {
+      const canonical = `${hostname}/${pathSegments[0]}`;
+      return pathSegments.length > 1 ? `${canonical}/...` : canonical;
+    }
+
+    const path = pathSegments.length > 0 ? `/${pathSegments.join("/")}` : "";
     const cleaned = `${hostname}${path}`;
     if (cleaned.length <= MAX_CONTACT_URL_DISPLAY_LENGTH) {
       return cleaned;
