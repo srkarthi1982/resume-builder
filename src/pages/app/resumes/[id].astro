@@ -315,13 +315,12 @@ const mediaUploadUrl = "/api/media/upload.json";
                     <div class="av-row-between av-resume-ai-header">
                       <label class="av-label" for="summary-text">Summary</label>
                       <AvAiAssist
-                        featureKey="resume.remark_suggestions"
-                        value=""
-                        minChars={30}
-                        maxChars={1500}
+                        mode="rewrite"
+                        text=""
+                        maxChars={RESUME_MAX.summary}
+                        rewriteField="summary"
                         label="AI"
                         valueSourceSelector="#summary-text"
-                        onAppendEvent="av:ai-append"
                         onReplaceEvent="av:ai-replace"
                       />
                     </div>
