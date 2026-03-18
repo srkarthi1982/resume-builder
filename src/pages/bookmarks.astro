@@ -10,7 +10,7 @@ import {
 import AppShell from "../layouts/AppShell.astro";
 
 const user = Astro.locals.user;
-const rootAppUrl = Astro.locals.rootAppUrl ?? "https://ansiversa.com";
+const rootAppUrl = Astro.locals.rootAppUrl ?? "https://www.ansiversa.com";
 
 if (!user) {
   const loginUrl = new URL("/login", rootAppUrl);
