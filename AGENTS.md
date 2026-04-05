@@ -326,6 +326,7 @@ To add a 5th template later:
 - 2026-01-29 Smoke test: not run (manual create/update resume).
 
 ## Task Log (Recent)
+- 2026-04-05 Populated `docs/app-spec.md` with implementation-aligned V1 documentation for remaining release-app coverage.
 - 2026-03-18 Components lock sync: upgraded `@ansiversa/components` to `^0.0.169` and refreshed the lockfile for the pre-launch ecosystem lock. Verification: `npm run typecheck` ✅, `npm run build` ✅.
 - 2026-03-01 Live-app shared UI sync: upgraded `@ansiversa/components` to `^0.0.163` (or confirmed already aligned in `web`) and refreshed install state for this repo. Verification: `npm run build` ✅.
 - 2026-02-27 Middleware Standard V1 normalization: introduced config-driven middleware via `src/lib/middlewareConfig.ts` + shared template `src/middleware.ts` (standardized static bypass list, prod `ANSIVERSA_COOKIE_DOMAIN` enforcement, ordered auth flow, safe numeric admin role check, dev bypass gated to `import.meta.env.DEV`). Preserved resume-builder behavior with `protectMost`, public routes `["/", "/help"]`, and retained local paid bypass capability through `DEV_BYPASS_IS_PAID` using `process` env source in config. Updated `.env.example` with routing vars + standardized dev bypass flags. Verification: `npm run typecheck` ✅, `npm run build` ✅.
